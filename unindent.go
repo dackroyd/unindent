@@ -51,26 +51,43 @@ func (analyzer) run(pass *analysis.Pass) (interface{}, error) {
 }
 
 func analyze(pass *analysis.Pass, stmt *ast.IfStmt, _ []ast.Node) bool {
-	if stmt.Else == nil {
+	if !alwaysReturns(stmt) {
 		return false
 	}
 
-	var alwaysReturns bool
+	return reportUnnecessaryElse(pass, stmt)
+}
+
+func alwaysReturns(s ast.Node) bool {
+	switch t := s.(type) {
+	case *ast.ReturnStmt:
+		return true
+	case *ast.IfStmt:
+		return ifAlwaysReturns(t)
+	}
+
+	return false
+}
+
+func ifAlwaysReturns(stmt *ast.IfStmt) bool {
+	if stmt.Else == nil {
+		return false
+	}
 
 	// Where the return statement is declared directly in the "if" block, it should be the last statement
 	// However, Go allows other statements after this, even if they can never be reached
 	for i := len(stmt.Body.List) - 1; i >= 0; i-- {
 		b := stmt.Body.List[i]
-		if _, ok := b.(*ast.ReturnStmt); ok {
-			alwaysReturns = true
-			break
+
+		if alwaysReturns(b) {
+			return true
 		}
 	}
 
-	if !alwaysReturns {
-		return false
-	}
+	return false
+}
 
+func reportUnnecessaryElse(pass *analysis.Pass, stmt *ast.IfStmt) bool {
 	var (
 		args []any
 		msg  strings.Builder
