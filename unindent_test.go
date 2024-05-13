@@ -16,7 +16,7 @@ func TestAnalyzer(t *testing.T) {
 
 	a := unindent.NewAnalyzer()
 
-	analysistest.Run(t, testdataDir(t), a, "unindent")
+	analysistest.RunWithSuggestedFixes(t, testdataDir(t), a, "unindent")
 }
 
 func testdataDir(t *testing.T) string {

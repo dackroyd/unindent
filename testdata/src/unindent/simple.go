@@ -4,6 +4,16 @@ import "strconv"
 
 func Empty() {}
 
+func EmptyElse(x, y int) int {
+	if x > y {
+		return x
+	} else { // want `^Unnecessary "else": preceding conditions always end in a "return". Remove the "else" wrapping the block of statements$`
+		// Continue
+	}
+
+	return y
+}
+
 func Ident(x int) int {
 	return x
 }

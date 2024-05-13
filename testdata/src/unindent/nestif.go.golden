@@ -1,0 +1,73 @@
+package unindent
+
+import "strconv"
+
+func NestIf(s string, x int) int {
+	if s == "" {
+		if x > 0 {
+			return x
+		}
+
+		return 0
+	}
+
+	l := len(s)
+	if l > 5 {
+		return x
+	}
+
+	return l
+}
+
+func NestIfDeep(s string, x int) int {
+	if s == "" {
+		if x > 0 {
+			l := len(s)
+			if l > 5 {
+				return x
+			}
+
+			return l
+		}
+
+		return 0
+	}
+
+	return 1
+}
+
+func NestIfOk(s string, x int) int {
+	if s == "" {
+		if x > 0 {
+			return x
+		}
+
+		return 0
+	}
+
+	l := len(s)
+	if l > 5 {
+		return x
+	}
+
+	return l
+}
+
+func FizBuzzNest(x int) string {
+	fizz := "fizz"
+	buzz := "buzz"
+
+	if x%3 == 0 {
+		if x%5 == 0 {
+			return fizz + buzz
+		}
+
+		return buzz
+	}
+
+	if x%5 == 0 {
+		return buzz
+	}
+
+	return strconv.Itoa(x)
+}

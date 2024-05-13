@@ -50,12 +50,12 @@ func (analyzer) run(pass *analysis.Pass) (interface{}, error) {
 	return analysis.Fact(nil), nil
 }
 
-func analyze(pass *analysis.Pass, stmt *ast.IfStmt, _ []ast.Node) bool {
+func analyze(pass *analysis.Pass, stmt *ast.IfStmt, stack []ast.Node) bool {
 	if !alwaysReturns(stmt) {
 		return false
 	}
 
-	return reportUnnecessaryElse(pass, stmt)
+	return reportUnnecessaryElse(pass, stmt, stack)
 }
 
 func alwaysReturns(s ast.Node) bool {
@@ -87,17 +87,28 @@ func ifAlwaysReturns(stmt *ast.IfStmt) bool {
 	return false
 }
 
-func reportUnnecessaryElse(pass *analysis.Pass, stmt *ast.IfStmt) bool {
+func reportUnnecessaryElse(pass *analysis.Pass, stmt *ast.IfStmt, _ []ast.Node) bool {
 	var (
 		args []any
 		msg  strings.Builder
 	)
+
+	edits := []analysis.TextEdit{}
 
 	msg.WriteString(`Unnecessary "else": preceding conditions always end in a "return". `)
 
 	if stmt.Init == nil {
 		msg.WriteString(`Remove the "else"`)
 	} else {
+		// Pull the 'init' statement our of the 'if'
+		// FIXME: this only needs to be done if the 'else' part uses the variable
+		in := mustFormatNode(stmt.Init)
+		edits = append(edits, analysis.TextEdit{
+			Pos:     stmt.Pos(),
+			End:     stmt.Init.End(),
+			NewText: []byte(in + "\nif "),
+		})
+
 		msg.WriteString(`Move variable declaration %q before the "if", and remove the "else"`)
 		args = append(args, mustFormatNode(stmt.Init))
 	}
@@ -105,17 +116,53 @@ func reportUnnecessaryElse(pass *analysis.Pass, stmt *ast.IfStmt) bool {
 	switch els := stmt.Else.(type) {
 	case *ast.IfStmt:
 		// "else if <cond>"
+		// Remove the 'else' from the 'else if', and shift the 'if' down
+		edits = append(edits, analysis.TextEdit{
+			Pos:     stmt.Body.Rbrace + 1,
+			End:     els.If,
+			NewText: []byte("\n\n"),
+		})
+
 		msg.WriteString(`, leaving "if %s { ... }"`)
 		args = append(args, mustFormatNode(els.Cond))
 	case *ast.BlockStmt:
 		// "else"
+		var endOpen token.Pos
+
+		if len(els.List) > 0 {
+			endOpen = els.List[0].Pos()
+		} else {
+			endOpen = els.Lbrace + 1
+		}
+
+		// Remove the 'else {', shifting the body down
+		edits = append(edits, analysis.TextEdit{
+			Pos:     stmt.Body.Rbrace + 1,
+			End:     endOpen,
+			NewText: []byte("\n\n"),
+		})
+		// Remove the closing '}' of the 'else'
+		edits = append(edits, analysis.TextEdit{
+			Pos:     els.Rbrace - 1,
+			End:     els.End() + 1,
+			NewText: []byte(""),
+		})
+
 		msg.WriteString(` wrapping the block of statements`)
 	default:
 		pass.Reportf(els.Pos(), `Unexpected ast in "else": %s`, mustFormatNode(stmt.Else))
 		return false
 	}
 
-	pass.Reportf(stmt.Else.Pos(), msg.String(), args...)
+	pass.Report(
+		analysis.Diagnostic{
+			Pos:     stmt.Else.Pos(),
+			Message: fmt.Sprintf(msg.String(), args...),
+			SuggestedFixes: []analysis.SuggestedFix{
+				{Message: "Remove unnecessary else", TextEdits: edits},
+			},
+		},
+	)
 
 	return true
 }
