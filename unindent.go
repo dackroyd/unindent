@@ -51,15 +51,19 @@ func (analyzer) run(pass *analysis.Pass) (interface{}, error) {
 }
 
 func analyze(pass *analysis.Pass, stmt *ast.IfStmt, stack []ast.Node) bool {
-	if !alwaysReturns(stmt) {
+	if !alwaysReturns(stmt, 0) {
 		return false
 	}
 
 	return reportUnnecessaryElse(pass, stmt, stack)
 }
 
-func alwaysReturns(s ast.Node) bool {
+func alwaysReturns(s ast.Node, depth int) bool {
+	newDepth := depth + 1
+
 	switch t := s.(type) {
+	case *ast.BlockStmt:
+		return blockAlwaysReturns(t, newDepth)
 	case *ast.ReturnStmt:
 		return true
 	case *ast.BranchStmt:
@@ -67,27 +71,41 @@ func alwaysReturns(s ast.Node) bool {
 		// understanding of where it ends up, which isn't assessed here
 		return t.Tok == token.BREAK || t.Tok == token.CONTINUE
 	case *ast.IfStmt:
-		return ifAlwaysReturns(t)
+		if !ifAlwaysReturns(t, newDepth) {
+			return false
+		}
+
+		// When we're looking into nested if/else of the IfStmt being analyzed,
+		// we must also evaluate the else cases as part of the body of our main if
+		if newDepth > 1 {
+			return alwaysReturns(t.Else, newDepth)
+		}
+
+		return true
 	case *ast.SwitchStmt:
-		return switchAlwaysReturns(t)
+		return switchAlwaysReturns(t, newDepth)
 	case *ast.TypeSwitchStmt:
-		return typeswitchAlwaysReturns(t)
+		return typeswitchAlwaysReturns(t, newDepth)
 	}
 
 	return false
 }
 
-func ifAlwaysReturns(stmt *ast.IfStmt) bool {
+func ifAlwaysReturns(stmt *ast.IfStmt, depth int) bool {
 	if stmt.Else == nil {
 		return false
 	}
 
-	// Where the return statement is declared directly in the "if" block, it should be the last statement
-	// However, Go allows other statements after this, even if they can never be reached
-	for i := len(stmt.Body.List) - 1; i >= 0; i-- {
-		b := stmt.Body.List[i]
+	return blockAlwaysReturns(stmt.Body, depth)
+}
 
-		if alwaysReturns(b) {
+func blockAlwaysReturns(block *ast.BlockStmt, depth int) bool {
+	// Where the return statement is declared directly in the block, it should be the last statement
+	// However, Go allows other statements after this, even if they can never be reached
+	for i := len(block.List) - 1; i >= 0; i-- {
+		b := block.List[i]
+
+		if alwaysReturns(b, depth) {
 			return true
 		}
 	}
@@ -95,15 +113,15 @@ func ifAlwaysReturns(stmt *ast.IfStmt) bool {
 	return false
 }
 
-func switchAlwaysReturns(s *ast.SwitchStmt) bool {
-	return switchBodyAlwaysReturns(s.Body)
+func switchAlwaysReturns(s *ast.SwitchStmt, depth int) bool {
+	return switchBodyAlwaysReturns(s.Body, depth)
 }
 
-func typeswitchAlwaysReturns(s *ast.TypeSwitchStmt) bool {
-	return switchBodyAlwaysReturns(s.Body)
+func typeswitchAlwaysReturns(s *ast.TypeSwitchStmt, depth int) bool {
+	return switchBodyAlwaysReturns(s.Body, depth)
 }
 
-func switchBodyAlwaysReturns(body *ast.BlockStmt) bool {
+func switchBodyAlwaysReturns(body *ast.BlockStmt, depth int) bool {
 	var defaultReturns bool
 
 	for _, b := range body.List {
@@ -113,11 +131,11 @@ func switchBodyAlwaysReturns(body *ast.BlockStmt) bool {
 		}
 
 		if c.List == nil {
-			defaultReturns = caseAlwaysReturns(c)
+			defaultReturns = caseAlwaysReturns(c, depth)
 			continue
 		}
 
-		if !caseAlwaysReturns(c) {
+		if !caseAlwaysReturns(c, depth) {
 			return false
 		}
 	}
@@ -125,11 +143,11 @@ func switchBodyAlwaysReturns(body *ast.BlockStmt) bool {
 	return defaultReturns
 }
 
-func caseAlwaysReturns(c *ast.CaseClause) bool {
+func caseAlwaysReturns(c *ast.CaseClause, depth int) bool {
 	for i := len(c.Body) - 1; i >= 0; i-- {
 		cb := c.Body[i]
 
-		if alwaysReturns(cb) {
+		if alwaysReturns(cb, depth) {
 			return true
 		}
 	}
