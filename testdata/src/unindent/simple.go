@@ -7,7 +7,7 @@ func Empty() {}
 func EmptyElse(x, y int) int {
 	if x > y {
 		return x
-	} else { // want `^Unnecessary "else": preceding conditions always end in a "return". Remove the "else" wrapping the block of statements$`
+	} else { // want `^Unnecessary "else": preceding conditions always end in a "return", "break" or "continue". Remove the "else" wrapping the block of statements$`
 		// Continue
 	}
 
@@ -37,7 +37,7 @@ func MaxOk(x, y int) int {
 func MaxReturnWithElse(x, y int) int {
 	if x > y {
 		return x
-	} else { // want `^Unnecessary "else": preceding conditions always end in a "return". Remove the "else" wrapping the block of statements$`
+	} else { // want `^Unnecessary "else": preceding conditions always end in a "return", "break" or "continue". Remove the "else" wrapping the block of statements$`
 		return y
 	}
 }
@@ -45,9 +45,9 @@ func MaxReturnWithElse(x, y int) int {
 func MaxReturnMulti(x, y int) int {
 	if x > y {
 		return x
-	} else if x == y { // want `^Unnecessary "else": preceding conditions always end in a "return". Remove the "else", leaving "if x == y { ... }"$`
+	} else if x == y { // want `^Unnecessary "else": preceding conditions always end in a "return", "break" or "continue". Remove the "else", leaving "if x == y { ... }"$`
 		return x
-	} else { // want `^Unnecessary "else": preceding conditions always end in a "return". Remove the "else" wrapping the block of statements$`
+	} else { // want `^Unnecessary "else": preceding conditions always end in a "return", "break" or "continue". Remove the "else" wrapping the block of statements$`
 		return y
 	}
 }
@@ -97,7 +97,7 @@ func MaxReturnAssign(x, y int) int {
 
 	if x > y {
 		return x
-	} else { // want `^Unnecessary "else": preceding conditions always end in a "return". Remove the "else" wrapping the block of statements$`
+	} else { // want `^Unnecessary "else": preceding conditions always end in a "return", "break" or "continue". Remove the "else" wrapping the block of statements$`
 		max = y
 	}
 
@@ -118,7 +118,7 @@ func Sign(x int) int {
 	sign := 1
 	if x > 0 {
 		return sign
-	} else { // want `^Unnecessary "else": preceding conditions always end in a "return". Remove the "else" wrapping the block of statements$`
+	} else { // want `^Unnecessary "else": preceding conditions always end in a "return", "break" or "continue". Remove the "else" wrapping the block of statements$`
 		return -sign
 	}
 }
@@ -126,7 +126,7 @@ func Sign(x int) int {
 func SignWithInit(x int) int {
 	if sign := 1; x > 0 {
 		return sign
-	} else { // want `^Unnecessary "else": preceding conditions always end in a "return". Move variable declaration "sign := 1" before the "if", and remove the "else" wrapping the block of statements$`
+	} else { // want `^Unnecessary "else": preceding conditions always end in a "return", "break" or "continue". Move variable declaration "sign := 1" before the "if", and remove the "else" wrapping the block of statements$`
 		return -sign
 	}
 }
@@ -137,11 +137,11 @@ func FizBuzz(x int) string {
 
 	if x%3 == 0 && x%5 == 0 {
 		return fizz + buzz
-	} else if x%3 == 0 { // want `^Unnecessary "else": preceding conditions always end in a "return". Remove the "else", leaving "if x%3 == 0 { ... }"$`
+	} else if x%3 == 0 { // want `^Unnecessary "else": preceding conditions always end in a "return", "break" or "continue". Remove the "else", leaving "if x%3 == 0 { ... }"$`
 		return fizz
-	} else if x%5 == 0 { // want `^Unnecessary "else": preceding conditions always end in a "return". Remove the "else", leaving "if x%5 == 0 { ... }"$`
+	} else if x%5 == 0 { // want `^Unnecessary "else": preceding conditions always end in a "return", "break" or "continue". Remove the "else", leaving "if x%5 == 0 { ... }"$`
 		return buzz
-	} else { // want `^Unnecessary "else": preceding conditions always end in a "return". Remove the "else" wrapping the block of statements$`
+	} else { // want `^Unnecessary "else": preceding conditions always end in a "return", "break" or "continue". Remove the "else" wrapping the block of statements$`
 		return strconv.Itoa(x)
 	}
 }
@@ -150,7 +150,7 @@ func Contains(s []int, x int) (attempts int, present bool) {
 	for _, v := range s {
 		if v == x {
 			return attempts, true
-		} else { // want `^Unnecessary "else": preceding conditions always end in a "return". Remove the "else" wrapping the block of statements$`
+		} else { // want `^Unnecessary "else": preceding conditions always end in a "return", "break" or "continue". Remove the "else" wrapping the block of statements$`
 			attempts++
 		}
 	}

@@ -62,8 +62,16 @@ func alwaysReturns(s ast.Node) bool {
 	switch t := s.(type) {
 	case *ast.ReturnStmt:
 		return true
+	case *ast.BranchStmt:
+		// Fallthrough doesn't return, and GOTO is unpredictable without deeper
+		// understanding of where it ends up, which isn't assessed here
+		return t.Tok == token.BREAK || t.Tok == token.CONTINUE
 	case *ast.IfStmt:
 		return ifAlwaysReturns(t)
+	case *ast.SwitchStmt:
+		return switchAlwaysReturns(t)
+	case *ast.TypeSwitchStmt:
+		return typeswitchAlwaysReturns(t)
 	}
 
 	return false
@@ -87,6 +95,48 @@ func ifAlwaysReturns(stmt *ast.IfStmt) bool {
 	return false
 }
 
+func switchAlwaysReturns(s *ast.SwitchStmt) bool {
+	return switchBodyAlwaysReturns(s.Body)
+}
+
+func typeswitchAlwaysReturns(s *ast.TypeSwitchStmt) bool {
+	return switchBodyAlwaysReturns(s.Body)
+}
+
+func switchBodyAlwaysReturns(body *ast.BlockStmt) bool {
+	var defaultReturns bool
+
+	for _, b := range body.List {
+		c, ok := b.(*ast.CaseClause)
+		if !ok {
+			panic(fmt.Sprintf("unexpected switch body statement %+v", c))
+		}
+
+		if c.List == nil {
+			defaultReturns = caseAlwaysReturns(c)
+			continue
+		}
+
+		if !caseAlwaysReturns(c) {
+			return false
+		}
+	}
+
+	return defaultReturns
+}
+
+func caseAlwaysReturns(c *ast.CaseClause) bool {
+	for i := len(c.Body) - 1; i >= 0; i-- {
+		cb := c.Body[i]
+
+		if alwaysReturns(cb) {
+			return true
+		}
+	}
+
+	return false
+}
+
 func reportUnnecessaryElse(pass *analysis.Pass, stmt *ast.IfStmt, _ []ast.Node) bool {
 	var (
 		args []any
@@ -95,7 +145,7 @@ func reportUnnecessaryElse(pass *analysis.Pass, stmt *ast.IfStmt, _ []ast.Node) 
 
 	edits := []analysis.TextEdit{}
 
-	msg.WriteString(`Unnecessary "else": preceding conditions always end in a "return". `)
+	msg.WriteString(`Unnecessary "else": preceding conditions always end in a "return", "break" or "continue". `)
 
 	if stmt.Init == nil {
 		msg.WriteString(`Remove the "else"`)

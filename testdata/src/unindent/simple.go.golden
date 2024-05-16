@@ -9,7 +9,7 @@ func EmptyElse(x, y int) int {
 		return x
 	}
 
-	// want `^Unnecessary "else": preceding conditions always end in a "return". Remove the "else" wrapping the block of statements$`
+	// want `^Unnecessary "else": preceding conditions always end in a "return", "break" or "continue". Remove the "else" wrapping the block of statements$`
 	// Continue
 
 	return y
@@ -48,7 +48,7 @@ func MaxReturnMulti(x, y int) int {
 		return x
 	}
 
-	if x == y { // want `^Unnecessary "else": preceding conditions always end in a "return". Remove the "else", leaving "if x == y { ... }"$`
+	if x == y { // want `^Unnecessary "else": preceding conditions always end in a "return", "break" or "continue". Remove the "else", leaving "if x == y { ... }"$`
 		return x
 	}
 
@@ -143,11 +143,11 @@ func FizBuzz(x int) string {
 		return fizz + buzz
 	}
 
-	if x%3 == 0 { // want `^Unnecessary "else": preceding conditions always end in a "return". Remove the "else", leaving "if x%3 == 0 { ... }"$`
+	if x%3 == 0 { // want `^Unnecessary "else": preceding conditions always end in a "return", "break" or "continue". Remove the "else", leaving "if x%3 == 0 { ... }"$`
 		return fizz
 	}
 
-	if x%5 == 0 { // want `^Unnecessary "else": preceding conditions always end in a "return". Remove the "else", leaving "if x%5 == 0 { ... }"$`
+	if x%5 == 0 { // want `^Unnecessary "else": preceding conditions always end in a "return", "break" or "continue". Remove the "else", leaving "if x%5 == 0 { ... }"$`
 		return buzz
 	}
 
