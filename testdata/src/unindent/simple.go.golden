@@ -153,3 +153,15 @@ func FizBuzz(x int) string {
 
 	return strconv.Itoa(x)
 }
+
+func Contains(s []int, x int) (attempts int, present bool) {
+	for _, v := range s {
+		if v == x {
+			return attempts, true
+		}
+
+		attempts++
+	}
+
+	return attempts, false
+}

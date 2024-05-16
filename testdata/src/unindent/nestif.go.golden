@@ -19,6 +19,24 @@ func NestIf(s string, x int) int {
 	return l
 }
 
+func NestIfFallout(s string, x int) int {
+	if s == "" {
+		if x > 0 {
+			return x
+		}
+	} else if x < 0 {
+		if l := len(s); l > 5 {
+			return l
+		}
+	} else {
+		if l := len(s); l > 5 {
+			return x
+		}
+	}
+
+	return 0
+}
+
 func NestIfDeep(s string, x int) int {
 	if s == "" {
 		if x > 0 {

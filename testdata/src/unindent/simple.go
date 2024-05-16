@@ -145,3 +145,15 @@ func FizBuzz(x int) string {
 		return strconv.Itoa(x)
 	}
 }
+
+func Contains(s []int, x int) (attempts int, present bool) {
+	for _, v := range s {
+		if v == x {
+			return attempts, true
+		} else { // want `^Unnecessary "else": preceding conditions always end in a "return". Remove the "else" wrapping the block of statements$`
+			attempts++
+		}
+	}
+
+	return attempts, false
+}
