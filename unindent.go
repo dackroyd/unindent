@@ -165,11 +165,7 @@ func reportUnnecessaryElse(pass *analysis.Pass, stmt *ast.IfStmt, _ []ast.Node) 
 
 	msg.WriteString(`Unnecessary "else": preceding conditions always end in a "return", "break" or "continue". `)
 
-	if stmt.Init == nil {
-		msg.WriteString(`Remove the "else"`)
-	} else {
-		// Pull the 'init' statement our of the 'if'
-		// FIXME: this only needs to be done if the 'else' part uses the variable
+	if stmt.Init != nil && elseUsesInit(stmt) {
 		in := mustFormatNode(stmt.Init)
 		edits = append(edits, analysis.TextEdit{
 			Pos:     stmt.Pos(),
@@ -179,6 +175,8 @@ func reportUnnecessaryElse(pass *analysis.Pass, stmt *ast.IfStmt, _ []ast.Node) 
 
 		msg.WriteString(`Move variable declaration %q before the "if", and remove the "else"`)
 		args = append(args, mustFormatNode(stmt.Init))
+	} else {
+		msg.WriteString(`Remove the "else"`)
 	}
 
 	switch els := stmt.Else.(type) {
@@ -233,6 +231,44 @@ func reportUnnecessaryElse(pass *analysis.Pass, stmt *ast.IfStmt, _ []ast.Node) 
 	)
 
 	return true
+}
+
+func elseUsesInit(stmt *ast.IfStmt) bool {
+	assign, ok := stmt.Init.(*ast.AssignStmt)
+	if !ok {
+		return false
+	}
+
+	vars := make([]string, len(assign.Lhs))
+
+	for i, v := range assign.Lhs {
+		ident, ok := v.(*ast.Ident)
+		if !ok {
+			continue
+		}
+
+		vars[i] = ident.Name
+	}
+
+	var varUsed bool
+
+	ast.Inspect(stmt.Else, func(n ast.Node) bool {
+		ident, ok := n.(*ast.Ident)
+		if !ok {
+			return true
+		}
+
+		for _, v := range vars {
+			if ident.Name == v {
+				varUsed = true
+				return false
+			}
+		}
+
+		return true
+	})
+
+	return varUsed
 }
 
 func mustFormatNode(n any) string {
