@@ -28,11 +28,18 @@ func NewAnalyzer() *analysis.Analyzer {
 	}
 }
 
+type nodeInfo struct {
+	Returns bool
+}
+
 func (analyzer) run(pass *analysis.Pass) (interface{}, error) {
 	ins, ok := pass.ResultOf[inspect.Analyzer].(*inspector.Inspector)
 	if !ok {
 		return nil, fmt.Errorf("unexpected analyzer type for initial inspection %T", pass.ResultOf[inspect.Analyzer])
 	}
+
+	// Track the analysis of the stack to use when evaluating deeper elements.
+	infoStack := []nodeInfo{{Returns: true}}
 
 	ins.WithStack([]ast.Node{&ast.IfStmt{}}, func(node ast.Node, push bool, stack []ast.Node) (proceed bool) {
 		stmt, ok := node.(*ast.IfStmt)
@@ -41,8 +48,15 @@ func (analyzer) run(pass *analysis.Pass) (interface{}, error) {
 		}
 
 		if push {
-			return analyze(pass, stmt, stack)
+			parentInfo := infoStack[len(infoStack)-1]
+			info := analyze(pass, stmt, stack, parentInfo)
+
+			infoStack = append(infoStack, info)
+
+			return true
 		}
+
+		infoStack = infoStack[:len(infoStack)-1]
 
 		return true
 	})
@@ -50,20 +64,26 @@ func (analyzer) run(pass *analysis.Pass) (interface{}, error) {
 	return analysis.Fact(nil), nil
 }
 
-func analyze(pass *analysis.Pass, stmt *ast.IfStmt, stack []ast.Node) bool {
-	if !alwaysReturns(stmt, 0) {
-		return false
+func analyze(pass *analysis.Pass, stmt *ast.IfStmt, stack []ast.Node, parentInfo nodeInfo) nodeInfo {
+	parent, ok := stack[len(stack)-2].(*ast.IfStmt)
+	if ok && parent.Else == stmt && !parentInfo.Returns {
+		// This is an 'else if' where the 'if' doesn't return, so the 'else' is not redundant
+		return nodeInfo{}
 	}
 
-	return reportUnnecessaryElse(pass, stmt, stack)
+	if !ifAlwaysReturns(stmt) {
+		return nodeInfo{}
+	}
+
+	reportUnnecessaryElse(pass, stmt, stack)
+
+	return nodeInfo{Returns: true}
 }
 
-func alwaysReturns(s ast.Node, depth int) bool {
-	newDepth := depth + 1
-
+func alwaysReturns(s ast.Node) bool {
 	switch t := s.(type) {
 	case *ast.BlockStmt:
-		return blockAlwaysReturns(t, newDepth)
+		return blockAlwaysReturns(t)
 	case *ast.ReturnStmt:
 		return true
 	case *ast.BranchStmt:
@@ -71,41 +91,37 @@ func alwaysReturns(s ast.Node, depth int) bool {
 		// understanding of where it ends up, which isn't assessed here
 		return t.Tok == token.BREAK || t.Tok == token.CONTINUE
 	case *ast.IfStmt:
-		if !ifAlwaysReturns(t, newDepth) {
+		if !ifAlwaysReturns(t) {
 			return false
 		}
 
 		// When we're looking into nested if/else of the IfStmt being analyzed,
 		// we must also evaluate the else cases as part of the body of our main if
-		if newDepth > 1 {
-			return alwaysReturns(t.Else, newDepth)
-		}
-
-		return true
+		return alwaysReturns(t.Else)
 	case *ast.SwitchStmt:
-		return switchAlwaysReturns(t, newDepth)
+		return switchAlwaysReturns(t)
 	case *ast.TypeSwitchStmt:
-		return typeswitchAlwaysReturns(t, newDepth)
+		return typeswitchAlwaysReturns(t)
 	}
 
 	return false
 }
 
-func ifAlwaysReturns(stmt *ast.IfStmt, depth int) bool {
+func ifAlwaysReturns(stmt *ast.IfStmt) bool {
 	if stmt.Else == nil {
 		return false
 	}
 
-	return blockAlwaysReturns(stmt.Body, depth)
+	return blockAlwaysReturns(stmt.Body)
 }
 
-func blockAlwaysReturns(block *ast.BlockStmt, depth int) bool {
+func blockAlwaysReturns(block *ast.BlockStmt) bool {
 	// Where the return statement is declared directly in the block, it should be the last statement
 	// However, Go allows other statements after this, even if they can never be reached
 	for i := len(block.List) - 1; i >= 0; i-- {
 		b := block.List[i]
 
-		if alwaysReturns(b, depth) {
+		if alwaysReturns(b) {
 			return true
 		}
 	}
@@ -113,15 +129,15 @@ func blockAlwaysReturns(block *ast.BlockStmt, depth int) bool {
 	return false
 }
 
-func switchAlwaysReturns(s *ast.SwitchStmt, depth int) bool {
-	return switchBodyAlwaysReturns(s.Body, depth)
+func switchAlwaysReturns(s *ast.SwitchStmt) bool {
+	return switchBodyAlwaysReturns(s.Body)
 }
 
-func typeswitchAlwaysReturns(s *ast.TypeSwitchStmt, depth int) bool {
-	return switchBodyAlwaysReturns(s.Body, depth)
+func typeswitchAlwaysReturns(s *ast.TypeSwitchStmt) bool {
+	return switchBodyAlwaysReturns(s.Body)
 }
 
-func switchBodyAlwaysReturns(body *ast.BlockStmt, depth int) bool {
+func switchBodyAlwaysReturns(body *ast.BlockStmt) bool {
 	var defaultReturns bool
 
 	for _, b := range body.List {
@@ -131,11 +147,11 @@ func switchBodyAlwaysReturns(body *ast.BlockStmt, depth int) bool {
 		}
 
 		if c.List == nil {
-			defaultReturns = caseAlwaysReturns(c, depth)
+			defaultReturns = caseAlwaysReturns(c)
 			continue
 		}
 
-		if !caseAlwaysReturns(c, depth) {
+		if !caseAlwaysReturns(c) {
 			return false
 		}
 	}
@@ -143,11 +159,11 @@ func switchBodyAlwaysReturns(body *ast.BlockStmt, depth int) bool {
 	return defaultReturns
 }
 
-func caseAlwaysReturns(c *ast.CaseClause, depth int) bool {
+func caseAlwaysReturns(c *ast.CaseClause) bool {
 	for i := len(c.Body) - 1; i >= 0; i-- {
 		cb := c.Body[i]
 
-		if alwaysReturns(cb, depth) {
+		if alwaysReturns(cb) {
 			return true
 		}
 	}
@@ -155,7 +171,7 @@ func caseAlwaysReturns(c *ast.CaseClause, depth int) bool {
 	return false
 }
 
-func reportUnnecessaryElse(pass *analysis.Pass, stmt *ast.IfStmt, _ []ast.Node) bool {
+func reportUnnecessaryElse(pass *analysis.Pass, stmt *ast.IfStmt, _ []ast.Node) {
 	var (
 		args []any
 		msg  strings.Builder
@@ -217,7 +233,7 @@ func reportUnnecessaryElse(pass *analysis.Pass, stmt *ast.IfStmt, _ []ast.Node) 
 		msg.WriteString(` wrapping the block of statements`)
 	default:
 		pass.Reportf(els.Pos(), `Unexpected ast in "else": %s`, mustFormatNode(stmt.Else))
-		return false
+		return
 	}
 
 	pass.Report(
@@ -229,8 +245,6 @@ func reportUnnecessaryElse(pass *analysis.Pass, stmt *ast.IfStmt, _ []ast.Node) 
 			},
 		},
 	)
-
-	return true
 }
 
 func elseUsesInit(stmt *ast.IfStmt) bool {
