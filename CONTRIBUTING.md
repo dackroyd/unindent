@@ -50,6 +50,17 @@ files in [`testdata/src/unindent`](testdata/src/unindent):
 
 Add a case for every change in behaviour: one that is reported, and one alongside it that is not.
 
+## Benchmarks
+
+The benchmarks in [`bench_test.go`](bench_test.go) analyze generated code shaped to expose costs that grow faster than
+the code, and a few standard library packages. For a change that may affect speed, compare at least 8 runs before and
+after with [benchstat](https://pkg.go.dev/golang.org/x/perf/cmd/benchstat):
+
+```sh
+go test -run '^$' -bench . -benchmem -count 10 > new.txt
+benchstat old.txt new.txt
+```
+
 ## Checking against real code
 
 Tests cover the cases we thought of. CI also runs `unindent` over pinned versions of real Go codebases, the default set

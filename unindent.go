@@ -401,18 +401,26 @@ func (c *checker) initConflicts(info *types.Info, links []*ast.IfStmt, enclosing
 	var conflicts []string
 
 	for i := range links[:len(links)-1] {
-		if hoistsInit(links[i]) && len(c.initConflicts(info, links[:i+1], enclosing)) > 0 {
+		if len(c.hoistConflicts(info, links[:i+1], enclosing)) > 0 {
 			conflicts = append(conflicts, `an earlier "else" in the chain is not fixed automatically`)
 			break
 		}
 	}
 
+	return append(conflicts, c.hoistConflicts(info, links, enclosing)...)
+}
+
+// hoistConflicts describes why the initialiser of the last link cannot move into the block enclosing the chain, whether
+// or not the earlier links can be fixed.
+func (c *checker) hoistConflicts(info *types.Info, links []*ast.IfStmt, enclosing ast.Node) []string {
 	stmt := links[len(links)-1]
 	headScope, stmtScope := info.Scopes[links[0]], info.Scopes[stmt]
 
 	if !hoistsInit(stmt) || headScope == nil || stmtScope == nil {
-		return conflicts
+		return nil
 	}
+
+	var conflicts []string
 
 	outer := headScope.Parent()
 	earlier := c.movedBefore(info, enclosing, links[0])
@@ -563,6 +571,10 @@ func usedAfter(info *types.Info, n ast.Node, pos token.Pos, name string, outer *
 	var used bool
 
 	ast.Inspect(n, func(n ast.Node) bool {
+		if n != nil && n.End() <= pos {
+			return false
+		}
+
 		ident, ok := n.(*ast.Ident)
 		if used || !ok || ident.Pos() < pos || ident.Name != name {
 			return !used

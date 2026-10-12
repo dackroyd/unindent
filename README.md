@@ -96,6 +96,11 @@ The analyzer is also available as a Go package, `unindent.NewAnalyzer()`, for us
 - A call that never returns only in some builds counts as an exit, but its fix is withheld, as it would change behaviour
     in a build where the call returns. It is found by a heuristic: the function, or one it calls, is declared in a file
     with build constraints and again in a file that the build leaves out.
+- Finding helpers in other packages that never return means type-checking every dependency from source. Run on its own,
+    `unindent` uses about 3.5 times the CPU time of a linter that only reads the packages it checks, and a standalone
+    run on a project the size of prometheus can need about 7.5 GB of memory, because dependencies are loaded from
+    source. `go vet -vettool` caches this work between runs, and golangci-lint shares it with linters such as
+    `staticcheck` and `govet`'s `lostcancel`.
 
 When a fix would not compile or would change behaviour, the finding is reported without one, with the reason. See
 [when no fix is offered](docs/checks.md#when-no-fix-is-offered). Where golangci-lint runs `unindent` as a custom linter
