@@ -220,18 +220,10 @@ func reportUnnecessaryElse(pass *analysis.Pass, stmt *ast.IfStmt, stack []ast.No
 		args = append(args, mustFormatNode(els.Cond))
 	case *ast.BlockStmt:
 		// "else"
-		var endOpen token.Pos
-
-		if len(els.List) > 0 {
-			endOpen = els.List[0].Pos()
-		} else {
-			endOpen = els.Lbrace + 1
-		}
-
-		// Remove the 'else {', shifting the body down
+		// Remove the 'else {', shifting the body down. Anything after the brace, such as a comment, stays.
 		edits = append(edits, analysis.TextEdit{
 			Pos:     stmt.Body.Rbrace + 1,
-			End:     endOpen,
+			End:     els.Lbrace + 1,
 			NewText: []byte("\n\n"),
 		})
 		// Remove the closing '}' of the 'else'

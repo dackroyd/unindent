@@ -90,9 +90,9 @@ The analyzer is also available as a Go package, `unindent.NewAnalyzer()`, for us
 
 - Only `return`, `break` and `continue` count as exits. A branch that ends in `panic`, `os.Exit`, `log.Fatal` or
     `t.Fatal` is not recognised.
-- Comments between `else {` and the first statement in the block are removed by the fix.
 
-Review fixes before committing them.
+When a fix would not compile or would change behaviour, the finding is reported without one, with the reason. See
+[when no fix is offered](docs/checks.md#when-no-fix-is-offered).
 
 ## Contributing
 

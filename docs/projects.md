@@ -8,12 +8,12 @@ applies the fixes, and checks that the code still builds, passes `go vet` and it
 
 | Project | Commit | Findings | Fixed | Fix withheld | Files changed | Comments lost |
 | --- | --- | ---: | ---: | ---: | ---: | ---: |
-| [golang/tools](#golangtools) | [`16517d9`](https://github.com/golang/tools/commit/16517d951552611e7bd358c48ee1051fd0e57b0c), 2026-10-10 | 160 | 154 | 6 | 89 | 37 |
+| [golang/tools](#golangtools) | [`16517d9`](https://github.com/golang/tools/commit/16517d951552611e7bd358c48ee1051fd0e57b0c), 2026-10-10 | 160 | 154 | 6 | 89 | 0 |
 | [grpc/grpc-go](#grpcgrpc-go) | [`8c59ee6`](https://github.com/grpc/grpc-go/commit/8c59ee6356bf92d0a5819b0cdbd3118876783028), 2026-10-10 | 25 | 24 | 1 | 23 | 0 |
-| [hashicorp/terraform](#hashicorpterraform) | [`d8e73fc`](https://github.com/hashicorp/terraform/commit/d8e73fcbd9bb9d7c7ab38242eaccef5bfe88e270), 2026-10-09 | 203 | 198 | 5 | 109 | 37 |
-| [gohugoio/hugo](#gohugoiohugo) | [`c9f6e4d`](https://github.com/gohugoio/hugo/commit/c9f6e4d4abc3645cb46824c870e4e1b4c098b765), 2026-10-11 | 64 | 64 | 0 | 34 | 1 |
+| [hashicorp/terraform](#hashicorpterraform) | [`d8e73fc`](https://github.com/hashicorp/terraform/commit/d8e73fcbd9bb9d7c7ab38242eaccef5bfe88e270), 2026-10-09 | 203 | 198 | 5 | 109 | 0 |
+| [gohugoio/hugo](#gohugoiohugo) | [`c9f6e4d`](https://github.com/gohugoio/hugo/commit/c9f6e4d4abc3645cb46824c870e4e1b4c098b765), 2026-10-11 | 64 | 64 | 0 | 34 | 0 |
 | [prometheus/prometheus](#prometheusprometheus) | [`fffc15f`](https://github.com/prometheus/prometheus/commit/fffc15f5b5a6c3ed50282d307e96db0e5f25bcb2), 2026-10-11 | 12 | 12 | 0 | 8 | 0 |
-| Total | | 464 | 452 | 12 | 263 | 75 |
+| Total | | 464 | 452 | 12 | 263 | 0 |
 
 A finding's kind is the kind of `else` and the last statement of the branch before it. A fix is withheld when
 it would not compile or would change behaviour; the reasons quote the names involved, shown here as "…".

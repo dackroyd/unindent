@@ -80,6 +80,7 @@ func InitHoistedSafely(m map[int]int, k int) int {
 		return 0
 	}
 
+	// want `^Unnecessary "else": preceding conditions always end in a "return", "break" or "continue". Move variable declaration "v, ok := m\[k\]" before the "if", and remove the "else" wrapping the block of statements$`
 	return v
 }
 
@@ -96,6 +97,7 @@ func NestedHoistMovedByOuterFix(ok bool) (err error) {
 			return nil
 		}
 
+		// want `^Unnecessary "else": preceding conditions always end in a "return", "break" or "continue". Move variable declaration "err := parse2\(\)" before the "if", and remove the "else" wrapping the block of statements$`
 		return err
 	}
 }
@@ -108,6 +110,7 @@ func SiblingsHoistSameName(a, b any) (string, string) {
 		return "", ""
 	}
 
+	// want `^Unnecessary "else": preceding conditions always end in a "return", "break" or "continue". Move variable declaration "s, ok := a.\(string\)" before the "if", and remove the "else" wrapping the block of statements$`
 	first = s
 
 	if s, ok := b.(string); !ok {
@@ -124,6 +127,7 @@ func SiblingElseDeclaresHoistedName(a, b any) string {
 		return ""
 	}
 
+	// want `^Unnecessary "else": preceding conditions always end in a "return", "break" or "continue". Remove the "else" wrapping the block of statements$`
 	s := "a"
 	_ = s
 

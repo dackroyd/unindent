@@ -75,6 +75,7 @@ func ElseHidesOuterNotUsedAfter(xs []int) int {
 			continue
 		}
 
+		// want `^Unnecessary "else": preceding conditions always end in a "return", "break" or "continue". Remove the "else" wrapping the block of statements$`
 		total := x * 2
 		_ = total
 	}
@@ -88,6 +89,7 @@ func ElseNameRedeclaredInNestedScopeAfter(xs []int) int {
 			continue
 		}
 
+		// want `^Unnecessary "else": preceding conditions always end in a "return", "break" or "continue". Remove the "else" wrapping the block of statements$`
 		v := x
 		_ = v
 

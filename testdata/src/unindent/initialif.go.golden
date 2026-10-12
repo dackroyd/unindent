@@ -5,36 +5,40 @@ func InitByIfOnly(x int) int {
 		return y
 	}
 
-    return x
+	// want `^Unnecessary "else": preceding conditions always end in a "return", "break" or "continue". Remove the "else" wrapping the block of statements$`
+	return x
 }
 
 func InitByIfAndElse(x int) int {
-    y := 1
+	y := 1
 	if x > 1 {
 		return y
 	}
 
+	// want `^Unnecessary "else": preceding conditions always end in a "return", "break" or "continue". Move variable declaration "y := 1" before the "if", and remove the "else" wrapping the block of statements$`
 	return x * y
 }
 
 func InitByIfAndElseMulti(x int) int {
 	y := 1
-    if x > 1 {
+	if x > 1 {
 		return y
 	}
 
-    if x < 10 { // want `^Unnecessary "else": preceding conditions always end in a "return", "break" or "continue". Move variable declaration "y := 1" before the "if", and remove the "else", leaving "if x < 10 { ... }"$`
+	if x < 10 { // want `^Unnecessary "else": preceding conditions always end in a "return", "break" or "continue". Move variable declaration "y := 1" before the "if", and remove the "else", leaving "if x < 10 { ... }"$`
 		return y - x
 	}
 
-    return x * y
+	// want `^Unnecessary "else": preceding conditions always end in a "return", "break" or "continue". Remove the "else" wrapping the block of statements$`
+	return x * y
 }
 
 func InitMultiByIfAndElse(x int) int {
 	y, z := 1, 2
-    if x > 1 {
+	if x > 1 {
 		return y
 	}
 
-    return x * y * z
+	// want `^Unnecessary "else": preceding conditions always end in a "return", "break" or "continue". Move variable declaration "y, z := 1, 2" before the "if", and remove the "else" wrapping the block of statements$`
+	return x * y * z
 }

@@ -1,0 +1,45 @@
+package unindent
+
+func CommentFirstInElse(x int) int {
+	if x < 0 {
+		return 0
+	}
+
+	// want `^Unnecessary "else": preceding conditions always end in a "return", "break" or "continue". Remove the "else" wrapping the block of statements$`
+	// Double positive values.
+	// Values are never negative here.
+	return x * 2
+}
+
+func CommentLastInElse(x int) int {
+	if x < 0 {
+		return 0
+	}
+
+	// want `^Unnecessary "else": preceding conditions always end in a "return", "break" or "continue". Remove the "else" wrapping the block of statements$`
+	x *= 2
+	// The result is always even.
+
+	return x
+}
+
+func CommentAfterElse(x int) int {
+	if x < 0 {
+		return 0
+	}
+
+	// want `^Unnecessary "else": preceding conditions always end in a "return", "break" or "continue". Remove the "else" wrapping the block of statements$`
+	x *= 2
+	// Doubled.
+
+	return x
+}
+
+func BlockCommentInElse(x int) int {
+	if x < 0 {
+		return 0
+	}
+
+	/* Positive. */ // want `^Unnecessary "else": preceding conditions always end in a "return", "break" or "continue". Remove the "else" wrapping the block of statements$`
+	return x
+}
