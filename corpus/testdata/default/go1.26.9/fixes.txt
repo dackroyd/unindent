@@ -104,7 +104,7 @@ compress lost flate/level3.go: // We only check if value mismatches.
 compress lost zstd/seqdec.go: // Overlapping copy
 compress .: build FAILS AFTER THE FIXES; vet FAILS AFTER THE FIXES
 compress tests: BROKEN BY THE FIXES
-age: 11 files changed, 0 comments lost
+age: 10 files changed, 0 comments lost
 age .: build passes; vet passes
 age tests: not broken by the fixes
 encoding: 7 files changed, 0 comments lost

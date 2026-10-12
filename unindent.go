@@ -6,6 +6,7 @@ import (
 	"go/ast"
 	"go/format"
 	"go/token"
+	"go/types"
 	"strings"
 
 	"golang.org/x/tools/go/analysis"
@@ -177,10 +178,11 @@ func caseAlwaysReturns(c *ast.CaseClause) bool {
 	return false
 }
 
-func reportUnnecessaryElse(pass *analysis.Pass, stmt *ast.IfStmt, _ []ast.Node) {
+func reportUnnecessaryElse(pass *analysis.Pass, stmt *ast.IfStmt, stack []ast.Node) {
 	var (
-		args []any
-		msg  strings.Builder
+		args      []any
+		msg       strings.Builder
+		conflicts []string
 	)
 
 	edits := []analysis.TextEdit{}
@@ -237,20 +239,105 @@ func reportUnnecessaryElse(pass *analysis.Pass, stmt *ast.IfStmt, _ []ast.Node) 
 		})
 
 		msg.WriteString(` wrapping the block of statements`)
+
+		head, enclosing := chainHead(stack)
+		conflicts = moveConflicts(pass.TypesInfo, els, head, enclosing)
 	default:
 		pass.Reportf(els.Pos(), `Unexpected ast in "else": %s`, mustFormatNode(stmt.Else))
 		return
 	}
 
-	pass.Report(
-		analysis.Diagnostic{
-			Pos:     stmt.Else.Pos(),
-			Message: fmt.Sprintf(msg.String(), args...),
-			SuggestedFixes: []analysis.SuggestedFix{
-				{Message: "Remove unnecessary else", TextEdits: edits},
-			},
-		},
-	)
+	diag := analysis.Diagnostic{
+		Pos:     stmt.Else.Pos(),
+		Message: fmt.Sprintf(msg.String(), args...),
+	}
+
+	if len(conflicts) > 0 {
+		diag.Message += ". Not fixed automatically: " + strings.Join(conflicts, "; ")
+	} else {
+		diag.SuggestedFixes = []analysis.SuggestedFix{
+			{Message: "Remove unnecessary else", TextEdits: edits},
+		}
+	}
+
+	pass.Report(diag)
+}
+
+// chainHead returns the first if statement of the if/else chain at the top of the stack, and the node enclosing the
+// chain: the block or case clause that the else block moves into.
+func chainHead(stack []ast.Node) (*ast.IfStmt, ast.Node) {
+	head, _ := stack[len(stack)-1].(*ast.IfStmt)
+
+	for i := len(stack) - 2; i >= 0; i-- {
+		switch n := stack[i].(type) {
+		case *ast.IfStmt:
+			if n.Else == head {
+				head = n
+				continue
+			}
+		case *ast.LabeledStmt:
+			continue
+		}
+
+		return head, stack[i]
+	}
+
+	return head, nil
+}
+
+// moveConflicts describes the names declared at the top level of els that cannot move into the block enclosing the
+// if/else chain: a name already declared in that block, or one that would hide a variable used after the chain.
+func moveConflicts(info *types.Info, els *ast.BlockStmt, head *ast.IfStmt, enclosing ast.Node) []string {
+	elseScope, headScope := info.Scopes[els], info.Scopes[head]
+	if elseScope == nil || headScope == nil || enclosing == nil {
+		return nil
+	}
+
+	outer := headScope.Parent()
+
+	var conflicts []string
+
+	for _, name := range elseScope.Names() {
+		if outer.Lookup(name) != nil {
+			conflicts = append(conflicts, fmt.Sprintf("%q is already declared in the enclosing block", name))
+			continue
+		}
+
+		if usedAfter(info, enclosing, head.End(), name, outer) {
+			conflicts = append(conflicts, fmt.Sprintf("%q would hide the %q used after the \"if\"", name, name))
+		}
+	}
+
+	return conflicts
+}
+
+// usedAfter reports whether n refers to name after pos, where name resolves to a declaration in outer or a scope
+// enclosing it. Uses of a name declared in a scope nested after pos are unaffected by a declaration in outer.
+func usedAfter(info *types.Info, n ast.Node, pos token.Pos, name string, outer *types.Scope) bool {
+	var used bool
+
+	ast.Inspect(n, func(n ast.Node) bool {
+		ident, ok := n.(*ast.Ident)
+		if used || !ok || ident.Pos() < pos || ident.Name != name {
+			return !used
+		}
+
+		obj := info.Uses[ident]
+		if obj == nil || obj.Parent() == nil {
+			return true
+		}
+
+		for s := outer; s != nil; s = s.Parent() {
+			if obj.Parent() == s {
+				used = true
+				break
+			}
+		}
+
+		return !used
+	})
+
+	return used
 }
 
 func elseUsesInit(stmt *ast.IfStmt) bool {

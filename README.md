@@ -90,8 +90,6 @@ The analyzer is also available as a Go package, `unindent.NewAnalyzer()`, for us
 
 - Only `return`, `break` and `continue` count as exits. A branch that ends in `panic`, `os.Exit`, `log.Fatal` or
     `t.Fatal` is not recognised.
-- The fix moves the `else` block's declarations into the enclosing block without checking for names already declared
-    there. The result may not compile, or may shadow a variable used after the `if`.
 - Moving an `if` statement's initialiser before the `if` can shadow a variable used after it.
 - Comments between `else {` and the first statement in the block are removed by the fix.
 

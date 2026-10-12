@@ -368,7 +368,7 @@ stdlib internal/runtime/cgroup/cgroup_linux.go:238:9 else if after return: fixed
 stdlib internal/runtime/cgroup/cgroup_linux.go:272:9 else if after return: fixed
 stdlib internal/runtime/cgroup/line_reader.go:143:10 else after return: fixed
 stdlib internal/runtime/cgroup/line_reader_test.go:135:12 else if after break: fixed
-stdlib internal/runtime/maps/map.go:308:9 else after return: fixed
+stdlib internal/runtime/maps/map.go:308:9 else after return: not fixed: "overflow" is already declared in the enclosing block
 stdlib internal/runtime/maps/map.go:861:10 else after return: fixed
 stdlib internal/runtime/maps/table.go:1105:12 else after continue: fixed
 stdlib internal/trace/internal/tracev1/parser.go:122:9 else after return: fixed
@@ -427,7 +427,7 @@ stdlib os/exec_unix.go:128:9 else if after return: fixed
 stdlib os/file_unix.go:42:10 else if after return: fixed
 stdlib os/root_openat.go:263:12 else if after return: fixed
 stdlib os/root_test.go:163:9 else after return: fixed
-stdlib os/root_test.go:1365:11 else after return: fixed
+stdlib os/root_test.go:1365:11 else after return: not fixed: "err" is already declared in the enclosing block
 stdlib os/root_test.go:1529:11 else after return: fixed
 stdlib os/user/lookup_unix.go:123:9 else if after return: fixed
 stdlib os/user/lookup_unix.go:132:9 else if after return: fixed
@@ -1195,7 +1195,7 @@ age plugin/plugin.go:344:10 else if after return: fixed
 age plugin/plugin.go:457:10 else if after return: fixed
 age plugin/plugin.go:469:11 else if after return: fixed
 age plugin/plugin.go:471:11 else if after continue: fixed
-age plugin/tui.go:34:11 else after return: fixed
+age plugin/tui.go:34:11 else after return: not fixed: "err" is already declared in the enclosing block
 age scrypt.go:208:9 else if after return: fixed
 age tag/internal/age-plugin-tagtest/plugin-tagtest.go:56:9 else if after return: fixed
 age x25519.go:193:9 else if after return: fixed

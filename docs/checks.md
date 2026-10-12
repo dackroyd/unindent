@@ -100,3 +100,27 @@ return y
 ```
 
 An `else if` after a branch that does not exit is not reported: removing its `else` would change which branches run.
+
+## When no fix is offered
+
+A finding is still reported, without a fix, when applying the fix would not compile or would change behaviour. The
+message ends with "Not fixed automatically:" and the reason, so the change can be made by hand, usually after renaming a
+variable.
+
+- **A name declared in the `else` block is already declared in the enclosing block.** Moving the declaration would
+    redeclare it, or turn `:=` into an assignment to the existing variable.
+- **A name declared in the `else` block would hide a variable used after the `if`.** Once moved, the later uses would
+    refer to the new variable instead.
+
+```go
+for _, x := range xs {
+	if x < 0 {
+		continue
+	} else { // ... Not fixed automatically: "total" would hide the "total" used after the "if"
+		total := x * 2
+		log(total)
+	}
+
+	total += x
+}
+```
