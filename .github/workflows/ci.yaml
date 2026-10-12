@@ -94,3 +94,184 @@ jobs:
           advanced-security: false
           persona: pedantic
           version: 1.30.1
+
+  changes:
+    name: Changes
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: read
+    outputs:
+      corpus: ${{ steps.changes.outputs.corpus }}
+    steps:
+      # The merge commit and its parents, so HEAD^1 is the base branch.
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        if: github.event_name == 'pull_request'
+        with:
+          persist-credentials: false
+          fetch-depth: 2
+      # The corpus results depend on the analyzer and CLI, the root module's dependencies, the corpus check and this
+      # workflow. The corpus job's tests also check docs/projects.md, which is generated from the large set's results.
+      # The analyzer's tests and their testdata, the other docs and the other workflows don't affect them.
+      - name: Find whether the corpus results can change
+        id: changes
+        env:
+          EVENT: ${{ github.event_name }}
+        run: |
+          if [ "$EVENT" != pull_request ]; then
+            echo "Not a pull request, so the corpus is always checked."
+            echo "corpus=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          changed=$(git diff --name-only HEAD^1 HEAD)
+          relevant=$(
+            {
+              printf '%s\n' "$changed" |
+                grep -E -e '^go\.(mod|sum|work|work\.sum)$' -e '^corpus/' -e '^docs/projects\.md$' \
+                  -e '^\.github/workflows/ci\.yaml$' || true
+              printf '%s\n' "$changed" | grep -E '\.go$' | grep -Ev -e '_test\.go$' -e '(^|/)testdata/' || true
+            } | sort -u
+          )
+          if [ -n "$relevant" ]; then
+            printf 'The corpus results can change with:\n%s\n' "$relevant"
+            echo "corpus=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "Nothing that the corpus results depend on changed, so the corpus jobs are skipped."
+            echo "corpus=false" >> "$GITHUB_OUTPUT"
+          fi
+
+  corpus:
+    name: Corpus (${{ matrix.go }}, ${{ matrix.os }})
+    needs: changes
+    # Pull requests that can't change the results skip the corpus. Pushes to main always check it.
+    if: github.event_name != 'pull_request' || needs.changes.outputs.corpus == 'true'
+    runs-on: ${{ matrix.os }}
+    # A cold run of the default set takes about 5 minutes on 4 cores, and a warm one about 4.
+    timeout-minutes: 30
+    permissions:
+      contents: read
+    strategy:
+      fail-fast: false
+      matrix:
+        # The default set with each release in corpus/projects.go, on linux/amd64. The results do not depend on the
+        # host, so arm64 Linux and Apple silicon macOS check they match, and test the fixes natively, with the latest.
+        go: ["go1.26.9", "go1.27.0"]
+        os: [ubuntu-latest]
+        include:
+          - go: go1.27.0
+            os: ubuntu-24.04-arm
+          - go: go1.27.0
+            os: macos-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
+        with:
+          go-version-file: corpus/go.mod
+          cache: false
+      # Caches are only saved on main, which pull requests can restore, so they don't grow with each pull request. The
+      # checkouts are shared by every job. The modules are cached as downloaded, smaller than extracted, for each
+      # release. The build cache, about 1.1 GB for each release, is kept for each runner's OS and architecture, as
+      # the compilers differ; a pull request that changes the projects starts from the last one saved.
+      - name: Restore the corpus checkouts
+        id: checkouts
+        uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: ~/unindent-corpus
+          key: corpus-checkouts-default-${{ hashFiles('corpus/projects.go') }}
+      - name: Restore the corpus modules
+        id: modules
+        uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: ~/go/pkg/mod/cache/download
+          key: corpus-modules-default-${{ matrix.go }}-${{ hashFiles('corpus/projects.go') }}
+      - name: Find the build cache
+        id: gocache
+        run: echo "dir=$(go env GOCACHE)" >> "$GITHUB_OUTPUT"
+      - name: Restore the build cache
+        id: build
+        uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: ${{ steps.gocache.outputs.dir }}
+          key: corpus-build-${{ runner.os }}-${{ runner.arch }}-${{ matrix.go }}-${{ hashFiles('corpus/projects.go') }}
+          restore-keys: corpus-build-${{ runner.os }}-${{ runner.arch }}-${{ matrix.go }}-
+      - name: Test the corpus check
+        working-directory: corpus
+        run: |
+          go test -race ./...
+          go vet ./...
+          go mod tidy -diff
+      - uses: golangci/golangci-lint-action@ba0d7d2ec06a0ea1cb5fa41b2e4a3ab91d21278a # v9.3.0
+        with:
+          version: v2.14.0
+          working-directory: corpus
+      - name: Fetch the corpus
+        working-directory: corpus
+        run: go run . fetch -dir "$HOME/unindent-corpus"
+      - name: Save the corpus checkouts
+        if: >-
+          github.event_name == 'push' && steps.checkouts.outputs.cache-hit != 'true' &&
+          matrix.os == 'ubuntu-latest' && matrix.go == 'go1.27.0'
+        uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: ~/unindent-corpus
+          key: ${{ steps.checkouts.outputs.cache-primary-key }}
+      # Go marks the build cache entries it uses, so those older than this file were not used by the check.
+      - name: Mark the start of the check
+        run: touch "$RUNNER_TEMP/corpus-start"
+      - name: Check reports and fixes against the corpus
+        working-directory: corpus
+        env:
+          GO_RELEASE: ${{ matrix.go }}
+        run: go run . check -go "$GO_RELEASE" -dir "$HOME/unindent-corpus"
+      - name: Save the corpus modules
+        if: >-
+          !cancelled() && github.event_name == 'push' && steps.modules.outputs.cache-hit != 'true' &&
+          matrix.os == 'ubuntu-latest'
+        uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: ~/go/pkg/mod/cache/download
+          key: ${{ steps.modules.outputs.cache-primary-key }}
+      # A build cache restored from an earlier list of projects holds entries the check no longer uses, which would
+      # otherwise be saved again with each change to the list.
+      - name: Drop the build cache entries the check did not use
+        if: >-
+          !cancelled() && github.event_name == 'push' && steps.build.outputs.cache-hit != 'true'
+        env:
+          GOCACHE_DIR: ${{ steps.gocache.outputs.dir }}
+        run: |
+          find "$GOCACHE_DIR" -type f ! -newer "$RUNNER_TEMP/corpus-start" ! -name README ! -name trim.txt -delete
+          du -sh "$GOCACHE_DIR"
+      - name: Save the build cache
+        if: >-
+          !cancelled() && github.event_name == 'push' && steps.build.outputs.cache-hit != 'true'
+        uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: ${{ steps.gocache.outputs.dir }}
+          key: ${{ steps.build.outputs.cache-primary-key }}
+
+  # The check that the main branch ruleset requires. The matrix jobs' names change with the matrix, and a skipped
+  # matrix job reports no check under those names, so requiring them would leave skipped pull requests pending.
+  corpus-result:
+    name: Corpus
+    needs: [changes, corpus]
+    if: always()
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions: {}
+    steps:
+      - name: Require the corpus jobs to pass or be skipped
+        env:
+          CHANGES: ${{ needs.changes.result }}
+          CORPUS: ${{ needs.corpus.result }}
+        run: |
+          echo "Changes: $CHANGES. Corpus: $CORPUS."
+          if [ "$CHANGES" != success ]; then
+            echo "::error::Could not find whether the corpus results can change."
+            exit 1
+          fi
+          if [ "$CORPUS" != success ] && [ "$CORPUS" != skipped ]; then
+            echo "::error::A corpus job did not pass: $CORPUS."
+            exit 1
+          fi

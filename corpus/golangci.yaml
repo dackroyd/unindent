@@ -1,0 +1,25 @@
+version: "2"
+run:
+  tests: true
+  relative-path-mode: wd
+issues:
+  max-issues-per-linter: 0
+  max-same-issues: 0
+  uniq-by-line: false
+linters:
+  default: none
+  enable:
+    - revive
+  exclusions:
+    generated: disable
+    presets: []
+  settings:
+    revive:
+      rules:
+        - name: indent-error-flow
+        - name: superfluous-else
+        - name: early-return
+output:
+  formats:
+    json:
+      path: stdout

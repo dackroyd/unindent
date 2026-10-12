@@ -1,0 +1,80 @@
+name: Corpus (large)
+
+# The large set takes about half an hour and needs room made on the runner, too much for every change. It runs weekly,
+# and by hand before preparing a release, and fails when the results drift from those recorded, so that they are
+# re-recorded deliberately with "go run . check -set large -update".
+on:
+  schedule:
+    - cron: "17 5 * * 1"
+  workflow_dispatch:
+
+permissions: {}
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  corpus:
+    name: Corpus (large)
+    runs-on: ubuntu-latest
+    # A cold run takes about 40 minutes on 4 fast cores.
+    timeout-minutes: 120
+    permissions:
+      contents: read
+    steps:
+      # With -clean-cache, the check needs about 31 GB of disk, as building and vetting hugo once takes 27 GB on its
+      # own: more than the 14 GB that runners are promised. Ubuntu runners have about 20 GB free, and removing
+      # toolchains the check doesn't use frees about 25 GB more.
+      - name: Free disk space
+        run: |
+          sudo rm -rf /usr/local/lib/android /usr/share/dotnet /usr/local/.ghcup /usr/share/swift \
+            /opt/hostedtoolcache/CodeQL
+      - name: Require 40 GB of free disk space
+        run: |
+          df -h "$HOME"
+          free=$(df -Pk "$HOME" | awk 'NR == 2 { print int($4 / 1024 / 1024) }')
+          if [ "$free" -lt 40 ]; then
+            echo "::error::The large set needs about 31 GB of disk, but only $free GB is free."
+            exit 1
+          fi
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
+        with:
+          go-version-file: corpus/go.mod
+          cache: false
+      # Saved on main only, like CI's caches. The build cache is not cached: the large set fills it with over 30 GB.
+      - name: Restore the corpus checkouts
+        id: checkouts
+        uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: ~/unindent-corpus
+          key: corpus-checkouts-large-${{ hashFiles('corpus/projects.go') }}
+      - name: Restore the corpus modules
+        id: modules
+        uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: ~/go/pkg/mod/cache/download
+          key: corpus-modules-large-${{ hashFiles('corpus/projects.go') }}
+      - name: Fetch the corpus
+        working-directory: corpus
+        run: go run . fetch -set large -dir "$HOME/unindent-corpus"
+      - name: Save the corpus checkouts
+        if: github.ref == 'refs/heads/main' && steps.checkouts.outputs.cache-hit != 'true'
+        uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: ~/unindent-corpus
+          key: ${{ steps.checkouts.outputs.cache-primary-key }}
+      # -clean-cache empties the build cache once each project's builds are checked, before the fixes and after them.
+      - name: Check reports and fixes against the large set
+        working-directory: corpus
+        run: go run . check -set large -clean-cache -dir "$HOME/unindent-corpus"
+      - name: Save the corpus modules
+        if: >-
+          !cancelled() && github.ref == 'refs/heads/main' && steps.modules.outputs.cache-hit != 'true'
+        uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: ~/go/pkg/mod/cache/download
+          key: ${{ steps.modules.outputs.cache-primary-key }}
