@@ -111,6 +111,24 @@ variable.
     redeclare it, or turn `:=` into an assignment to the existing variable.
 - **A name declared in the `else` block would hide a variable used after the `if`.** Once moved, the later uses would
     refer to the new variable instead.
+- **An initialiser that has to move declares a name that is already declared in the enclosing block**, for example a
+    named result `err`, or that would hide a variable used after the `if`.
+- **Two fixes move the same name into the enclosing block.** Two initialisers in the same chain, or in consecutive `if`
+    statements, declare the same name, or an `else` block redeclares a name from a moved initialiser.
+- **An earlier link in the chain is not fixed.** The rest of the chain uses what that link's initialiser declares, so it
+    cannot move out from under it.
+
+```go
+func load() (err error) {
+	if err := open(); err == io.EOF {
+		return nil
+	} else if err != nil { // ... Not fixed automatically: "err" is already declared in the enclosing block
+		return err
+	}
+
+	return nil
+}
+```
 
 ```go
 for _, x := range xs {
