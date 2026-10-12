@@ -71,7 +71,7 @@ func analyze(pass *analysis.Pass, stmt *ast.IfStmt, stack []ast.Node, parentInfo
 		return nodeInfo{}
 	}
 
-	if !ifAlwaysReturns(stmt) {
+	if !ifAlwaysReturns(stmt, false) {
 		return nodeInfo{}
 	}
 
@@ -80,24 +80,30 @@ func analyze(pass *analysis.Pass, stmt *ast.IfStmt, stack []ast.Node, parentInfo
 	return nodeInfo{Returns: true}
 }
 
-func alwaysReturns(s ast.Node) bool {
+// alwaysReturns reports whether s always leaves the block it is in. inSwitch is set within the cases of a switch, where an
+// unlabeled break only leaves the switch.
+func alwaysReturns(s ast.Node, inSwitch bool) bool {
 	switch t := s.(type) {
 	case *ast.BlockStmt:
-		return blockAlwaysReturns(t)
+		return blockAlwaysReturns(t, inSwitch)
 	case *ast.ReturnStmt:
 		return true
 	case *ast.BranchStmt:
 		// Fallthrough doesn't return, and GOTO is unpredictable without deeper
 		// understanding of where it ends up, which isn't assessed here
+		if t.Tok == token.BREAK && t.Label == nil {
+			return !inSwitch
+		}
+
 		return t.Tok == token.BREAK || t.Tok == token.CONTINUE
 	case *ast.IfStmt:
-		if !ifAlwaysReturns(t) {
+		if !ifAlwaysReturns(t, inSwitch) {
 			return false
 		}
 
 		// When we're looking into nested if/else of the IfStmt being analyzed,
 		// we must also evaluate the else cases as part of the body of our main if
-		return alwaysReturns(t.Else)
+		return alwaysReturns(t.Else, inSwitch)
 	case *ast.SwitchStmt:
 		return switchAlwaysReturns(t)
 	case *ast.TypeSwitchStmt:
@@ -107,21 +113,21 @@ func alwaysReturns(s ast.Node) bool {
 	return false
 }
 
-func ifAlwaysReturns(stmt *ast.IfStmt) bool {
+func ifAlwaysReturns(stmt *ast.IfStmt, inSwitch bool) bool {
 	if stmt.Else == nil {
 		return false
 	}
 
-	return blockAlwaysReturns(stmt.Body)
+	return blockAlwaysReturns(stmt.Body, inSwitch)
 }
 
-func blockAlwaysReturns(block *ast.BlockStmt) bool {
+func blockAlwaysReturns(block *ast.BlockStmt, inSwitch bool) bool {
 	// Where the return statement is declared directly in the block, it should be the last statement
 	// However, Go allows other statements after this, even if they can never be reached
 	for i := len(block.List) - 1; i >= 0; i-- {
 		b := block.List[i]
 
-		if alwaysReturns(b) {
+		if alwaysReturns(b, inSwitch) {
 			return true
 		}
 	}
@@ -163,7 +169,7 @@ func caseAlwaysReturns(c *ast.CaseClause) bool {
 	for i := len(c.Body) - 1; i >= 0; i-- {
 		cb := c.Body[i]
 
-		if alwaysReturns(cb) {
+		if alwaysReturns(cb, true) {
 			return true
 		}
 	}
