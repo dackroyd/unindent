@@ -102,9 +102,9 @@ brings the disk needed down to about 31 GB, the most that building and vetting h
 fifth slower. `-update` also regenerates `docs/projects.md` from the results, as does `go run . docs` on its own, and
 the corpus check's tests fail if the page no longer matches them, so don't edit it by hand.
 
-The "Corpus (large)" workflow checks the large set every week, and can be run by hand from the Actions tab. It fails
-when the results drift from those recorded, for example after a change whose effect the default set didn't show, or a
-new Go release. Re-record them with the command above in a pull request of their own, after checking the changes are
+The "Corpus (large)" workflow checks the large set every week, and is run by hand from the Actions tab before each
+release. It fails when the results drift from those recorded, for example after a change whose effect the default set
+didn't show. Re-record them with the command above in a pull request of their own, after checking the changes are
 intended.
 
 ### Adding a project
@@ -144,7 +144,31 @@ Update the documentation in the same change as the behaviour it describes:
 - [`docs/checks.md`](docs/checks.md): what each check reports and how it is fixed.
 - [`docs/comparison.md`](docs/comparison.md): coverage compared with other linters.
 - [`docs/projects.md`](docs/projects.md): generated from the large set's results, so record them rather than edit it.
-- [`CHANGELOG.md`](CHANGELOG.md): an entry under "Unreleased" for every user-facing change.
+- A changelog fragment for every change that users notice, as [Changelog](#changelog) describes.
+
+## Changelog
+
+Changes that users notice are recorded as [changie](https://changie.dev) fragments in
+[`.changes/unreleased`](.changes/unreleased), one per entry, and batched into [`CHANGELOG.md`](CHANGELOG.md) when a
+version is released. Add one in the same pull request as the change, from the repository root:
+
+```sh
+go tool -modfile=tools/go.mod changie new
+```
+
+It asks for the kind of change, one of Keep a Changelog's: Added, Changed, Deprecated, Removed, Fixed or Security. Then
+it asks for the entry, written for people who use `unindent`: what changed and, for a fix, what went wrong before. The
+kinds choose the next version: Fixed and Security bump the patch version, and the others the minor version until v1.0.0.
+
+Changes that users don't notice, such as CI, the corpus check, tests and documentation, need no fragment. The
+"Changelog" check fails a pull request that changes the analyzer or the CLI (Go files other than tests, in the root or
+`cmd/`) without adding a fragment. Label the pull request `no changelog` when such a change is internal, a refactoring
+for example.
+
+changie and [GoReleaser](https://goreleaser.com) are pinned with `tool` directives in the nested [`tools`](tools/go.mod)
+module, not the root `go.mod`, as the root module's requirements join the module graph of every module that imports
+`unindent`. `-modfile=tools/go.mod` runs them from the repository root, where their configuration is. The first run
+builds them.
 
 ## Commits and pull requests
 
@@ -159,3 +183,50 @@ without a trailing period. The body explains why the change is needed.
 The fix deleted everything between "else {" and the first statement in
 the block, so a comment at the top of the block was lost.
 ```
+
+## Releasing
+
+Releases are made by hand, when there is something worth releasing. First run the "Corpus (large)" workflow from the
+Actions tab on `main`, and wait for it to pass: CI only checks the default set, so this confirms the large set's results
+still hold. If it fails, re-record them as [The large set](#the-large-set) describes before releasing. Then release in
+two steps:
+
+1. **Prepare.** Run the "Prepare release" workflow from the Actions tab. It batches the fragments into
+    `.changes/vX.Y.Z.md`, choosing the version from their kinds unless you enter one, regenerates `CHANGELOG.md`, and
+    pushes the branch `release/vX.Y.Z`. Open a pull request for the branch yourself, as CI only runs on pull requests
+    that a person opens, and review the release notes. Edit them in the pull request if needed, then merge it.
+2. **Publish.** The merge starts the "Release" workflow. It reruns CI, then waits for your approval in the `release`
+    environment. Once approved, it tags the merge commit `vX.Y.Z`, builds the binaries for Linux, macOS and Windows on
+    amd64 and arm64 with GoReleaser, publishes the GitHub release with the version's notes, attests the build
+    provenance of the archives and checksums, and asks the Go module proxy for the new version, so that
+    `go install …@latest` and pkg.go.dev find it.
+
+The first release is v0.1.0: the prepare workflow uses it when no version has been released yet. Only the repository
+root is tagged, as Go modules require. The nested `corpus` and `tools` modules are never tagged.
+
+To try the release configuration locally, without publishing anything:
+
+```sh
+go tool -modfile=tools/go.mod changie batch auto --dry-run
+go tool -modfile=tools/go.mod goreleaser check
+go tool -modfile=tools/go.mod goreleaser release --snapshot --clean
+```
+
+The snapshot is written to `dist/`, which git ignores.
+
+### Repository settings
+
+The release process relies on these settings, made once by the maintainer:
+
+- **Rulesets.** Import each file in [`.github/rulesets`](.github/rulesets) with Settings → Rules → Rulesets → New
+    ruleset → Import a ruleset, or `gh api -X POST repos/dackroyd/unindent/rulesets --input <file>`.
+    [`main.json`](.github/rulesets/main.json) requires a pull request with the CI and "Changelog" checks passing before
+    merging to `main`, and blocks force pushes and deletion. [`tags.json`](.github/rulesets/tags.json) only lets
+    administrators, maintainers and GitHub Actions, for the release workflow, create, move or delete `v*` tags. Update
+    the required checks in `main.json` when a job's name changes. The corpus jobs are required through the "Corpus" job,
+    which passes when they pass or are skipped, so changing their matrix needs no update.
+- **The `release` environment.** Settings → Environments → New environment, named `release`, with yourself as a required
+    reviewer, and its deployment branches limited to `main`.
+- **Fork pull requests.** Settings → Actions → General → "Approval for running fork pull request workflows" → "Require
+    approval for all external contributors".
+- **The `no changelog` label.** Create it under Issues → Labels.

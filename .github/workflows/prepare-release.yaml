@@ -1,0 +1,76 @@
+name: Prepare release
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: The version to release, as v1.2.3. By default, the next version the changelog fragments call for.
+        required: false
+        type: string
+
+permissions: {}
+
+concurrency:
+  group: ${{ github.workflow }}
+  cancel-in-progress: false
+
+jobs:
+  prepare:
+    name: Prepare
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: write # Pushes the release branch.
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
+        with:
+          go-version-file: tools/go.mod
+          cache: false
+      - name: Choose the version
+        id: version
+        env:
+          VERSION: ${{ inputs.version }}
+        run: |
+          latest=$(go tool -modfile=tools/go.mod changie latest)
+          if [ -z "$VERSION" ]; then
+            if [ -z "$(find .changes -maxdepth 1 -name 'v*.md')" ]; then
+              # The first release is v0.1.0, whatever kinds of change it has.
+              VERSION=v0.1.0
+            else
+              VERSION=$(go tool -modfile=tools/go.mod changie next auto)
+            fi
+          fi
+          if ! printf '%s\n' "$VERSION" | grep -Eqx 'v(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)'; then
+            echo "::error::The version must be a release version such as v1.2.3."
+            exit 1
+          fi
+          if [ "$(printf '%s\n%s\n' "$latest" "$VERSION" | sort -V | tail -n 1)" != "$VERSION" ] ||
+            [ "$VERSION" = "$latest" ]; then
+            echo "::error::$VERSION is not after the latest release, $latest."
+            exit 1
+          fi
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+      - name: Batch the changelog fragments
+        env:
+          VERSION: ${{ steps.version.outputs.version }}
+        run: |
+          go tool -modfile=tools/go.mod changie batch "$VERSION"
+          go tool -modfile=tools/go.mod changie merge
+      - name: Push the release branch
+        env:
+          VERSION: ${{ steps.version.outputs.version }}
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git switch -c "release/$VERSION"
+          git add .changes CHANGELOG.md
+          git commit -m "🔖 Release $VERSION" -m "Batches the changelog fragments into the release notes for $VERSION."
+          git push "https://x-access-token:$GH_TOKEN@github.com/$GITHUB_REPOSITORY.git" "release/$VERSION"
+          {
+            echo "Pushed \`release/$VERSION\`. Open a pull request for it, so CI runs, then merge it to publish $VERSION:"
+            echo "$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/compare/main...release/$VERSION?expand=1"
+          } >> "$GITHUB_STEP_SUMMARY"

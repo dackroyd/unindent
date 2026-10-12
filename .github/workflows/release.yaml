@@ -1,0 +1,101 @@
+name: Release
+
+on:
+  push:
+    branches: [main]
+    # A merged release pull request adds the version's notes.
+    paths: [".changes/v*.md"]
+
+permissions: {}
+
+concurrency:
+  group: ${{ github.workflow }}
+  cancel-in-progress: false
+
+jobs:
+  version:
+    name: Version
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: read
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - name: Find the version to release
+        id: version
+        run: |
+          version=$(find .changes -maxdepth 1 -name 'v*.md' -exec basename {} .md \; | sort -V | tail -n 1)
+          if ! printf '%s\n' "$version" | grep -Eqx 'v(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)'; then
+            echo "::error::No release version in .changes."
+            exit 1
+          fi
+          if git rev-parse -q --verify "refs/tags/$version" > /dev/null; then
+            echo "$version is already released."
+            exit 0
+          fi
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+
+  checks:
+    name: Checks
+    needs: version
+    if: needs.version.outputs.version != ''
+    permissions:
+      contents: read
+    # actionlint does not support the "$/" self-repository syntax yet: https://github.com/rhysd/actionlint/pull/732
+    uses: ./.github/workflows/ci.yaml # zizmor: ignore[self-repository]
+
+  release:
+    name: Release
+    needs: [version, checks]
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    # Waits for the maintainer's approval.
+    environment: release
+    permissions:
+      contents: write # Pushes the tag and publishes the release.
+      id-token: write # Signs the build provenance attestations.
+      attestations: write # Stores the attestations.
+    env:
+      VERSION: ${{ needs.version.outputs.version }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      # Builds the binaries with the latest Go release. No cache, so nothing a pull request saved can reach them.
+      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
+        with:
+          go-version: "1.27.x"
+          cache: false
+      # Go modules are versioned by tags at the repository root. The nested modules are never tagged.
+      - name: Tag the release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git tag -a "$VERSION" -m "$VERSION"
+          git push "https://x-access-token:$GH_TOKEN@github.com/$GITHUB_REPOSITORY.git" "refs/tags/$VERSION"
+      - name: Publish the release
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: |
+          # The notes without the version's heading, which the release has as its title.
+          tail -n +3 ".changes/$VERSION.md" > "$RUNNER_TEMP/notes.md"
+          go tool -modfile=tools/go.mod goreleaser release --clean --release-notes "$RUNNER_TEMP/notes.md"
+      - uses: actions/attest-build-provenance@4d101475d8b20a2381f78447822ac1eab6504dd8 # v4.2.2
+        with:
+          subject-path: |
+            dist/*.tar.gz
+            dist/*.zip
+            dist/checksums.txt
+      - name: Announce the version to the Go module proxy
+        working-directory: ${{ runner.temp }}
+        env:
+          GOPROXY: https://proxy.golang.org
+        run: go list -m "github.com/dackroyd/unindent@$VERSION"

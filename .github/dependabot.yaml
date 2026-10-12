@@ -20,3 +20,15 @@ updates:
       default-days: 7
     commit-message:
       prefix: "⬆️"
+  # The release tools, updated together.
+  - package-ecosystem: gomod
+    directory: /tools
+    schedule:
+      interval: weekly
+    cooldown:
+      default-days: 7
+    commit-message:
+      prefix: "⬆️"
+    groups:
+      tools:
+        patterns: ["*"]

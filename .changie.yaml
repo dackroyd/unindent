@@ -1,0 +1,33 @@
+# Changelog entries are fragments in .changes/unreleased, added with
+# "go tool -modfile=tools/go.mod changie new". The prepare release workflow
+# batches them into .changes/<version>.md and regenerates CHANGELOG.md.
+changesDir: .changes
+unreleasedDir: unreleased
+headerPath: header.tpl.md
+changelogPath: CHANGELOG.md
+versionExt: md
+versionFormat: '## [{{.VersionNoPrefix}}](https://github.com/dackroyd/unindent/releases/tag/{{.Version}}) - {{.Time.Format "2006-01-02"}}'
+kindFormat: '### {{.Kind}}'
+# Wraps each entry at 120 columns, as the rest of the Markdown is.
+changeFormat: '- {{ .Body | wrap 116 | indent 2 | trimPrefix "  " }}'
+# The kinds of Keep a Changelog. Until v1.0.0, breaking changes only bump the
+# minor version: make Changed and Removed major then.
+kinds:
+  - label: Added
+    auto: minor
+  - label: Changed
+    auto: minor
+  - label: Deprecated
+    auto: minor
+  - label: Removed
+    auto: minor
+  - label: Fixed
+    auto: patch
+  - label: Security
+    auto: patch
+newlines:
+  afterChangelogHeader: 0
+  beforeChangelogVersion: 1
+  beforeKind: 1
+  afterKind: 1
+  endOfVersion: 1

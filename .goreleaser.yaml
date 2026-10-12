@@ -1,0 +1,35 @@
+# Builds the release binaries. The release workflow runs it once the version is tagged:
+# go tool -modfile=tools/go.mod goreleaser release --clean --release-notes <notes>
+version: 2
+
+project_name: unindent
+
+builds:
+  - main: ./cmd/unindent
+    env:
+      - CGO_ENABLED=0
+    flags:
+      - -trimpath
+    # go build records the tagged version in the binary, as "go version -m unindent" shows.
+    ldflags:
+      - -s -w
+    mod_timestamp: "{{ .CommitTimestamp }}"
+    goos: [linux, darwin, windows]
+    goarch: [amd64, arm64]
+
+archives:
+  - formats: [tar.gz]
+    format_overrides:
+      - goos: windows
+        formats: [zip]
+    files:
+      - LICENSE
+      - README.md
+      - CHANGELOG.md
+
+checksum:
+  name_template: checksums.txt
+
+# The release notes are changie's, from .changes/<version>.md.
+changelog:
+  disable: true

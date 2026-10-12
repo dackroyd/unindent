@@ -1,0 +1,58 @@
+name: Changelog
+
+on:
+  pull_request:
+    # Adding or removing the "no changelog" label reruns the check.
+    types: [opened, synchronize, reopened, labeled, unlabeled]
+
+permissions: {}
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  changelog:
+    name: Changelog
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+    steps:
+      # The merge commit and its parents, so HEAD^1 is the base branch.
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+          fetch-depth: 2
+      - name: Require a changelog fragment
+        if: ${{ !contains(github.event.pull_request.labels.*.name, 'no changelog') }}
+        run: |
+          changed=$(git diff --name-only HEAD^1 HEAD)
+          code=$(printf '%s\n' "$changed" | grep -E '^([^/]+|cmd/.+)\.go$' | grep -v '_test\.go$' || true)
+          if [ -z "$code" ]; then
+            echo "No change to the analyzer or CLI."
+            exit 0
+          fi
+          added=$(git diff --name-only --diff-filter=A HEAD^1 HEAD -- .changes/unreleased)
+          if [ -z "$added" ]; then
+            echo "::error::This changes the analyzer or CLI, so it needs a changelog fragment: run" \
+              "\"go tool -modfile=tools/go.mod changie new\", or label it \"no changelog\" if users won't notice."
+            printf 'Changed:\n%s\n' "$code"
+            exit 1
+          fi
+          printf 'Fragments added:\n%s\n' "$added"
+      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
+        with:
+          go-version-file: tools/go.mod
+          cache: false
+      - name: Check the fragments and CHANGELOG.md
+        run: |
+          if [ -n "$(find .changes/unreleased -name '*.yaml')" ]; then
+            go tool -modfile=tools/go.mod changie batch auto --dry-run
+          fi
+          go tool -modfile=tools/go.mod changie merge --dry-run > "$RUNNER_TEMP/CHANGELOG.md"
+          if ! diff -u CHANGELOG.md "$RUNNER_TEMP/CHANGELOG.md"; then
+            echo "::error::CHANGELOG.md differs from the released versions in .changes: run" \
+              "\"go tool -modfile=tools/go.mod changie merge\"."
+            exit 1
+          fi

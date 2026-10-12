@@ -59,7 +59,9 @@ go install github.com/dackroyd/unindent/cmd/unindent@latest
 unindent ./...
 ```
 
-Requires Go 1.26 or later.
+Requires Go 1.26 or later. Each [release](https://github.com/dackroyd/unindent/releases) also has binaries for Linux,
+macOS and Windows, with checksums and build provenance that `gh attestation verify <archive> --repo dackroyd/unindent`
+checks.
 
 ## Usage
 
@@ -99,7 +101,8 @@ Review fixes before committing them.
 
 ## Contributing
 
-See [CONTRIBUTING.md](CONTRIBUTING.md). Changes are listed in the [changelog](CHANGELOG.md).
+See [CONTRIBUTING.md](CONTRIBUTING.md). Released changes are listed in the [changelog](CHANGELOG.md), and those not yet
+released in [`.changes/unreleased`](.changes/unreleased).
 
 ## License
 
