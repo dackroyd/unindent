@@ -17,19 +17,41 @@ import (
 	"golang.org/x/tools/go/types/typeutil"
 )
 
-type analyzer struct{}
+// Flags that turn each check on or off, named after the checks' headings in docs/checks.md.
+const (
+	flagElseAfterExit   = "else-after-exit"
+	flagElseIfAfterExit = "else-if-after-exit"
+)
 
-// NewAnalyzer which checks that whether code blocks can be unindented without changing behaviour.
+// checks are the checks that are turned on.
+type checks struct {
+	elseAfterExit   bool
+	elseIfAfterExit bool
+}
+
+type analyzer struct {
+	checks checks
+}
+
+// NewAnalyzer which checks that whether code blocks can be unindented without changing behaviour. Every check is on;
+// its flag in the analyzer's Flags turns it off. Each analyzer has its own flags.
 func NewAnalyzer() *analysis.Analyzer {
-	var a analyzer
+	a := &analyzer{checks: checks{elseAfterExit: true, elseIfAfterExit: true}}
 
-	return &analysis.Analyzer{
+	an := &analysis.Analyzer{
 		Doc:      "Identifies unnecessarily indented code",
 		Name:     "unindent",
 		Requires: []*analysis.Analyzer{inspect.Analyzer, ctrlflow.Analyzer, buildAnalyzer},
 		Run:      a.run,
 		URL:      "https://github.com/dackroyd/unindent",
 	}
+
+	an.Flags.BoolVar(&a.checks.elseAfterExit, flagElseAfterExit, true,
+		`report an "else" after a branch that always exits`)
+	an.Flags.BoolVar(&a.checks.elseIfAfterExit, flagElseIfAfterExit, true,
+		`report an "else if" after a branch that always exits`)
+
+	return an
 }
 
 type nodeInfo struct {
@@ -44,12 +66,17 @@ type checker struct {
 	pass   *analysis.Pass
 	cfgs   *ctrlflow.CFGs
 	builds *buildDependents
+	checks checks
 	// strict counts the calls that never return only in some builds as returning, and records them in dependent.
 	strict    bool
 	dependent []string
 }
 
-func (analyzer) run(pass *analysis.Pass) (interface{}, error) {
+func (a *analyzer) run(pass *analysis.Pass) (interface{}, error) {
+	if !a.checks.elseAfterExit && !a.checks.elseIfAfterExit {
+		return analysis.Fact(nil), nil
+	}
+
 	ins, ok := pass.ResultOf[inspect.Analyzer].(*inspector.Inspector)
 	if !ok {
 		return nil, fmt.Errorf("unexpected analyzer type for initial inspection %T", pass.ResultOf[inspect.Analyzer])
@@ -65,7 +92,7 @@ func (analyzer) run(pass *analysis.Pass) (interface{}, error) {
 		return nil, fmt.Errorf("unexpected analyzer type for build-dependent calls %T", pass.ResultOf[buildAnalyzer])
 	}
 
-	c := &checker{pass: pass, cfgs: cfgs, builds: builds}
+	c := &checker{pass: pass, cfgs: cfgs, builds: builds, checks: a.checks}
 
 	// Track the analysis of the stack to use when evaluating deeper elements.
 	infoStack := []nodeInfo{{Returns: true}}
@@ -111,9 +138,20 @@ func (c *checker) analyze(stmt *ast.IfStmt, stack []ast.Node, parentInfo nodeInf
 
 	dependent = slices.Concat(dependent, c.buildDependentExits(stmt))
 
-	c.reportUnnecessaryElse(stmt, stack, dependent)
+	if c.reports(stmt) {
+		c.reportUnnecessaryElse(stmt, stack, dependent)
+	}
 
 	return nodeInfo{Returns: true, Dependent: dependent}
+}
+
+// reports reports whether the check for the else of stmt, an "else" block or an "else if", is turned on.
+func (c *checker) reports(stmt *ast.IfStmt) bool {
+	if _, ok := stmt.Else.(*ast.IfStmt); ok {
+		return c.checks.elseIfAfterExit
+	}
+
+	return c.checks.elseAfterExit
 }
 
 // buildDependentExits returns the calls that never return only in some builds that stmt's body needs to exit, if it
@@ -439,6 +477,10 @@ func (c *checker) initConflicts(info *types.Info, links []*ast.IfStmt, enclosing
 		return nil
 	}
 
+	if len(links) > 1 && !c.checks.elseIfAfterExit {
+		return keptInitConflicts(info, links)
+	}
+
 	var conflicts []string
 
 	for i := range links[:len(links)-1] {
@@ -449,6 +491,48 @@ func (c *checker) initConflicts(info *types.Info, links []*ast.IfStmt, enclosing
 	}
 
 	return append(conflicts, c.hoistConflicts(info, links, enclosing)...)
+}
+
+// keptInitConflicts describes why the fix for the last link of a chain cannot be applied while the earlier links keep
+// their "else", as the check for an "else if" is off. The initialisers of the chain stay in it, so the last link's own
+// initialiser cannot move before the "if", and its else block, which moves out of the chain, cannot use what one of them
+// declares.
+func keptInitConflicts(info *types.Info, links []*ast.IfStmt) []string {
+	stmt := links[len(links)-1]
+
+	var scopes []*types.Scope
+
+	for _, l := range links {
+		if s := info.Scopes[l]; s != nil {
+			scopes = append(scopes, s)
+		}
+	}
+
+	var names []string
+
+	ast.Inspect(stmt.Else, func(n ast.Node) bool {
+		if ident, ok := n.(*ast.Ident); ok {
+			if obj := info.Uses[ident]; obj != nil && slices.Contains(scopes, obj.Parent()) {
+				names = append(names, ident.Name)
+			}
+		}
+
+		return true
+	})
+
+	if s := info.Scopes[stmt]; s != nil && hoistsInit(stmt) && len(names) == 0 {
+		names = s.Names()
+	}
+
+	slices.Sort(names)
+
+	var conflicts []string
+
+	for _, name := range slices.Compact(names) {
+		conflicts = append(conflicts, fmt.Sprintf("%q is declared by an initialiser that stays in the chain, as the %s check is off", name, flagElseIfAfterExit))
+	}
+
+	return conflicts
 }
 
 // hoistConflicts describes why the initialiser of the last link cannot move into the block enclosing the chain, whether
@@ -512,6 +596,12 @@ func (c *checker) moveConflicts(info *types.Info, els *ast.BlockStmt, links []*a
 	outer := headScope.Parent()
 	earlier := c.movedBefore(info, enclosing, head)
 
+	// Without the "else if" check, the earlier links keep their initialisers.
+	hoisting := links
+	if !c.checks.elseIfAfterExit {
+		hoisting = links[len(links)-1:]
+	}
+
 	var conflicts []string
 
 	names := c.movedNames(info, els)
@@ -527,7 +617,7 @@ func (c *checker) moveConflicts(info *types.Info, els *ast.BlockStmt, links []*a
 			continue
 		}
 
-		if hoistedBefore(info, links, name) {
+		if hoistedBefore(info, hoisting, name) {
 			conflicts = append(conflicts, fmt.Sprintf("%q is also declared by an \"if\" initialiser", name))
 			continue
 		}
@@ -675,17 +765,21 @@ func (c *checker) movedBefore(info *types.Info, enclosing ast.Node, head *ast.If
 
 // chainMovedNames returns the names that the fixes of the if/else chain at stmt move into the block holding it: the
 // initialisers they hoist, and the declarations of the else block they move up, including what fixes inside it move.
+// Only the fixes of checks that are on count, and a link after an "else if" keeps its initialiser when the "else if"
+// check is off.
 func (c *checker) chainMovedNames(info *types.Info, stmt ast.Stmt) []string {
 	if labeled, ok := stmt.(*ast.LabeledStmt); ok {
 		stmt = labeled.Stmt
 	}
 
-	link, _ := stmt.(*ast.IfStmt)
+	head, _ := stmt.(*ast.IfStmt)
+	link := head
 
 	var names []string
 
 	for link != nil && c.ifAlwaysReturns(link) {
-		if s := info.Scopes[link]; s != nil && hoistsInit(link) {
+		hoists := c.reports(link) && (link == head || c.checks.elseIfAfterExit)
+		if s := info.Scopes[link]; s != nil && hoists && hoistsInit(link) {
 			names = append(names, s.Names()...)
 		}
 
@@ -693,7 +787,10 @@ func (c *checker) chainMovedNames(info *types.Info, stmt ast.Stmt) []string {
 		case *ast.IfStmt:
 			link = e
 		case *ast.BlockStmt:
-			names = append(names, c.movedNames(info, e)...)
+			if c.checks.elseAfterExit {
+				names = append(names, c.movedNames(info, e)...)
+			}
+
 			link = nil
 		}
 	}

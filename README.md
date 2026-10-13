@@ -80,15 +80,23 @@ go vet -vettool=$(command -v unindent) ./...
 `unindent` exits with status 3 when it reports a finding, 1 when it cannot load the packages, and 0 otherwise. Test
 files are checked too; pass `-test=false` to skip them.
 
+Every check is on by default, and each has a flag that turns it off, named in the [table of checks](#checks):
+
+```sh
+unindent -else-if-after-exit=false ./...
+go vet -vettool=$(command -v unindent) -else-if-after-exit=false ./...
+```
+
 The analyzer is also available as a Go package, `unindent.NewAnalyzer()`, for use with any
-[`go/analysis`](https://pkg.go.dev/golang.org/x/tools/go/analysis) driver.
+[`go/analysis`](https://pkg.go.dev/golang.org/x/tools/go/analysis) driver. Its flags are in the analyzer's `Flags`, for
+example `a.Flags.Set("else-if-after-exit", "false")`, and belong to that analyzer alone.
 
 ## Checks
 
-| Check                                                         | Reports                                       |
-| ------------------------------------------------------------- | --------------------------------------------- |
-| [Else after an exit](docs/checks.md#else-after-an-exit)       | An `else` after a branch that always exits    |
-| [Else if after an exit](docs/checks.md#else-if-after-an-exit) | An `else if` after a branch that always exits |
+| Check                                                         | Reports                                       | Flag                  |
+| ------------------------------------------------------------- | --------------------------------------------- | --------------------- |
+| [Else after an exit](docs/checks.md#else-after-an-exit)       | An `else` after a branch that always exits    | `-else-after-exit`    |
+| [Else if after an exit](docs/checks.md#else-if-after-an-exit) | An `else if` after a branch that always exits | `-else-if-after-exit` |
 
 ## Limitations
 

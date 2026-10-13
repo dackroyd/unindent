@@ -1,0 +1,125 @@
+package noelseif
+
+func g(x int) int { return x }
+
+func use(int) {}
+
+func Else(x int) int {
+	if x < 0 {
+		return -x
+	} else { // want `^Unnecessary "else": .* Remove the "else" wrapping the block of statements$`
+		x++
+	}
+
+	return x
+}
+
+func ElseIfNotReported(x int) int {
+	if x < 0 {
+		return -x
+	} else if x > 10 {
+		return 10
+	}
+
+	return x
+}
+
+func ChainEnd(x int) int {
+	if x < 0 {
+		return -x
+	} else if x > 10 {
+		return 10
+	} else { // want `^Unnecessary "else": .* Remove the "else" wrapping the block of statements$`
+		x++
+	}
+
+	return x
+}
+
+func ChainEndUsesHeadInitialiser(x int) int {
+	if v := g(x); v < 0 {
+		return -x
+	} else if x > 10 {
+		return 10
+	} else { // want `^Unnecessary "else": .* Remove the "else" wrapping the block of statements. Not fixed automatically: "v" is declared by an initialiser that stays in the chain, as the else-if-after-exit check is off$`
+		use(v)
+	}
+
+	return x
+}
+
+func ChainEndUsesOwnInitialiser(x int) int {
+	if x < 0 {
+		return -x
+	} else if v := g(x); v > 10 {
+		return 10
+	} else { // want `^Unnecessary "else": .* Move variable declaration "v := g\(x\)" before the "if", and remove the "else" wrapping the block of statements. Not fixed automatically: "v" is declared by an initialiser that stays in the chain, as the else-if-after-exit check is off$`
+		use(v)
+	}
+
+	return x
+}
+
+func ChainUsesHeadInitialiserInCondition(x int) int {
+	if v := g(x); v < 0 {
+		return -x
+	} else if v > 10 {
+		return 10
+	} else { // want `^Unnecessary "else": .* Remove the "else" wrapping the block of statements$`
+		x++
+	}
+
+	return x
+}
+
+func ChainEndRedeclaresHeadInitialiser(x int) int {
+	if v := g(x); v < 0 {
+		return -x
+	} else if x > 10 {
+		return 10
+	} else { // want `^Unnecessary "else": .* Remove the "else" wrapping the block of statements$`
+		v := x * 2
+		use(v)
+	}
+
+	return x
+}
+
+func KeptInitialiserNotMoved(x int) int {
+	if x < 0 {
+		return -x
+	} else if y := g(x); y > 10 {
+		return 10
+	} else { // want `^Unnecessary "else": .* Not fixed automatically: "y" is declared by an initialiser that stays in the chain, as the else-if-after-exit check is off$`
+		use(y)
+	}
+
+	if x > 5 {
+		return 5
+	} else { // want `^Unnecessary "else": .* Remove the "else" wrapping the block of statements$`
+		y := x * 2
+		use(y)
+	}
+
+	return x
+}
+
+func MovedElseBlockStillTracked(x int) int {
+	if x < 0 {
+		return -x
+	} else if x > 10 {
+		return 10
+	} else { // want `^Unnecessary "else": .* Remove the "else" wrapping the block of statements$`
+		y := x * 2
+		use(y)
+	}
+
+	if x > 5 {
+		return 5
+	} else { // want `^Unnecessary "else": .* Not fixed automatically: "y" is also moved into the enclosing block by an earlier fix$`
+		y := x * 3
+		use(y)
+	}
+
+	return x
+}

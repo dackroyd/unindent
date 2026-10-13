@@ -1,7 +1,8 @@
 # Checks
 
 Each check reports a construct that indents code without need, explains the change in the message, and offers a fix that
-`unindent -fix` applies.
+`unindent -fix` applies. Every check is on by default, and its flag turns it off: `-else-after-exit=false` or
+`-else-if-after-exit=false`.
 
 A branch **exits** when every path through it ends in a `return`, `break`, `continue`, `goto` or a call that never
 returns, or in a loop or `select` that never ends. These are the Go specification's
@@ -38,6 +39,8 @@ type checked, so a counterpart counts even when it never returns either. A funct
 every build that can call it.
 
 ## Else after an exit
+
+Flag: `-else-after-exit`.
 
 Reports an `else` that follows a branch that exits. The `else` is unnecessary: its block runs only when the branch did
 not, so it can follow the `if` at the outer level.
@@ -101,6 +104,8 @@ return x * y
 
 ## Else if after an exit
 
+Flag: `-else-if-after-exit`.
+
 Reports an `else if` that follows a branch that exits, and every branch before it in the chain exits too. The `else` is
 unnecessary, so the condition starts a new `if`. The rest of the chain is checked the same way.
 
@@ -130,6 +135,10 @@ return y
 
 An `else if` after a branch that does not exit is not reported: removing its `else` would change which branches run.
 
+The two checks are independent. With this one off, the `else` at the end of such a chain is still reported, and its fix
+moves the block out of the chain, leaving the `else if` links as they are. With
+[Else after an exit](#else-after-an-exit) off, the `else if` links are still reported, and the final `else` stays.
+
 ## When no fix is offered
 
 A finding is still reported, without a fix, when applying the fix would not compile or would change behaviour. The
@@ -146,6 +155,9 @@ variable.
     statements, declare the same name, or an `else` block redeclares a name from a moved initialiser.
 - **An earlier link in the chain is not fixed.** The rest of the chain uses what that link's initialiser declares, so it
     cannot move out from under it.
+- **An initialiser in the chain stays, as the Else if after an exit check is off.** The final `else` uses a variable
+    declared by the initialiser of an `if` in the chain, which can only move before the chain once every `else if` is
+    removed: `"v" is declared by an initialiser that stays in the chain, as the else-if-after-exit check is off`.
 - **The branch exits through a call that never returns only in some builds.** The function, or one it calls, is declared
     in a file with build constraints and again in a file that the build leaves out, so in another build it may return,
     and the `else` block would then run after it. The runtime's `racerelease`, for example, throws in builds without
