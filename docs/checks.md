@@ -7,7 +7,9 @@ A branch **exits** when every path through it ends in a `return`, `break`, `cont
 Paths are followed into nested statements: an `if` with an `else` exits when both branches exit, and a `switch` exits
 when it has a `default`, every case exits, and no unlabeled `break` in its cases leaves it early, since that `break`
 only leaves the `switch`. A `break` that leaves a loop, `switch` or `select` nested in a case doesn't count. A
-`continue`, or a `break` to a label outside the `if`, is an exit.
+`continue`, or a `break` to a label outside the `if`, is an exit. Statements after an exit only run when a `goto` jumps
+to a label among them, so a branch with a label after its last exit doesn't exit: the path from the label carries on to
+the end of the branch.
 
 Calls that never return are:
 

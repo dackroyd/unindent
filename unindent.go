@@ -209,13 +209,19 @@ func (c *checker) ifAlwaysReturns(stmt *ast.IfStmt) bool {
 }
 
 func (c *checker) blockAlwaysReturns(block *ast.BlockStmt) bool {
-	// Where the return statement is declared directly in the block, it should be the last statement
-	// However, Go allows other statements after this, even if they can never be reached
-	for i := len(block.List) - 1; i >= 0; i-- {
-		b := block.List[i]
+	return c.listAlwaysReturns(block.List)
+}
 
-		if c.alwaysReturns(b) {
+// listAlwaysReturns reports whether a statement in list always leaves it. Go allows statements after it, which can
+// only be reached through a label among them, so a label after it carries on to the end of the list.
+func (c *checker) listAlwaysReturns(list []ast.Stmt) bool {
+	for i := len(list) - 1; i >= 0; i-- {
+		if c.alwaysReturns(list[i]) {
 			return true
+		}
+
+		if _, ok := list[i].(*ast.LabeledStmt); ok {
+			return false
 		}
 	}
 
@@ -264,15 +270,7 @@ func (c *checker) switchBodyAlwaysReturns(body *ast.BlockStmt) bool {
 }
 
 func (c *checker) caseAlwaysReturns(clause *ast.CaseClause) bool {
-	for i := len(clause.Body) - 1; i >= 0; i-- {
-		cb := clause.Body[i]
-
-		if c.alwaysReturns(cb) {
-			return true
-		}
-	}
-
-	return false
+	return c.listAlwaysReturns(clause.Body)
 }
 
 // reportUnnecessaryElse reports the else of stmt, with a fix unless the fix would not compile or would change
