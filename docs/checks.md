@@ -5,8 +5,9 @@ Each check reports a construct that indents code without need, explains the chan
 
 A branch **exits** when every path through it ends in a `return`, `break`, `continue` or a call that never returns.
 Paths are followed into nested statements: an `if` with an `else` exits when both branches exit, and a `switch` exits
-when it has a `default` and every case exits. Inside a `switch`, an unlabeled `break` only leaves the `switch`, so it is
-not an exit; a `continue`, or a `break` to a label outside the `if`, is.
+when it has a `default`, every case exits, and no unlabeled `break` in its cases leaves it early, since that `break`
+only leaves the `switch`. A `break` that leaves a loop, `switch` or `select` nested in a case doesn't count. A
+`continue`, or a `break` to a label outside the `if`, is an exit.
 
 Calls that never return are:
 

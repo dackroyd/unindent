@@ -100,7 +100,7 @@ func (c *checker) analyze(stmt *ast.IfStmt, stack []ast.Node, parentInfo nodeInf
 		return nodeInfo{}
 	}
 
-	if !c.ifAlwaysReturns(stmt, false) {
+	if !c.ifAlwaysReturns(stmt) {
 		return nodeInfo{}
 	}
 
@@ -122,7 +122,7 @@ func (c *checker) buildDependentExits(stmt *ast.IfStmt) []string {
 	c.strict, c.dependent = true, nil
 	defer func() { c.strict = false }()
 
-	if c.ifAlwaysReturns(stmt, false) {
+	if c.ifAlwaysReturns(stmt) {
 		return nil
 	}
 
@@ -131,38 +131,34 @@ func (c *checker) buildDependentExits(stmt *ast.IfStmt) []string {
 	return slices.Compact(c.dependent)
 }
 
-// alwaysReturns reports whether s always leaves the block it is in. inSwitch is set within the cases of a switch, where an
-// unlabeled break only leaves the switch.
-func (c *checker) alwaysReturns(s ast.Node, inSwitch bool) bool {
+// alwaysReturns reports whether s always leaves the block it is in. An unlabeled break counts, as it leaves any if
+// around it; instead, a switch is rejected when a break in its cases only leaves the switch.
+func (c *checker) alwaysReturns(s ast.Node) bool {
 	switch t := s.(type) {
 	case *ast.BlockStmt:
-		return c.blockAlwaysReturns(t, inSwitch)
+		return c.blockAlwaysReturns(t)
 	case *ast.ReturnStmt:
 		return true
 	case *ast.BranchStmt:
 		// Fallthrough doesn't return, and GOTO is unpredictable without deeper
 		// understanding of where it ends up, which isn't assessed here
-		if t.Tok == token.BREAK && t.Label == nil {
-			return !inSwitch
-		}
-
 		return t.Tok == token.BREAK || t.Tok == token.CONTINUE
 	case *ast.IfStmt:
-		if !c.ifAlwaysReturns(t, inSwitch) {
+		if !c.ifAlwaysReturns(t) {
 			return false
 		}
 
 		// When we're looking into nested if/else of the IfStmt being analyzed,
 		// we must also evaluate the else cases as part of the body of our main if
-		return c.alwaysReturns(t.Else, inSwitch)
+		return c.alwaysReturns(t.Else)
 	case *ast.ExprStmt:
 		call, ok := t.X.(*ast.CallExpr)
 
 		return ok && c.neverReturns(call)
 	case *ast.SwitchStmt:
-		return c.switchAlwaysReturns(t)
+		return c.switchBodyAlwaysReturns(t.Body) && !breaksOut(t.Body)
 	case *ast.TypeSwitchStmt:
-		return c.typeswitchAlwaysReturns(t)
+		return c.switchBodyAlwaysReturns(t.Body) && !breaksOut(t.Body)
 	}
 
 	return false
@@ -204,21 +200,21 @@ func (c *checker) neverReturns(call *ast.CallExpr) bool {
 	return true
 }
 
-func (c *checker) ifAlwaysReturns(stmt *ast.IfStmt, inSwitch bool) bool {
+func (c *checker) ifAlwaysReturns(stmt *ast.IfStmt) bool {
 	if stmt.Else == nil {
 		return false
 	}
 
-	return c.blockAlwaysReturns(stmt.Body, inSwitch)
+	return c.blockAlwaysReturns(stmt.Body)
 }
 
-func (c *checker) blockAlwaysReturns(block *ast.BlockStmt, inSwitch bool) bool {
+func (c *checker) blockAlwaysReturns(block *ast.BlockStmt) bool {
 	// Where the return statement is declared directly in the block, it should be the last statement
 	// However, Go allows other statements after this, even if they can never be reached
 	for i := len(block.List) - 1; i >= 0; i-- {
 		b := block.List[i]
 
-		if c.alwaysReturns(b, inSwitch) {
+		if c.alwaysReturns(b) {
 			return true
 		}
 	}
@@ -226,12 +222,23 @@ func (c *checker) blockAlwaysReturns(block *ast.BlockStmt, inSwitch bool) bool {
 	return false
 }
 
-func (c *checker) switchAlwaysReturns(s *ast.SwitchStmt) bool {
-	return c.switchBodyAlwaysReturns(s.Body)
-}
+// breaksOut reports whether body holds an unlabeled break that leaves the statement body belongs to, rather than a
+// loop, switch or select nested inside it.
+func breaksOut(body *ast.BlockStmt) bool {
+	var found bool
 
-func (c *checker) typeswitchAlwaysReturns(s *ast.TypeSwitchStmt) bool {
-	return c.switchBodyAlwaysReturns(s.Body)
+	ast.Inspect(body, func(n ast.Node) bool {
+		switch t := n.(type) {
+		case *ast.BranchStmt:
+			found = found || (t.Tok == token.BREAK && t.Label == nil)
+		case *ast.ForStmt, *ast.RangeStmt, *ast.SwitchStmt, *ast.TypeSwitchStmt, *ast.SelectStmt, *ast.FuncLit:
+			return false
+		}
+
+		return !found
+	})
+
+	return found
 }
 
 func (c *checker) switchBodyAlwaysReturns(body *ast.BlockStmt) bool {
@@ -260,7 +267,7 @@ func (c *checker) caseAlwaysReturns(clause *ast.CaseClause) bool {
 	for i := len(clause.Body) - 1; i >= 0; i-- {
 		cb := clause.Body[i]
 
-		if c.alwaysReturns(cb, true) {
+		if c.alwaysReturns(cb) {
 			return true
 		}
 	}
@@ -533,7 +540,7 @@ func (c *checker) chainMovedNames(info *types.Info, stmt ast.Stmt) []string {
 
 	var names []string
 
-	for link != nil && c.ifAlwaysReturns(link, false) {
+	for link != nil && c.ifAlwaysReturns(link) {
 		if s := info.Scopes[link]; s != nil && hoistsInit(link) {
 			names = append(names, s.Names()...)
 		}
