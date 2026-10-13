@@ -127,3 +127,17 @@ func SiblingElseDeclaresHoistedName(a, b any) string {
 		return s
 	}
 }
+
+func InitialiserHoldsFix(a bool) int {
+	if g := func() int {
+		if a {
+			return 1
+		} else { // want `^Unnecessary "else": preceding conditions always end in a "return", "break", "continue", "goto", a call that never returns or a loop or select that never ends. Remove the "else" wrapping the block of statements$`
+			return 2
+		}
+	}; g() > 0 {
+		return 0
+	} else { // want `^Unnecessary "else": preceding conditions always end in a "return", "break", "continue", "goto", a call that never returns or a loop or select that never ends. Move variable declaration "g := func\(\) int {.*}" before the "if", and remove the "else" wrapping the block of statements. Not fixed automatically: another fix inside the "if" statement has to be applied first$`
+		return g()
+	}
+}

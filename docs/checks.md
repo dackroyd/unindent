@@ -168,6 +168,8 @@ variable.
     `"goto fail" would jump over the declaration of "v"`. Moving the `else` block cannot break a `goto` to a label
     inside it: such a `goto` must be inside the block too, and the fix keeps the block's statements in order with
     nothing between them.
+- **Another fix inside the `if` statement has to be applied first.** An initialiser that has to move holds another fix,
+    such as an `else` in a function literal: `unindent -fix` applies that one, and a second run applies this one.
 
 ```go
 func load() (err error) {

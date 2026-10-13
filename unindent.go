@@ -70,6 +70,8 @@ type checker struct {
 	// strict counts the calls that never return only in some builds as returning, and records them in dependent.
 	strict    bool
 	dependent []string
+	// found holds the findings until the package is checked, as whether a fix can be applied depends on the others.
+	found []finding
 }
 
 func (a *analyzer) run(pass *analysis.Pass) (interface{}, error) {
@@ -116,6 +118,8 @@ func (a *analyzer) run(pass *analysis.Pass) (interface{}, error) {
 
 		return true
 	})
+
+	c.flush()
 
 	return analysis.Fact(nil), nil
 }
@@ -425,20 +429,14 @@ func (c *checker) reportUnnecessaryElse(stmt *ast.IfStmt, stack []ast.Node, depe
 		return
 	}
 
-	diag := analysis.Diagnostic{
-		Pos:     stmt.Else.Pos(),
-		Message: fmt.Sprintf(msg.String(), args...),
-	}
-
-	if len(conflicts) > 0 {
-		diag.Message += ". Not fixed automatically: " + strings.Join(conflicts, "; ")
-	} else {
-		diag.SuggestedFixes = []analysis.SuggestedFix{
-			{Message: "Remove unnecessary else", TextEdits: edits},
-		}
-	}
-
-	pass.Report(diag)
+	c.report(finding{
+		stmt:      stmt,
+		message:   fmt.Sprintf(msg.String(), args...),
+		fix:       "Remove unnecessary else",
+		edits:     edits,
+		conflicts: conflicts,
+		copies:    hoistsInit(stmt),
+	})
 }
 
 // chainLinks returns the if statements of the if/else chain from its head down to the one at the top of the stack, and
