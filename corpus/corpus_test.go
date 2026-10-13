@@ -439,6 +439,20 @@ func f(x int) int {
 		x++
 	}
 
+	if x > 2 {
+	loop:
+		for {
+			continue loop
+		}
+	} else if x > 3 {
+		select {}
+	} else if x > 4 {
+		goto end
+	} else {
+		x++
+	}
+
+end:
 	return x
 }
 `
@@ -456,6 +470,9 @@ func f(x int) int {
 		{6, 9, "else if after return"},
 		{8, 9, "else after call"},
 		{19, 9, "else after switch"},
+		{28, 9, "else if after for"},
+		{30, 9, "else if after select"},
+		{32, 9, "else after goto"},
 		{4, 2, "not on an else"},
 	} {
 		pos := position{Project: "p", File: "p.go", Line: tt.line, Col: tt.col}

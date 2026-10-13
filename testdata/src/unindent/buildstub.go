@@ -11,7 +11,7 @@ func localHalt() { panic("halt") }
 func ElseAfterConstrainedLocalCall(x int) int {
 	if x > 0 {
 		localHalt()
-	} else { // want `^Unnecessary "else": preceding conditions always end in a "return", "break", "continue" or a call that never returns. Remove the "else" wrapping the block of statements$`
+	} else { // want `^Unnecessary "else": preceding conditions always end in a "return", "break", "continue", "goto", a call that never returns or a loop or select that never ends. Remove the "else" wrapping the block of statements$`
 		x++
 	}
 

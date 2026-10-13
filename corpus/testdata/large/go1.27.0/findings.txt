@@ -158,6 +158,7 @@ tools internal/diff/lcs/old.go:154:10 else if after continue: fixed
 tools internal/diff/lcs/old.go:259:10 else if after continue: fixed
 tools internal/flow/lattice.go:59:9 else if after return: fixed
 tools internal/fmtstr/parse.go:266:11 else after return: fixed
+tools internal/gcimporter/exportdata.go:330:10 else after goto: fixed
 tools internal/gcimporter/iimport.go:165:10 else after call: fixed
 tools internal/gcimporter/iimport.go:267:10 else if after call: fixed
 tools internal/gcimporter/iimport.go:269:10 else if after call: fixed
@@ -601,8 +602,13 @@ hugo tpl/tplimpl/templates.go:235:12 else if after break: fixed
 hugo transform/urlreplacers/absurlreplacer.go:231:10 else after break: fixed
 hugo watcher/filenotify/poller_test.go:270:12 else if after return: fixed
 prometheus discovery/aws/msk.go:538:9 else if after return: fixed
+prometheus discovery/consul/consul.go:356:9 else after for: fixed
 prometheus model/exemplar/exemplar.go:58:9 else if after return: fixed
 prometheus model/exemplar/exemplar.go:63:9 else if after return: fixed
+prometheus model/histogram/float_histogram.go:1477:12 else if after goto: fixed
+prometheus model/histogram/float_histogram.go:1531:12 else after switch: fixed
+prometheus model/histogram/float_histogram.go:1611:12 else if after goto: fixed
+prometheus model/histogram/float_histogram.go:1674:12 else after switch: fixed
 prometheus model/histogram/float_histogram.go:2360:9 else if after return: fixed
 prometheus model/histogram/generic.go:270:9 else if after call: fixed
 prometheus model/labels/labels_stringlabels.go:546:9 else if after return: fixed

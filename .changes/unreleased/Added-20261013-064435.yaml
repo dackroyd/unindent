@@ -1,0 +1,3 @@
+kind: Added
+body: 'Every terminating statement in the Go specification counts as an exit: `goto`, a `for` loop without a condition, a `select` whose cases all exit, `select {}`, a labelled statement that exits, and a `switch` case ending in `fallthrough`. A `for`, `switch` or `select` that a `break` refers to, by label too, does not count. A fix is withheld when a `goto` would jump over a declaration it moves.'
+time: 2026-10-13T06:44:35.000000000Z

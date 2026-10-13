@@ -10,7 +10,7 @@ import (
 func PanicExits(x int) int {
 	if x < 0 {
 		panic("negative")
-	} else { // want `^Unnecessary "else": preceding conditions always end in a "return", "break", "continue" or a call that never returns. Remove the "else" wrapping the block of statements$`
+	} else { // want `^Unnecessary "else": preceding conditions always end in a "return", "break", "continue", "goto", a call that never returns or a loop or select that never ends. Remove the "else" wrapping the block of statements$`
 		return x
 	}
 }
@@ -18,7 +18,7 @@ func PanicExits(x int) int {
 func OsExitExits(code int) int {
 	if code != 0 {
 		os.Exit(code)
-	} else { // want `^Unnecessary "else": preceding conditions always end in a "return", "break", "continue" or a call that never returns. Remove the "else" wrapping the block of statements$`
+	} else { // want `^Unnecessary "else": preceding conditions always end in a "return", "break", "continue", "goto", a call that never returns or a loop or select that never ends. Remove the "else" wrapping the block of statements$`
 		code++
 	}
 
@@ -28,7 +28,7 @@ func OsExitExits(code int) int {
 func LogFatalExits(err error) int {
 	if err != nil {
 		log.Fatalf("failed: %v", err)
-	} else if err == nil { // want `^Unnecessary "else": preceding conditions always end in a "return", "break", "continue" or a call that never returns. Remove the "else", leaving "if err == nil { ... }"$`
+	} else if err == nil { // want `^Unnecessary "else": preceding conditions always end in a "return", "break", "continue", "goto", a call that never returns or a loop or select that never ends. Remove the "else", leaving "if err == nil { ... }"$`
 		return 1
 	}
 
@@ -40,7 +40,7 @@ func GoexitExits(done bool) int {
 
 	if !done {
 		runtime.Goexit()
-	} else { // want `^Unnecessary "else": preceding conditions always end in a "return", "break", "continue" or a call that never returns. Remove the "else" wrapping the block of statements$`
+	} else { // want `^Unnecessary "else": preceding conditions always end in a "return", "break", "continue", "goto", a call that never returns or a loop or select that never ends. Remove the "else" wrapping the block of statements$`
 		n++
 	}
 
@@ -51,7 +51,7 @@ func TestFatalExits(t *testing.T) {
 	v, err := parse()
 	if err != nil {
 		t.Fatalf("parse: %v", err)
-	} else { // want `^Unnecessary "else": preceding conditions always end in a "return", "break", "continue" or a call that never returns. Remove the "else" wrapping the block of statements$`
+	} else { // want `^Unnecessary "else": preceding conditions always end in a "return", "break", "continue", "goto", a call that never returns or a loop or select that never ends. Remove the "else" wrapping the block of statements$`
 		_ = v
 	}
 }
@@ -59,7 +59,7 @@ func TestFatalExits(t *testing.T) {
 func TestSkipExits(t *testing.T) {
 	if testing.Short() {
 		t.Skip("slow")
-	} else { // want `^Unnecessary "else": preceding conditions always end in a "return", "break", "continue" or a call that never returns. Remove the "else" wrapping the block of statements$`
+	} else { // want `^Unnecessary "else": preceding conditions always end in a "return", "break", "continue", "goto", a call that never returns or a loop or select that never ends. Remove the "else" wrapping the block of statements$`
 		_ = t.Name()
 	}
 }
@@ -67,7 +67,7 @@ func TestSkipExits(t *testing.T) {
 func helperFatalExits(tb testing.TB, err error) {
 	if err != nil {
 		tb.Fatal(err)
-	} else { // want `^Unnecessary "else": preceding conditions always end in a "return", "break", "continue" or a call that never returns. Remove the "else" wrapping the block of statements$`
+	} else { // want `^Unnecessary "else": preceding conditions always end in a "return", "break", "continue", "goto", a call that never returns or a loop or select that never ends. Remove the "else" wrapping the block of statements$`
 		tb.Log("ok")
 	}
 }
@@ -80,7 +80,7 @@ func failNow(msg string) {
 func HelperExits(x int) int {
 	if x < 0 {
 		failNow("negative")
-	} else { // want `^Unnecessary "else": preceding conditions always end in a "return", "break", "continue" or a call that never returns. Remove the "else" wrapping the block of statements$`
+	} else { // want `^Unnecessary "else": preceding conditions always end in a "return", "break", "continue", "goto", a call that never returns or a loop or select that never ends. Remove the "else" wrapping the block of statements$`
 		x *= 2
 	}
 

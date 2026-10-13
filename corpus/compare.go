@@ -245,6 +245,8 @@ func unindentReason(is *ifStmt) string {
 		return "exits through a nested if, switch or type switch"
 	case *ast.ExprStmt:
 		return "ends in a call"
+	case *ast.ForStmt, *ast.SelectStmt:
+		return "ends in a for or select that never ends"
 	}
 
 	return "other"
@@ -266,10 +268,19 @@ func reviveReason(is *ifStmt, rules []string) string {
 	return "other"
 }
 
+// lastStmt returns the last statement of b, without its labels.
 func lastStmt(b *ast.BlockStmt) ast.Stmt {
 	if len(b.List) == 0 {
 		return nil
 	}
 
-	return b.List[len(b.List)-1]
+	last := b.List[len(b.List)-1]
+	for {
+		labeled, ok := last.(*ast.LabeledStmt)
+		if !ok {
+			return last
+		}
+
+		last = labeled.Stmt
+	}
 }

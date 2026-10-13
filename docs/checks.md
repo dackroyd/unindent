@@ -3,13 +3,22 @@
 Each check reports a construct that indents code without need, explains the change in the message, and offers a fix that
 `unindent -fix` applies.
 
-A branch **exits** when every path through it ends in a `return`, `break`, `continue` or a call that never returns.
-Paths are followed into nested statements: an `if` with an `else` exits when both branches exit, and a `switch` exits
-when it has a `default`, every case exits, and no unlabeled `break` in its cases leaves it early, since that `break`
-only leaves the `switch`. A `break` that leaves a loop, `switch` or `select` nested in a case doesn't count. A
-`continue`, or a `break` to a label outside the `if`, is an exit. Statements after an exit only run when a `goto` jumps
-to a label among them, so a branch with a label after its last exit doesn't exit: the path from the label carries on to
-the end of the branch.
+A branch **exits** when every path through it ends in a `return`, `break`, `continue`, `goto` or a call that never
+returns, or in a loop or `select` that never ends. These are the Go specification's
+[terminating statements](https://go.dev/ref/spec#Terminating_statements), plus `break`, `continue` and calls that never
+return, which leave the `if` as surely. Paths are followed into nested statements:
+
+- An `if` with an `else` exits when both branches exit.
+- A `switch` exits when it has a `default` and every case exits or ends in a `fallthrough`.
+- A `for` loop exits when it has no condition and no `range` clause.
+- A `select` exits when every case exits. A `select {}` blocks forever, so it exits too.
+- A labelled statement exits when the statement it labels does.
+
+A `break` that refers to a `for`, `switch` or `select` in the branch, unlabelled in its body or to its label from
+anywhere inside it, leaves that statement instead, so the statement doesn't exit. A `break` that leaves a loop, `switch`
+or `select` nested inside it doesn't count. A `continue`, or a `break` to a label outside the `if`, is an exit.
+Statements after an exit only run when a `goto` jumps to a label among them, so a label after the exit ends the branch's
+last path there: the branch exits only if what follows the label does.
 
 Calls that never return are:
 
@@ -36,7 +45,7 @@ not, so it can follow the `if` at the outer level.
 ```go
 if err != nil {
 	return err
-} else { // Unnecessary "else": preceding conditions always end in a "return", "break", "continue" or a call that never returns. Remove the "else" wrapping the block of statements
+} else { // Unnecessary "else": preceding conditions always end in a "return", "break", "continue", "goto", a call that never returns or a loop or select that never ends. Remove the "else" wrapping the block of statements
 	process(v)
 }
 ```
@@ -98,7 +107,7 @@ unnecessary, so the condition starts a new `if`. The rest of the chain is checke
 ```go
 if x > y {
 	return x
-} else if x == y { // Unnecessary "else": preceding conditions always end in a "return", "break", "continue" or a call that never returns. Remove the "else", leaving "if x == y { ... }"
+} else if x == y { // Unnecessary "else": preceding conditions always end in a "return", "break", "continue", "goto", a call that never returns or a loop or select that never ends. Remove the "else", leaving "if x == y { ... }"
 	return 0
 } else { // reported: the branch before also exits
 	return y
@@ -142,6 +151,11 @@ variable.
     and the `else` block would then run after it. The runtime's `racerelease`, for example, throws in builds without
     `-race`, where `race0.go` declares it as a stub, and returns in builds with it, where `race.go` declares it. The
     reason names the call: `"racerelease" never returns only in some builds`.
+- **A `goto` would jump over a moved declaration.** A `goto` before the `if`, or inside it, to a label after the `if`
+    would jump over a variable that the fix moves out of the `else` block or the initialiser, which Go does not allow:
+    `"goto fail" would jump over the declaration of "v"`. Moving the `else` block cannot break a `goto` to a label
+    inside it: such a `goto` must be inside the block too, and the fix keeps the block's statements in order with
+    nothing between them.
 
 ```go
 func load() (err error) {

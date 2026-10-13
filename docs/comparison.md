@@ -10,7 +10,8 @@ how their reports overlap with `unindent`'s on real code.
 | `else` after a branch ending in `return`, `break` or `continue`                    | yes        | `indent-error-flow`, `superfluous-else` | —               | —                        |
 | `else` after a branch ending in `panic`, `os.Exit` or `log.Fatal`                  | yes        | `superfluous-else`                      | —               | —                        |
 | `else` after a branch ending in `t.Fatal`, `t.Skip` or a helper that never returns | yes        | —                                       | —               | —                        |
-| `else` after a branch ending in `goto`                                             | —          | `superfluous-else`                      | —               | —                        |
+| `else` after a branch ending in `goto`                                             | yes        | `superfluous-else`                      | —               | —                        |
+| `else` after a branch ending in a `for` loop or `select` that never ends           | yes        | —                                       | —               | —                        |
 | `else` after a branch that exits through a nested `if`/`else` or `switch`          | yes        | —                                       | —               | —                        |
 | `else if` after a branch that exits                                                | yes        | —                                       | —               | —                        |
 | `if` inside a `select` case                                                        | yes        | —                                       | —               | —                        |
@@ -42,16 +43,17 @@ The corpus check produces these numbers, and every change that alters them updat
 
 |                             | `if` statements |
 | --------------------------- | --------------- |
-| Reported by `unindent`      | 614             |
+| Reported by `unindent`      | 620             |
 | Reported by revive          | 306             |
-| Reported by both            | 209             |
-| Reported by `unindent` only | 405             |
-| Reported by revive only     | 97              |
+| Reported by both            | 210             |
+| Reported by `unindent` only | 410             |
+| Reported by revive only     | 96              |
 
-Of the 405 that only `unindent` reported, 338 are `else if` chains, 59 follow a branch ending in a call that never
-returns, 5 are inside `select` cases, 2 exit through a nested `if`/`else` or `switch` and 1 is another nested form.
+Of the 410 that only `unindent` reported, 340 are `else if` chains, 59 follow a branch ending in a call that never
+returns, 5 are inside `select` cases, 4 exit through a nested `if`/`else` or `switch`, 1 follows a `for` loop that never
+ends and 1 is another nested form.
 
-Of the 97 that only revive reported, 96 are `early-return` inversions, and 1 follows a branch ending in `goto`.
+All 96 that only revive reported are `early-return` inversions.
 
 ## Using them together
 

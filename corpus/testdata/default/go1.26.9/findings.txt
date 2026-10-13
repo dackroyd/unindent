@@ -148,6 +148,7 @@ stdlib cmd/go/internal/cache/cache.go:244:9 else if after return: fixed
 stdlib cmd/go/internal/cache/cache.go:254:9 else if after return: fixed
 stdlib cmd/go/internal/doc/doc.go:475:10 else after call: fixed
 stdlib cmd/go/internal/list/list.go:966:10 else if after return: fixed
+stdlib cmd/go/internal/load/pkg.go:937:12 else if after goto: fixed
 stdlib cmd/go/internal/load/pkg.go:2186:13 else after return: fixed
 stdlib cmd/go/internal/load/pkg.go:2726:11 else if after return: fixed
 stdlib cmd/go/internal/modcmd/vendor.go:318:10 else if after return: fixed
@@ -180,6 +181,7 @@ stdlib cmd/go/internal/modload/import.go:773:10 else if after return: fixed
 stdlib cmd/go/internal/modload/init.go:198:10 else after return: fixed
 stdlib cmd/go/internal/modload/load.go:645:11 else if after return: fixed
 stdlib cmd/go/internal/modload/load.go:1417:12 else if after return: fixed
+stdlib cmd/go/internal/modload/load.go:2282:9 else if after goto: fixed
 stdlib cmd/go/internal/modload/modfile.go:71:9 else if after return: fixed
 stdlib cmd/go/internal/modload/modfile.go:356:9 else if after return: fixed
 stdlib cmd/go/internal/modload/modfile.go:511:10 else if after return: fixed
@@ -401,6 +403,7 @@ stdlib encoding/xml/read_test.go:1110:9 else if after call: fixed
 stdlib encoding/xml/xml.go:1182:9 else if after return: fixed
 stdlib flag/example_value_test.go:27:9 else after return: fixed
 stdlib flag/flag.go:1014:9 else if after call: fixed
+stdlib go/build/build.go:673:10 else if after goto: fixed
 stdlib go/build/build_test.go:670:9 else if after call: fixed
 stdlib go/build/build_test.go:672:9 else after call: fixed
 stdlib go/doc/exports.go:240:10 else if after return: fixed
@@ -453,6 +456,7 @@ stdlib internal/coverage/test/counter_test.go:128:10 else if after call: not fix
 stdlib internal/coverage/test/counter_test.go:210:10 else after call: fixed
 stdlib internal/coverage/test/counter_test.go:217:11 else if after call: fixed
 stdlib internal/coverage/test/counter_test.go:227:11 else if after call: fixed
+stdlib internal/exportdata/exportdata.go:265:10 else after goto: fixed
 stdlib internal/fuzz/encoding.go:189:11 else if after return: fixed
 stdlib internal/fuzz/encoding.go:191:11 else after return: fixed
 stdlib internal/fuzz/fuzz.go:981:9 else if after return: fixed
@@ -473,11 +477,14 @@ stdlib internal/runtime/maps/map.go:308:9 else after return: not fixed: "overflo
 stdlib internal/runtime/maps/map.go:861:10 else after return: fixed
 stdlib internal/runtime/maps/table.go:120:9 else if after call: fixed
 stdlib internal/runtime/maps/table.go:128:9 else after return: fixed
+stdlib internal/runtime/maps/table.go:990:12 else after goto: fixed
 stdlib internal/runtime/maps/table.go:1105:12 else after continue: fixed
 stdlib internal/runtime/wasitest/nonblock_test.go:84:11 else if after call: fixed
 stdlib internal/runtime/wasitest/nonblock_test.go:94:12 else if after call: fixed
+stdlib internal/sync/mutex.go:226:9 else after for: fixed
 stdlib internal/trace/event_test.go:567:12 else if after call: fixed
 stdlib internal/trace/event_test.go:569:12 else if after call: fixed
+stdlib internal/trace/gc.go:554:12 else after goto: fixed
 stdlib internal/trace/internal/tracev1/parser.go:122:9 else after return: fixed
 stdlib internal/trace/internal/tracev1/parser.go:425:12 else if after continue: fixed
 stdlib internal/trace/internal/tracev1/parser.go:427:12 else after return: fixed
@@ -580,6 +587,7 @@ stdlib path/filepath/symlink.go:47:10 else if after continue: fixed
 stdlib reflect/all_test.go:6386:9 else if after call: fixed
 stdlib reflect/all_test.go:6685:10 else if after call: fixed
 stdlib reflect/tostring_test.go:39:10 else after return: fixed
+stdlib regexp/backtrack.go:185:11 else after goto: fixed
 stdlib regexp/backtrack.go:247:11 else after continue: fixed
 stdlib regexp/syntax/regexp.go:142:12 else after return: fixed
 stdlib runtime/alg.go:162:9 else after return: fixed
@@ -716,6 +724,7 @@ nats-server server/avl/seqset.go:712:9 else if after return: fixed
 nats-server server/benchmark_publish_test.go:174:15 else if after call: fixed
 nats-server server/client.go:620:10 else if after return: fixed
 nats-server server/client.go:912:9 else if after return: fixed
+nats-server server/client.go:1604:10 else after goto: fixed
 nats-server server/client.go:2062:9 else after return: fixed
 nats-server server/client.go:3193:9 else if after return: fixed
 nats-server server/client.go:5680:12 else after continue: fixed
@@ -730,6 +739,7 @@ nats-server server/consumer.go:1194:11 else if after return: fixed
 nats-server server/consumer.go:4522:11 else if after return: fixed
 nats-server server/consumer.go:4524:11 else if after return: fixed
 nats-server server/consumer.go:5131:11 else if after continue: fixed
+nats-server server/consumer.go:5489:11 else after goto: fixed
 nats-server server/consumer.go:5767:9 else if after return: fixed
 nats-server server/consumer.go:6548:11 else after break: fixed
 nats-server server/consumer.go:6953:9 else if after return: fixed
@@ -1196,6 +1206,9 @@ nats-server server/opts_test.go:3071:9 else if after call: fixed
 nats-server server/opts_test.go:3121:9 else if after call: fixed
 nats-server server/opts_test.go:3700:11 else after return: fixed
 nats-server server/opts_test.go:3822:11 else after return: fixed
+nats-server server/parser.go:227:12 else after goto: fixed
+nats-server server/parser.go:233:12 else after goto: fixed
+nats-server server/parser.go:239:12 else after goto: fixed
 nats-server server/parser.go:1309:10 else after return: fixed
 nats-server server/parser.go:1315:10 else after return: fixed
 nats-server server/parser.go:1321:10 else after return: fixed
@@ -1274,6 +1287,7 @@ nats-server server/stree/stree_test.go:486:10 else if after call: fixed
 nats-server server/subject_transform.go:264:12 else after return: fixed
 nats-server server/sublist.go:1300:11 else after return: fixed
 nats-server server/sublist.go:1363:9 else if after return: fixed
+nats-server server/sublist.go:1537:12 else if after for: fixed
 nats-server server/sublist.go:1724:11 else if after return: fixed
 nats-server server/sublist.go:1741:10 else if after return: fixed
 nats-server server/util_test.go:107:10 else if after call: fixed
@@ -1405,6 +1419,7 @@ esbuild internal/resolver/resolver.go:562:10 else after return: fixed
 esbuild internal/resolver/resolver.go:983:10 else after return: fixed
 esbuild internal/resolver/resolver.go:1062:12 else after return: fixed
 esbuild internal/resolver/resolver.go:1087:9 else after return: fixed
+esbuild internal/resolver/resolver.go:1334:12 else if after goto: fixed
 esbuild internal/resolver/resolver.go:2089:12 else after return: fixed
 esbuild internal/resolver/resolver.go:2421:10 else if after return: fixed
 esbuild internal/resolver/yarnpnp.go:317:9 else after return: fixed

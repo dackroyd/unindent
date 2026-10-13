@@ -131,18 +131,21 @@ func (c *checker) buildDependentExits(stmt *ast.IfStmt) []string {
 	return slices.Compact(c.dependent)
 }
 
-// alwaysReturns reports whether s always leaves the block it is in. An unlabeled break counts, as it leaves any if
-// around it; instead, a switch is rejected when a break in its cases only leaves the switch.
+// alwaysReturns reports whether s always leaves the block it is in: one of the Go specification's terminating
+// statements, a break or continue, which leave any if around them, or a call that never returns. A for, switch or
+// select is rejected when a break refers to it, as the break only leaves that statement.
 func (c *checker) alwaysReturns(s ast.Node) bool {
 	switch t := s.(type) {
 	case *ast.BlockStmt:
-		return c.blockAlwaysReturns(t)
+		return c.listAlwaysReturns(t.List)
 	case *ast.ReturnStmt:
 		return true
 	case *ast.BranchStmt:
-		// Fallthrough doesn't return, and GOTO is unpredictable without deeper
-		// understanding of where it ends up, which isn't assessed here
-		return t.Tok == token.BREAK || t.Tok == token.CONTINUE
+		// Every branch leaves the block. A fallthrough can only end a case, and the switch checks the case it
+		// continues into.
+		return true
+	case *ast.LabeledStmt:
+		return c.alwaysReturns(t.Stmt) && !breaksTo(t.Stmt, t.Label.Name)
 	case *ast.IfStmt:
 		if !c.ifAlwaysReturns(t) {
 			return false
@@ -155,10 +158,14 @@ func (c *checker) alwaysReturns(s ast.Node) bool {
 		call, ok := t.X.(*ast.CallExpr)
 
 		return ok && c.neverReturns(call)
+	case *ast.ForStmt:
+		return t.Cond == nil && !breaksOut(t.Body)
 	case *ast.SwitchStmt:
 		return c.switchBodyAlwaysReturns(t.Body) && !breaksOut(t.Body)
 	case *ast.TypeSwitchStmt:
 		return c.switchBodyAlwaysReturns(t.Body) && !breaksOut(t.Body)
+	case *ast.SelectStmt:
+		return c.selectBodyAlwaysReturns(t.Body) && !breaksOut(t.Body)
 	}
 
 	return false
@@ -213,7 +220,8 @@ func (c *checker) blockAlwaysReturns(block *ast.BlockStmt) bool {
 }
 
 // listAlwaysReturns reports whether a statement in list always leaves it. Go allows statements after it, which can
-// only be reached through a label among them, so a label after it carries on to the end of the list.
+// only be reached through a label among them, so a label after it carries on to the end of the list unless the
+// labelled statement always leaves too.
 func (c *checker) listAlwaysReturns(list []ast.Stmt) bool {
 	for i := len(list) - 1; i >= 0; i-- {
 		if c.alwaysReturns(list[i]) {
@@ -238,6 +246,24 @@ func breaksOut(body *ast.BlockStmt) bool {
 		case *ast.BranchStmt:
 			found = found || (t.Tok == token.BREAK && t.Label == nil)
 		case *ast.ForStmt, *ast.RangeStmt, *ast.SwitchStmt, *ast.TypeSwitchStmt, *ast.SelectStmt, *ast.FuncLit:
+			return false
+		}
+
+		return !found
+	})
+
+	return found
+}
+
+// breaksTo reports whether n holds a break to label, which leaves the statement the label is on.
+func breaksTo(n ast.Node, label string) bool {
+	var found bool
+
+	ast.Inspect(n, func(n ast.Node) bool {
+		switch t := n.(type) {
+		case *ast.BranchStmt:
+			found = found || (t.Tok == token.BREAK && t.Label != nil && t.Label.Name == label)
+		case *ast.FuncLit:
 			return false
 		}
 
@@ -273,6 +299,23 @@ func (c *checker) caseAlwaysReturns(clause *ast.CaseClause) bool {
 	return c.listAlwaysReturns(clause.Body)
 }
 
+// selectBodyAlwaysReturns reports whether every clause of a select always leaves it. A select without clauses blocks
+// forever.
+func (c *checker) selectBodyAlwaysReturns(body *ast.BlockStmt) bool {
+	for _, b := range body.List {
+		clause, ok := b.(*ast.CommClause)
+		if !ok {
+			panic(fmt.Sprintf("unexpected select body statement %+v", b))
+		}
+
+		if !c.listAlwaysReturns(clause.Body) {
+			return false
+		}
+	}
+
+	return true
+}
+
 // reportUnnecessaryElse reports the else of stmt, with a fix unless the fix would not compile or would change
 // behaviour, as it would in a build where one of the dependent calls returns.
 func (c *checker) reportUnnecessaryElse(stmt *ast.IfStmt, stack []ast.Node, dependent []string) {
@@ -293,7 +336,7 @@ func (c *checker) reportUnnecessaryElse(stmt *ast.IfStmt, stack []ast.Node, depe
 
 	conflicts = append(conflicts, c.initConflicts(pass.TypesInfo, links, enclosing)...)
 
-	msg.WriteString(`Unnecessary "else": preceding conditions always end in a "return", "break", "continue" or a call that never returns. `)
+	msg.WriteString(`Unnecessary "else": preceding conditions always end in a "return", "break", "continue", "goto", a call that never returns or a loop or select that never ends. `)
 
 	if hoistsInit(stmt) {
 		in := nodeSource(pass, stmt.Init)
@@ -436,7 +479,13 @@ func (c *checker) hoistConflicts(info *types.Info, links []*ast.IfStmt, enclosin
 		}
 	}
 
-	return conflicts
+	var vars []movedVar
+
+	for _, name := range stmtScope.Names() {
+		vars = append(vars, movedVar{name, stmtScope.Lookup(name).Pos()})
+	}
+
+	return append(conflicts, gotoConflicts(enclosing, links[0], vars)...)
 }
 
 // hoistedBefore reports whether one of links moves an initialiser that declares name.
@@ -465,7 +514,9 @@ func (c *checker) moveConflicts(info *types.Info, els *ast.BlockStmt, links []*a
 
 	var conflicts []string
 
-	for _, name := range c.movedNames(info, els) {
+	names := c.movedNames(info, els)
+
+	for _, name := range names {
 		if outer.Lookup(name) != nil {
 			conflicts = append(conflicts, fmt.Sprintf("%q is already declared in the enclosing block", name))
 			continue
@@ -486,7 +537,94 @@ func (c *checker) moveConflicts(info *types.Info, els *ast.BlockStmt, links []*a
 		}
 	}
 
+	return append(conflicts, gotoConflicts(enclosing, head, movedVars(elseScope, els, names))...)
+}
+
+// movedVar is a variable that a fix declares in the block enclosing the if/else chain, and where it is declared.
+type movedVar struct {
+	name string
+	pos  token.Pos
+}
+
+// movedVars returns the variables among names, the names movedNames returns for els. A name declared by a fix inside
+// els, rather than in els itself, counts as declared at the end of els.
+func movedVars(scope *types.Scope, els *ast.BlockStmt, names []string) []movedVar {
+	var vars []movedVar
+
+	for _, name := range names {
+		switch obj := scope.Lookup(name).(type) {
+		case *types.Var:
+			vars = append(vars, movedVar{name, obj.Pos()})
+		case nil:
+			vars = append(vars, movedVar{name, els.Rbrace})
+		}
+	}
+
+	return vars
+}
+
+// gotoConflicts describes the gotos that would jump over the declaration of one of vars once the fix moves it into
+// enclosing: a goto before the declaration to a label in enclosing after the chain that head starts. Before the fix, the
+// declaration was in a block the goto jumps out of, or does not enter.
+func gotoConflicts(enclosing ast.Node, head *ast.IfStmt, vars []movedVar) []string {
+	labels := labelsAfter(enclosing, head.End())
+	if len(labels) == 0 || len(vars) == 0 {
+		return nil
+	}
+
+	var conflicts []string
+
+	ast.Inspect(enclosing, func(n ast.Node) bool {
+		switch t := n.(type) {
+		case *ast.FuncLit:
+			return false
+		case *ast.BranchStmt:
+			if t.Tok != token.GOTO || !slices.Contains(labels, t.Label.Name) {
+				return true
+			}
+
+			for _, v := range vars {
+				conflict := fmt.Sprintf("\"goto %s\" would jump over the declaration of %q", t.Label.Name, v.name)
+				if t.Pos() < v.pos && !slices.Contains(conflicts, conflict) {
+					conflicts = append(conflicts, conflict)
+				}
+			}
+		}
+
+		return n == nil || n.Pos() < head.End()
+	})
+
 	return conflicts
+}
+
+// labelsAfter returns the labels of the statements of enclosing, a block or case clause, that start after pos.
+func labelsAfter(enclosing ast.Node, pos token.Pos) []string {
+	var list []ast.Stmt
+
+	switch n := enclosing.(type) {
+	case *ast.BlockStmt:
+		list = n.List
+	case *ast.CaseClause:
+		list = n.Body
+	case *ast.CommClause:
+		list = n.Body
+	}
+
+	var labels []string
+
+	for _, stmt := range list {
+		for stmt.Pos() > pos {
+			labeled, ok := stmt.(*ast.LabeledStmt)
+			if !ok {
+				break
+			}
+
+			labels = append(labels, labeled.Label.Name)
+			stmt = labeled.Stmt
+		}
+	}
+
+	return labels
 }
 
 // movedNames returns the names that end up declared at the top level of els once the fixes inside it are applied: its

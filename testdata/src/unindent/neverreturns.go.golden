@@ -12,7 +12,7 @@ func PanicExits(x int) int {
 		panic("negative")
 	}
 
-	// want `^Unnecessary "else": preceding conditions always end in a "return", "break", "continue" or a call that never returns. Remove the "else" wrapping the block of statements$`
+	// want `^Unnecessary "else": preceding conditions always end in a "return", "break", "continue", "goto", a call that never returns or a loop or select that never ends. Remove the "else" wrapping the block of statements$`
 	return x
 }
 
@@ -21,7 +21,7 @@ func OsExitExits(code int) int {
 		os.Exit(code)
 	}
 
-	// want `^Unnecessary "else": preceding conditions always end in a "return", "break", "continue" or a call that never returns. Remove the "else" wrapping the block of statements$`
+	// want `^Unnecessary "else": preceding conditions always end in a "return", "break", "continue", "goto", a call that never returns or a loop or select that never ends. Remove the "else" wrapping the block of statements$`
 	code++
 
 	return code
@@ -32,7 +32,7 @@ func LogFatalExits(err error) int {
 		log.Fatalf("failed: %v", err)
 	}
 
-	if err == nil { // want `^Unnecessary "else": preceding conditions always end in a "return", "break", "continue" or a call that never returns. Remove the "else", leaving "if err == nil { ... }"$`
+	if err == nil { // want `^Unnecessary "else": preceding conditions always end in a "return", "break", "continue", "goto", a call that never returns or a loop or select that never ends. Remove the "else", leaving "if err == nil { ... }"$`
 		return 1
 	}
 
@@ -46,7 +46,7 @@ func GoexitExits(done bool) int {
 		runtime.Goexit()
 	}
 
-	// want `^Unnecessary "else": preceding conditions always end in a "return", "break", "continue" or a call that never returns. Remove the "else" wrapping the block of statements$`
+	// want `^Unnecessary "else": preceding conditions always end in a "return", "break", "continue", "goto", a call that never returns or a loop or select that never ends. Remove the "else" wrapping the block of statements$`
 	n++
 
 	return n
@@ -58,7 +58,7 @@ func TestFatalExits(t *testing.T) {
 		t.Fatalf("parse: %v", err)
 	}
 
-	// want `^Unnecessary "else": preceding conditions always end in a "return", "break", "continue" or a call that never returns. Remove the "else" wrapping the block of statements$`
+	// want `^Unnecessary "else": preceding conditions always end in a "return", "break", "continue", "goto", a call that never returns or a loop or select that never ends. Remove the "else" wrapping the block of statements$`
 	_ = v
 }
 
@@ -67,7 +67,7 @@ func TestSkipExits(t *testing.T) {
 		t.Skip("slow")
 	}
 
-	// want `^Unnecessary "else": preceding conditions always end in a "return", "break", "continue" or a call that never returns. Remove the "else" wrapping the block of statements$`
+	// want `^Unnecessary "else": preceding conditions always end in a "return", "break", "continue", "goto", a call that never returns or a loop or select that never ends. Remove the "else" wrapping the block of statements$`
 	_ = t.Name()
 }
 
@@ -76,7 +76,7 @@ func helperFatalExits(tb testing.TB, err error) {
 		tb.Fatal(err)
 	}
 
-	// want `^Unnecessary "else": preceding conditions always end in a "return", "break", "continue" or a call that never returns. Remove the "else" wrapping the block of statements$`
+	// want `^Unnecessary "else": preceding conditions always end in a "return", "break", "continue", "goto", a call that never returns or a loop or select that never ends. Remove the "else" wrapping the block of statements$`
 	tb.Log("ok")
 }
 
@@ -90,7 +90,7 @@ func HelperExits(x int) int {
 		failNow("negative")
 	}
 
-	// want `^Unnecessary "else": preceding conditions always end in a "return", "break", "continue" or a call that never returns. Remove the "else" wrapping the block of statements$`
+	// want `^Unnecessary "else": preceding conditions always end in a "return", "break", "continue", "goto", a call that never returns or a loop or select that never ends. Remove the "else" wrapping the block of statements$`
 	x *= 2
 
 	return x

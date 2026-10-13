@@ -8,12 +8,12 @@ applies the fixes, and checks that the code still builds, passes `go vet` and it
 
 | Project | Commit | Findings | Fixed | Fix withheld | Files changed | Comments lost |
 | --- | --- | ---: | ---: | ---: | ---: | ---: |
-| [golang/tools](#golangtools) | [`16517d9`](https://github.com/golang/tools/commit/16517d951552611e7bd358c48ee1051fd0e57b0c), 2026-10-10 | 184 | 175 | 9 | 104 | 0 |
+| [golang/tools](#golangtools) | [`16517d9`](https://github.com/golang/tools/commit/16517d951552611e7bd358c48ee1051fd0e57b0c), 2026-10-10 | 185 | 176 | 9 | 105 | 0 |
 | [grpc/grpc-go](#grpcgrpc-go) | [`8c59ee6`](https://github.com/grpc/grpc-go/commit/8c59ee6356bf92d0a5819b0cdbd3118876783028), 2026-10-10 | 55 | 39 | 16 | 31 | 0 |
 | [hashicorp/terraform](#hashicorpterraform) | [`d8e73fc`](https://github.com/hashicorp/terraform/commit/d8e73fcbd9bb9d7c7ab38242eaccef5bfe88e270), 2026-10-09 | 296 | 278 | 18 | 132 | 0 |
 | [gohugoio/hugo](#gohugoiohugo) | [`c9f6e4d`](https://github.com/gohugoio/hugo/commit/c9f6e4d4abc3645cb46824c870e4e1b4c098b765), 2026-10-11 | 66 | 65 | 1 | 35 | 0 |
-| [prometheus/prometheus](#prometheusprometheus) | [`fffc15f`](https://github.com/prometheus/prometheus/commit/fffc15f5b5a6c3ed50282d307e96db0e5f25bcb2), 2026-10-11 | 13 | 13 | 0 | 9 | 0 |
-| Total | | 614 | 570 | 44 | 311 | 0 |
+| [prometheus/prometheus](#prometheusprometheus) | [`fffc15f`](https://github.com/prometheus/prometheus/commit/fffc15f5b5a6c3ed50282d307e96db0e5f25bcb2), 2026-10-11 | 18 | 18 | 0 | 10 | 0 |
+| Total | | 620 | 576 | 44 | 313 | 0 |
 
 A finding's kind is the kind of `else` and the last statement of the branch before it. A fix is withheld when
 it would not compile or would change behaviour; the reasons quote the names involved, shown here as "…".
@@ -32,6 +32,7 @@ Go's analysis and refactoring tools, and the gopls language server.
 | `else if after break` | 7 |
 | `else after continue` | 5 |
 | `else after break` | 1 |
+| `else after goto` | 1 |
 | `else after switch` | 1 |
 
 | Fix withheld because | Findings |
@@ -134,7 +135,10 @@ A monitoring system and time series database.
 | Kind | Findings |
 | --- | ---: |
 | `else if after return` | 10 |
+| `else after switch` | 2 |
 | `else if after continue` | 2 |
+| `else if after goto` | 2 |
+| `else after for` | 1 |
 | `else if after call` | 1 |
 
 After the fixes, in 5 modules:

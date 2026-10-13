@@ -191,6 +191,10 @@ func findingKind(is *ifStmt) string {
 		exit = "nested if"
 	case *ast.SwitchStmt, *ast.TypeSwitchStmt:
 		exit = "switch"
+	case *ast.ForStmt:
+		exit = "for"
+	case *ast.SelectStmt:
+		exit = "select"
 	default:
 		exit = "other"
 	}

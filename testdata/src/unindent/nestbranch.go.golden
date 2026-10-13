@@ -10,7 +10,7 @@ func NestSwitchReturns(s string, x int) int {
 		}
 	}
 
-	// want `^Unnecessary "else": preceding conditions always end in a "return", "break", "continue" or a call that never returns. Remove the "else" wrapping the block of statements$`
+	// want `^Unnecessary "else": preceding conditions always end in a "return", "break", "continue", "goto", a call that never returns or a loop or select that never ends. Remove the "else" wrapping the block of statements$`
 	l := len(s)
 	switch {
 	case l > 5:
@@ -72,7 +72,7 @@ func NestTypeswitchReturns(v any, x int) int {
 		}
 	}
 
-	// want `^Unnecessary "else": preceding conditions always end in a "return", "break", "continue" or a call that never returns. Remove the "else" wrapping the block of statements$`
+	// want `^Unnecessary "else": preceding conditions always end in a "return", "break", "continue", "goto", a call that never returns or a loop or select that never ends. Remove the "else" wrapping the block of statements$`
 	switch t := v.(type) {
 	case string:
 		return len(t)

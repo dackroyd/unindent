@@ -5,7 +5,7 @@ func CommentFirstInElse(x int) int {
 		return 0
 	}
 
-	// want `^Unnecessary "else": preceding conditions always end in a "return", "break", "continue" or a call that never returns. Remove the "else" wrapping the block of statements$`
+	// want `^Unnecessary "else": preceding conditions always end in a "return", "break", "continue", "goto", a call that never returns or a loop or select that never ends. Remove the "else" wrapping the block of statements$`
 	// Double positive values.
 	// Values are never negative here.
 	return x * 2
@@ -16,7 +16,7 @@ func CommentLastInElse(x int) int {
 		return 0
 	}
 
-	// want `^Unnecessary "else": preceding conditions always end in a "return", "break", "continue" or a call that never returns. Remove the "else" wrapping the block of statements$`
+	// want `^Unnecessary "else": preceding conditions always end in a "return", "break", "continue", "goto", a call that never returns or a loop or select that never ends. Remove the "else" wrapping the block of statements$`
 	x *= 2
 	// The result is always even.
 
@@ -28,7 +28,7 @@ func CommentAfterElse(x int) int {
 		return 0
 	}
 
-	// want `^Unnecessary "else": preceding conditions always end in a "return", "break", "continue" or a call that never returns. Remove the "else" wrapping the block of statements$`
+	// want `^Unnecessary "else": preceding conditions always end in a "return", "break", "continue", "goto", a call that never returns or a loop or select that never ends. Remove the "else" wrapping the block of statements$`
 	x *= 2
 	// Doubled.
 
@@ -40,6 +40,6 @@ func BlockCommentInElse(x int) int {
 		return 0
 	}
 
-	/* Positive. */ // want `^Unnecessary "else": preceding conditions always end in a "return", "break", "continue" or a call that never returns. Remove the "else" wrapping the block of statements$`
+	/* Positive. */ // want `^Unnecessary "else": preceding conditions always end in a "return", "break", "continue", "goto", a call that never returns or a loop or select that never ends. Remove the "else" wrapping the block of statements$`
 	return x
 }

@@ -8,7 +8,7 @@ func localWraps() { localStop() }
 func ElseAfterBuildDependentCall(x int) int {
 	if x > 0 {
 		buildstub.Stop()
-	} else { // want `^Unnecessary "else": preceding conditions always end in a "return", "break", "continue" or a call that never returns. Remove the "else" wrapping the block of statements. Not fixed automatically: "buildstub.Stop" never returns only in some builds$`
+	} else { // want `^Unnecessary "else": preceding conditions always end in a "return", "break", "continue", "goto", a call that never returns or a loop or select that never ends. Remove the "else" wrapping the block of statements. Not fixed automatically: "buildstub.Stop" never returns only in some builds$`
 		x++
 	}
 
@@ -18,9 +18,9 @@ func ElseAfterBuildDependentCall(x int) int {
 func ElseAfterCallOfBuildDependentCall(x int) int {
 	if x > 0 {
 		buildstub.Wraps()
-	} else if x < 0 { // want `^Unnecessary "else": preceding conditions always end in a "return", "break", "continue" or a call that never returns. Remove the "else", leaving "if x < 0 { ... }". Not fixed automatically: "buildstub.Wraps" never returns only in some builds$`
+	} else if x < 0 { // want `^Unnecessary "else": preceding conditions always end in a "return", "break", "continue", "goto", a call that never returns or a loop or select that never ends. Remove the "else", leaving "if x < 0 { ... }". Not fixed automatically: "buildstub.Wraps" never returns only in some builds$`
 		buildstub.WrapsTwice()
-	} else { // want `^Unnecessary "else": preceding conditions always end in a "return", "break", "continue" or a call that never returns. Remove the "else" wrapping the block of statements. Not fixed automatically: "buildstub.Wraps" never returns only in some builds; "buildstub.WrapsTwice" never returns only in some builds$`
+	} else { // want `^Unnecessary "else": preceding conditions always end in a "return", "break", "continue", "goto", a call that never returns or a loop or select that never ends. Remove the "else" wrapping the block of statements. Not fixed automatically: "buildstub.Wraps" never returns only in some builds; "buildstub.WrapsTwice" never returns only in some builds$`
 		x++
 	}
 
@@ -30,9 +30,9 @@ func ElseAfterCallOfBuildDependentCall(x int) int {
 func ElseAfterLocalBuildDependentCall(x int) int {
 	if x > 0 {
 		localStop()
-	} else if x < 0 { // want `^Unnecessary "else": preceding conditions always end in a "return", "break", "continue" or a call that never returns. Remove the "else", leaving "if x < 0 { ... }". Not fixed automatically: "localStop" never returns only in some builds$`
+	} else if x < 0 { // want `^Unnecessary "else": preceding conditions always end in a "return", "break", "continue", "goto", a call that never returns or a loop or select that never ends. Remove the "else", leaving "if x < 0 { ... }". Not fixed automatically: "localStop" never returns only in some builds$`
 		return 0
-	} else { // want `^Unnecessary "else": preceding conditions always end in a "return", "break", "continue" or a call that never returns. Remove the "else" wrapping the block of statements. Not fixed automatically: "localStop" never returns only in some builds$`
+	} else { // want `^Unnecessary "else": preceding conditions always end in a "return", "break", "continue", "goto", a call that never returns or a loop or select that never ends. Remove the "else" wrapping the block of statements. Not fixed automatically: "localStop" never returns only in some builds$`
 		localWraps()
 	}
 
@@ -43,10 +43,10 @@ func ElseAfterNestedBuildDependentCall(x int) int {
 	if x > 0 {
 		if x > 1 {
 			return 1
-		} else { // want `^Unnecessary "else": preceding conditions always end in a "return", "break", "continue" or a call that never returns. Remove the "else" wrapping the block of statements$`
+		} else { // want `^Unnecessary "else": preceding conditions always end in a "return", "break", "continue", "goto", a call that never returns or a loop or select that never ends. Remove the "else" wrapping the block of statements$`
 			localWraps()
 		}
-	} else { // want `^Unnecessary "else": preceding conditions always end in a "return", "break", "continue" or a call that never returns. Remove the "else" wrapping the block of statements. Not fixed automatically: "localWraps" never returns only in some builds$`
+	} else { // want `^Unnecessary "else": preceding conditions always end in a "return", "break", "continue", "goto", a call that never returns or a loop or select that never ends. Remove the "else" wrapping the block of statements. Not fixed automatically: "localWraps" never returns only in some builds$`
 		x++
 	}
 
@@ -56,7 +56,7 @@ func ElseAfterNestedBuildDependentCall(x int) int {
 func ElseAfterCallThatAlwaysPanics(x int) int {
 	if x > 0 {
 		buildstub.Panics()
-	} else { // want `^Unnecessary "else": preceding conditions always end in a "return", "break", "continue" or a call that never returns. Remove the "else" wrapping the block of statements$`
+	} else { // want `^Unnecessary "else": preceding conditions always end in a "return", "break", "continue", "goto", a call that never returns or a loop or select that never ends. Remove the "else" wrapping the block of statements$`
 		x++
 	}
 
@@ -66,7 +66,7 @@ func ElseAfterCallThatAlwaysPanics(x int) int {
 func ElseAfterCallThatAlwaysExits(x int) int {
 	if x > 0 {
 		buildstub.Exits()
-	} else { // want `^Unnecessary "else": preceding conditions always end in a "return", "break", "continue" or a call that never returns. Remove the "else" wrapping the block of statements$`
+	} else { // want `^Unnecessary "else": preceding conditions always end in a "return", "break", "continue", "goto", a call that never returns or a loop or select that never ends. Remove the "else" wrapping the block of statements$`
 		x++
 	}
 
@@ -77,7 +77,7 @@ func ElseAfterBuildDependentCallAndReturn(x int) int {
 	if x > 0 {
 		buildstub.Stop()
 		return 1
-	} else { // want `^Unnecessary "else": preceding conditions always end in a "return", "break", "continue" or a call that never returns. Remove the "else" wrapping the block of statements$`
+	} else { // want `^Unnecessary "else": preceding conditions always end in a "return", "break", "continue", "goto", a call that never returns or a loop or select that never ends. Remove the "else" wrapping the block of statements$`
 		x++
 	}
 
@@ -97,7 +97,7 @@ func ElseAfterCallThatMayReturn(x int) int {
 func ElseAfterBuildDependentMethod(s *buildstub.Stopper, x int) int {
 	if x > 0 {
 		s.Stop()
-	} else { // want `^Unnecessary "else": preceding conditions always end in a "return", "break", "continue" or a call that never returns. Remove the "else" wrapping the block of statements. Not fixed automatically: "s.Stop" never returns only in some builds$`
+	} else { // want `^Unnecessary "else": preceding conditions always end in a "return", "break", "continue", "goto", a call that never returns or a loop or select that never ends. Remove the "else" wrapping the block of statements. Not fixed automatically: "s.Stop" never returns only in some builds$`
 		x++
 	}
 
@@ -107,7 +107,7 @@ func ElseAfterBuildDependentMethod(s *buildstub.Stopper, x int) int {
 func ElseAfterConstrainedCallWithoutCounterpart(x int) int {
 	if x > 0 {
 		buildstub.Halt()
-	} else { // want `^Unnecessary "else": preceding conditions always end in a "return", "break", "continue" or a call that never returns. Remove the "else" wrapping the block of statements$`
+	} else { // want `^Unnecessary "else": preceding conditions always end in a "return", "break", "continue", "goto", a call that never returns or a loop or select that never ends. Remove the "else" wrapping the block of statements$`
 		x++
 	}
 

@@ -11,7 +11,7 @@ edge of the function.
 v, err := load()
 if err != nil {
 	return err
-} else { // Unnecessary "else": preceding conditions always end in a "return", "break", "continue" or a call that never returns. ...
+} else { // Unnecessary "else": preceding conditions always end in a "return", "break", "continue", "goto", ...
 	process(v)
 }
 ```
@@ -42,8 +42,9 @@ Existing linters enforce only part of it. revive's `indent-error-flow` and `supe
 of the `if` body only, gocritic's `nestingReduce` looks at loops only, and `nestif` reports complexity without saying
 what to change. `unindent` fills the gaps:
 
-- **Branches that exit in every path.** An `if` whose body ends in an `if`/`else` or `switch` that returns in every case
-    still makes its `else` unnecessary. revive does not follow those paths.
+- **Branches that exit in every path.** An `if` whose body ends in an `if`/`else` or `switch` that returns in every
+    case, or in a loop or `select` that never ends, still makes its `else` unnecessary. revive does not follow those
+    paths.
 - **Calls that never return.** `t.Fatal`, `t.Skip` and your own helpers that always call `os.Exit`, `log.Fatal` or
     `panic` end a branch as surely as a `return`. revive only knows `panic`, `os.Exit` and the `log` package's `Fatal`
     and `Panic` functions.
@@ -51,7 +52,7 @@ what to change. `unindent` fills the gaps:
 - **`select` cases.** revive skips `if` statements directly inside a `select` case.
 - **Fixes.** Every report comes with a fix that `-fix` applies.
 
-On five large Go codebases, `unindent` reported 405 cases that revive's rules did not. revive reported 97 that
+On five large Go codebases, `unindent` reported 410 cases that revive's rules did not. revive reported 96 that
 `unindent` does not yet, so run both for now. [Comparison with other linters](docs/comparison.md) has the details, and
 [Projects](docs/projects.md) what `unindent` finds in each codebase and what its fixes do.
 
@@ -84,15 +85,14 @@ The analyzer is also available as a Go package, `unindent.NewAnalyzer()`, for us
 
 ## Checks
 
-| Check                                                         | Reports                                                              |
-| ------------------------------------------------------------- | -------------------------------------------------------------------- |
-| [Else after an exit](docs/checks.md#else-after-an-exit)       | An `else` after a branch that always returns, breaks or continues    |
-| [Else if after an exit](docs/checks.md#else-if-after-an-exit) | An `else if` after a branch that always returns, breaks or continues |
+| Check                                                         | Reports                                       |
+| ------------------------------------------------------------- | --------------------------------------------- |
+| [Else after an exit](docs/checks.md#else-after-an-exit)       | An `else` after a branch that always exits    |
+| [Else if after an exit](docs/checks.md#else-if-after-an-exit) | An `else if` after a branch that always exits |
 
 ## Limitations
 
-- A call through a function value, or through an interface other than `testing.TB`, is not known to exit. Neither is a
-    `goto`, a `for` loop without a condition, or a `select`.
+- A call through a function value, or through an interface other than `testing.TB`, is not known to exit.
 - A call that never returns only in some builds counts as an exit, but its fix is withheld, as it would change behaviour
     in a build where the call returns. It is found by a heuristic: the function, or one it calls, is declared in a file
     with build constraints and again in a file that the build leaves out.

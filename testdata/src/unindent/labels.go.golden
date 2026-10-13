@@ -83,7 +83,7 @@ func LabelBeforeReturn(x int) int {
 		return x
 	}
 
-	// want `^Unnecessary "else": preceding conditions always end in a "return", "break", "continue" or a call that never returns. Remove the "else" wrapping the block of statements$`
+	// want `^Unnecessary "else": preceding conditions always end in a "return", "break", "continue", "goto", a call that never returns or a loop or select that never ends. Remove the "else" wrapping the block of statements$`
 	x++
 
 	return x

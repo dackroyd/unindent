@@ -3,7 +3,7 @@ package unindent
 func CommentFirstInElse(x int) int {
 	if x < 0 {
 		return 0
-	} else { // want `^Unnecessary "else": preceding conditions always end in a "return", "break", "continue" or a call that never returns. Remove the "else" wrapping the block of statements$`
+	} else { // want `^Unnecessary "else": preceding conditions always end in a "return", "break", "continue", "goto", a call that never returns or a loop or select that never ends. Remove the "else" wrapping the block of statements$`
 		// Double positive values.
 		// Values are never negative here.
 		return x * 2
@@ -13,7 +13,7 @@ func CommentFirstInElse(x int) int {
 func CommentLastInElse(x int) int {
 	if x < 0 {
 		return 0
-	} else { // want `^Unnecessary "else": preceding conditions always end in a "return", "break", "continue" or a call that never returns. Remove the "else" wrapping the block of statements$`
+	} else { // want `^Unnecessary "else": preceding conditions always end in a "return", "break", "continue", "goto", a call that never returns or a loop or select that never ends. Remove the "else" wrapping the block of statements$`
 		x *= 2
 		// The result is always even.
 	}
@@ -24,7 +24,7 @@ func CommentLastInElse(x int) int {
 func CommentAfterElse(x int) int {
 	if x < 0 {
 		return 0
-	} else { // want `^Unnecessary "else": preceding conditions always end in a "return", "break", "continue" or a call that never returns. Remove the "else" wrapping the block of statements$`
+	} else { // want `^Unnecessary "else": preceding conditions always end in a "return", "break", "continue", "goto", a call that never returns or a loop or select that never ends. Remove the "else" wrapping the block of statements$`
 		x *= 2
 	} // Doubled.
 
@@ -34,7 +34,7 @@ func CommentAfterElse(x int) int {
 func BlockCommentInElse(x int) int {
 	if x < 0 {
 		return 0
-	} else { /* Positive. */ // want `^Unnecessary "else": preceding conditions always end in a "return", "break", "continue" or a call that never returns. Remove the "else" wrapping the block of statements$`
+	} else { /* Positive. */ // want `^Unnecessary "else": preceding conditions always end in a "return", "break", "continue", "goto", a call that never returns or a loop or select that never ends. Remove the "else" wrapping the block of statements$`
 		return x
 	}
 }
