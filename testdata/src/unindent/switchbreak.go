@@ -32,7 +32,7 @@ func SwitchContinueLeavesIf(xs []int, mode int) int {
 			default:
 				continue
 			}
-		} else { // want `^Unnecessary "else": preceding conditions always end in a "return", "break" or "continue". Remove the "else" wrapping the block of statements$`
+		} else { // want `^Unnecessary "else": preceding conditions always end in a "return", "break", "continue" or a call that never returns. Remove the "else" wrapping the block of statements$`
 			n++
 		}
 
@@ -54,7 +54,7 @@ loop:
 			default:
 				break loop
 			}
-		} else { // want `^Unnecessary "else": preceding conditions always end in a "return", "break" or "continue". Remove the "else" wrapping the block of statements$`
+		} else { // want `^Unnecessary "else": preceding conditions always end in a "return", "break", "continue" or a call that never returns. Remove the "else" wrapping the block of statements$`
 			n++
 		}
 
@@ -73,7 +73,7 @@ func SwitchNestedIfBreakLeavesSwitch(xs []int, mode int) int {
 			case 1:
 				if x > 1 {
 					break
-				} else { // want `^Unnecessary "else": preceding conditions always end in a "return", "break" or "continue". Remove the "else" wrapping the block of statements$`
+				} else { // want `^Unnecessary "else": preceding conditions always end in a "return", "break", "continue" or a call that never returns. Remove the "else" wrapping the block of statements$`
 					return n
 				}
 			default:
@@ -96,7 +96,7 @@ func BreakInCaseLeavesIf(x, mode int) int {
 	case 1:
 		if x > 0 {
 			break
-		} else { // want `^Unnecessary "else": preceding conditions always end in a "return", "break" or "continue". Remove the "else" wrapping the block of statements$`
+		} else { // want `^Unnecessary "else": preceding conditions always end in a "return", "break", "continue" or a call that never returns. Remove the "else" wrapping the block of statements$`
 			n++
 		}
 

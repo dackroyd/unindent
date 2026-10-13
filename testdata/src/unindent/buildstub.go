@@ -1,0 +1,19 @@
+//go:build !unindent_never
+
+package unindent
+
+// localStop is a stub that panics in this build.
+func localStop() { panic("stub") }
+
+// localHalt is only declared in this build, as is its caller below, so every build with the call has this one.
+func localHalt() { panic("halt") }
+
+func ElseAfterConstrainedLocalCall(x int) int {
+	if x > 0 {
+		localHalt()
+	} else { // want `^Unnecessary "else": preceding conditions always end in a "return", "break", "continue" or a call that never returns. Remove the "else" wrapping the block of statements$`
+		x++
+	}
+
+	return x
+}

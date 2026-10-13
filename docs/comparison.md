@@ -5,17 +5,19 @@ how their reports overlap with `unindent`'s on real code.
 
 ## Coverage
 
-| Construct                                                                 | `unindent` | revive                                  | gocritic        | nestif                   |
-| ------------------------------------------------------------------------- | ---------- | --------------------------------------- | --------------- | ------------------------ |
-| `else` after a branch ending in `return`, `break` or `continue`           | yes        | `indent-error-flow`, `superfluous-else` | —               | —                        |
-| `else` after a branch ending in `panic`, `os.Exit`, `log.Fatal` or `goto` | —          | `superfluous-else`                      | —               | —                        |
-| `else` after a branch that exits through a nested `if`/`else` or `switch` | yes        | —                                       | —               | —                        |
-| `else if` after a branch that exits                                       | yes        | —                                       | —               | —                        |
-| `if` inside a `select` case                                               | yes        | —                                       | —               | —                        |
-| `if c { ... } else { return }`, inverted to exit first                    | —          | `early-return`                          | —               | —                        |
-| `if` wrapping the rest of a loop body                                     | —          | —                                       | `nestingReduce` | —                        |
-| Deeply nested `if` statements                                             | —          | `max-control-nesting`                   | —               | yes, by complexity score |
-| Suggested fix                                                             | yes        | —                                       | —               | —                        |
+| Construct                                                                          | `unindent` | revive                                  | gocritic        | nestif                   |
+| ---------------------------------------------------------------------------------- | ---------- | --------------------------------------- | --------------- | ------------------------ |
+| `else` after a branch ending in `return`, `break` or `continue`                    | yes        | `indent-error-flow`, `superfluous-else` | —               | —                        |
+| `else` after a branch ending in `panic`, `os.Exit` or `log.Fatal`                  | yes        | `superfluous-else`                      | —               | —                        |
+| `else` after a branch ending in `t.Fatal`, `t.Skip` or a helper that never returns | yes        | —                                       | —               | —                        |
+| `else` after a branch ending in `goto`                                             | —          | `superfluous-else`                      | —               | —                        |
+| `else` after a branch that exits through a nested `if`/`else` or `switch`          | yes        | —                                       | —               | —                        |
+| `else if` after a branch that exits                                                | yes        | —                                       | —               | —                        |
+| `if` inside a `select` case                                                        | yes        | —                                       | —               | —                        |
+| `if c { ... } else { return }`, inverted to exit first                             | —          | `early-return`                          | —               | —                        |
+| `if` wrapping the rest of a loop body                                              | —          | —                                       | `nestingReduce` | —                        |
+| Deeply nested `if` statements                                                      | —          | `max-control-nesting`                   | —               | yes, by complexity score |
+| Suggested fix                                                                      | yes        | —                                       | —               | —                        |
 
 revive and gocritic only look at the last statement of a branch. nestif reports how complex a nested `if` is, not what
 to change.
@@ -40,17 +42,16 @@ The corpus check produces these numbers, and every change that alters them updat
 
 |                             | `if` statements |
 | --------------------------- | --------------- |
-| Reported by `unindent`      | 464             |
+| Reported by `unindent`      | 614             |
 | Reported by revive          | 306             |
-| Reported by both            | 201             |
-| Reported by `unindent` only | 263             |
-| Reported by revive only     | 105             |
+| Reported by both            | 209             |
+| Reported by `unindent` only | 405             |
+| Reported by revive only     | 97              |
 
-Of the 263 that only `unindent` reported, 257 are `else if` chains, 3 are inside `select` cases, 2 exit through a nested
-`if`/`else` or `switch` and 1 is another nested form.
+Of the 405 that only `unindent` reported, 338 are `else if` chains, 59 follow a branch ending in a call that never
+returns, 5 are inside `select` cases, 2 exit through a nested `if`/`else` or `switch` and 1 is another nested form.
 
-Of the 105 that only revive reported, 99 are `early-return` inversions, and 6 follow a branch ending in `panic` or
-`goto`.
+Of the 97 that only revive reported, 96 are `early-return` inversions, and 1 follows a branch ending in `goto`.
 
 ## Using them together
 

@@ -5,7 +5,7 @@ func ElseRedeclaresEarlierName(ok bool) int {
 
 	if ok {
 		return x
-	} else { // want `^Unnecessary "else": preceding conditions always end in a "return", "break" or "continue". Remove the "else" wrapping the block of statements. Not fixed automatically: "x" is already declared in the enclosing block$`
+	} else { // want `^Unnecessary "else": preceding conditions always end in a "return", "break", "continue" or a call that never returns. Remove the "else" wrapping the block of statements. Not fixed automatically: "x" is already declared in the enclosing block$`
 		x := 2
 		_ = x
 	}
@@ -16,7 +16,7 @@ func ElseRedeclaresEarlierName(ok bool) int {
 func ElseRedeclaresResult(ok bool) (err error) {
 	if ok {
 		return nil
-	} else { // want `^Unnecessary "else": preceding conditions always end in a "return", "break" or "continue". Remove the "else" wrapping the block of statements. Not fixed automatically: "err" is already declared in the enclosing block$`
+	} else { // want `^Unnecessary "else": preceding conditions always end in a "return", "break", "continue" or a call that never returns. Remove the "else" wrapping the block of statements. Not fixed automatically: "err" is already declared in the enclosing block$`
 		err := errorf("failed")
 		return err
 	}
@@ -25,7 +25,7 @@ func ElseRedeclaresResult(ok bool) (err error) {
 func ElseRedeclaresLaterName(ok bool) int {
 	if ok {
 		return 0
-	} else { // want `^Unnecessary "else": preceding conditions always end in a "return", "break" or "continue". Remove the "else" wrapping the block of statements. Not fixed automatically: "y" is already declared in the enclosing block$`
+	} else { // want `^Unnecessary "else": preceding conditions always end in a "return", "break", "continue" or a call that never returns. Remove the "else" wrapping the block of statements. Not fixed automatically: "y" is already declared in the enclosing block$`
 		y := 1
 		_ = y
 	}
@@ -41,7 +41,7 @@ func ElseHidesOuterUsedAfter(xs []int) int {
 	for _, x := range xs {
 		if x < 0 {
 			continue
-		} else { // want `^Unnecessary "else": preceding conditions always end in a "return", "break" or "continue". Remove the "else" wrapping the block of statements. Not fixed automatically: "total" would hide the "total" used after the "if"$`
+		} else { // want `^Unnecessary "else": preceding conditions always end in a "return", "break", "continue" or a call that never returns. Remove the "else" wrapping the block of statements. Not fixed automatically: "total" would hide the "total" used after the "if"$`
 			total := x * 2
 			_ = total
 		}
@@ -56,7 +56,7 @@ func ElseHidesBuiltinUsedAfter(xs []int) int {
 	for i := range xs {
 		if i == 0 {
 			continue
-		} else { // want `^Unnecessary "else": preceding conditions always end in a "return", "break" or "continue". Remove the "else" wrapping the block of statements. Not fixed automatically: "len" would hide the "len" used after the "if"$`
+		} else { // want `^Unnecessary "else": preceding conditions always end in a "return", "break", "continue" or a call that never returns. Remove the "else" wrapping the block of statements. Not fixed automatically: "len" would hide the "len" used after the "if"$`
 			len := i
 			_ = len
 		}
@@ -75,7 +75,7 @@ func ElseHidesOuterNotUsedAfter(xs []int) int {
 			continue
 		}
 
-		// want `^Unnecessary "else": preceding conditions always end in a "return", "break" or "continue". Remove the "else" wrapping the block of statements$`
+		// want `^Unnecessary "else": preceding conditions always end in a "return", "break", "continue" or a call that never returns. Remove the "else" wrapping the block of statements$`
 		total := x * 2
 		_ = total
 	}
@@ -89,7 +89,7 @@ func ElseNameRedeclaredInNestedScopeAfter(xs []int) int {
 			continue
 		}
 
-		// want `^Unnecessary "else": preceding conditions always end in a "return", "break" or "continue". Remove the "else" wrapping the block of statements$`
+		// want `^Unnecessary "else": preceding conditions always end in a "return", "break", "continue" or a call that never returns. Remove the "else" wrapping the block of statements$`
 		v := x
 		_ = v
 

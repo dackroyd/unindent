@@ -3,12 +3,20 @@ stdlib archive/tar/writer.go:458:9 else if after return: fixed
 stdlib archive/zip/reader.go:235:10 else after return: fixed
 stdlib archive/zip/reader.go:841:12 else after break: fixed
 stdlib archive/zip/reader.go:1001:10 else if after return: fixed
+stdlib archive/zip/reader_test.go:1322:9 else if after call: fixed
 stdlib archive/zip/writer_test.go:130:10 else after continue: fixed
 stdlib bytes/bytes_test.go:1602:11 else after return: fixed
 stdlib cmd/asm/internal/asm/parse.go:721:9 else after return: fixed
 stdlib cmd/cgo/gcc.go:267:10 else if after continue: fixed
 stdlib cmd/cgo/gcc.go:1779:10 else if after return: fixed
 stdlib cmd/cgo/gcc.go:1785:10 else if after return: fixed
+stdlib cmd/cgo/internal/testcarchive/carchive_test.go:583:9 else if after call: fixed
+stdlib cmd/cgo/internal/testerrors/ptr_test.go:702:11 else after call: fixed
+stdlib cmd/cgo/internal/testerrors/ptr_test.go:725:10 else if after call: fixed
+stdlib cmd/cgo/internal/testplugin/plugin_test.go:100:9 else after call: fixed
+stdlib cmd/cgo/internal/testplugin/plugin_test.go:109:9 else after call: fixed
+stdlib cmd/cgo/internal/testplugin/plugin_test.go:198:10 else after call: fixed
+stdlib cmd/cgo/internal/testshared/shared_test.go:83:10 else after call: fixed
 stdlib cmd/compile/internal/abi/abiutils.go:157:10 else after return: fixed
 stdlib cmd/compile/internal/abi/abiutils.go:170:9 else after nested if: fixed
 stdlib cmd/compile/internal/abi/abiutils.go:209:10 else after return: fixed
@@ -28,13 +36,16 @@ stdlib cmd/compile/internal/compare/compare.go:285:10 else if after return: fixe
 stdlib cmd/compile/internal/dwarfgen/dwarf.go:351:11 else after return: fixed
 stdlib cmd/compile/internal/inline/inl.go:728:11 else after return: fixed
 stdlib cmd/compile/internal/inline/inlheur/analyze.go:204:9 else if after return: fixed
+stdlib cmd/compile/internal/inline/inlheur/dumpscores_test.go:43:10 else after call: not fixed: "err" is already declared in the enclosing block
 stdlib cmd/compile/internal/inline/inlheur/eclassify.go:122:10 else if after return: fixed
 stdlib cmd/compile/internal/inline/inlheur/eclassify.go:124:10 else after return: fixed
 stdlib cmd/compile/internal/inline/inlheur/eclassify.go:223:9 else after return: fixed
 stdlib cmd/compile/internal/inline/inlheur/funcprops_test.go:128:10 else after continue: fixed
 stdlib cmd/compile/internal/inline/inlheur/score_callresult_uses.go:409:9 else if after return: fixed
 stdlib cmd/compile/internal/inline/inlheur/scoring.go:148:9 else after return: fixed
+stdlib cmd/compile/internal/inline/inlheur/scoring.go:520:11 else after call: fixed
 stdlib cmd/compile/internal/liveness/intervals.go:359:9 else if after return: fixed
+stdlib cmd/compile/internal/liveness/intervals_test.go:66:11 else after call: fixed
 stdlib cmd/compile/internal/liveness/intervals_test.go:73:10 else if after continue: fixed
 stdlib cmd/compile/internal/liveness/mergelocals.go:758:11 else after continue: fixed
 stdlib cmd/compile/internal/loong64/ssa.go:32:10 else after return: fixed
@@ -82,14 +93,20 @@ stdlib cmd/compile/internal/ssa/loopbce.go:260:11 else after return: fixed
 stdlib cmd/compile/internal/ssa/numberlines.go:160:13 else after continue: fixed
 stdlib cmd/compile/internal/ssa/prove.go:1516:10 else after continue: fixed
 stdlib cmd/compile/internal/ssa/regalloc.go:945:10 else after return: fixed
+stdlib cmd/compile/internal/ssa/rewrite.go:1603:9 else if after call: fixed
 stdlib cmd/compile/internal/ssa/rewritetern.go:264:13 else after return: fixed
 stdlib cmd/compile/internal/ssa/sccp.go:137:10 else after return: fixed
 stdlib cmd/compile/internal/ssa/value.go:201:10 else after return: fixed
 stdlib cmd/compile/internal/ssagen/intrinsics.go:443:11 else after return: fixed
+stdlib cmd/compile/internal/ssagen/intrinsics.go:1906:10 else after call: fixed
 stdlib cmd/compile/internal/ssagen/ssa.go:3614:10 else after return: fixed
 stdlib cmd/compile/internal/ssagen/ssa.go:5306:10 else after return: fixed
 stdlib cmd/compile/internal/syntax/parser.go:738:12 else after return: fixed
+stdlib cmd/compile/internal/test/fixedbugs_test.go:118:10 else after call: fixed
+stdlib cmd/compile/internal/test/mergelocals_test.go:103:10 else if after call: fixed
 stdlib cmd/compile/internal/test/mergelocals_test.go:158:10 else if after continue: fixed
+stdlib cmd/compile/internal/typecheck/const.go:193:9 else if after call: fixed
+stdlib cmd/compile/internal/typecheck/const.go:195:9 else after call: fixed
 stdlib cmd/compile/internal/typecheck/subr.go:515:10 else if after return: fixed
 stdlib cmd/compile/internal/typecheck/subr.go:517:10 else if after return: fixed
 stdlib cmd/compile/internal/typecheck/subr.go:627:9 else if after return: fixed
@@ -108,19 +125,28 @@ stdlib cmd/compile/internal/types2/range.go:257:11 else after return: fixed
 stdlib cmd/compile/internal/types2/range.go:266:11 else after return: fixed
 stdlib cmd/compile/internal/types2/stdlib_test.go:425:11 else after return: fixed
 stdlib cmd/compile/internal/walk/switch.go:349:10 else after return: fixed
+stdlib cmd/compile/internal/x86/ssa.go:94:9 else after switch: fixed
+stdlib cmd/covdata/tool_test.go:936:10 else after call: fixed
 stdlib cmd/cover/cfg_test.go:72:9 else after return: fixed
+stdlib cmd/cover/cfg_test.go:218:9 else after call: fixed
+stdlib cmd/cover/cfg_test.go:260:9 else after call: not fixed: "err" is also declared by an "if" initialiser
 stdlib cmd/cover/cover.go:172:10 else after return: fixed
 stdlib cmd/cover/cover.go:192:11 else after return: fixed
 stdlib cmd/dist/imports.go:259:9 else if after return: fixed
 stdlib cmd/dist/imports.go:261:9 else after return: fixed
+stdlib cmd/dist/test.go:1050:9 else if after call: fixed
 stdlib cmd/dist/testjson.go:144:11 else if after break: fixed
 stdlib cmd/distpack/pack.go:258:9 else if after return: fixed
+stdlib cmd/go/go_test.go:354:10 else if after call: fixed
+stdlib cmd/go/go_test.go:546:9 else after call: fixed
+stdlib cmd/go/go_test.go:771:9 else after call: fixed
 stdlib cmd/go/internal/base/goflags.go:108:10 else if after continue: fixed
 stdlib cmd/go/internal/cache/cache.go:213:9 else if after return: not fixed: "err" is already declared in the enclosing block
 stdlib cmd/go/internal/cache/cache.go:218:9 else if after return: not fixed: an earlier "else" in the chain is not fixed automatically
 stdlib cmd/go/internal/cache/cache.go:231:9 else if after return: fixed
 stdlib cmd/go/internal/cache/cache.go:244:9 else if after return: fixed
 stdlib cmd/go/internal/cache/cache.go:254:9 else if after return: fixed
+stdlib cmd/go/internal/doc/doc.go:475:10 else after call: fixed
 stdlib cmd/go/internal/list/list.go:966:10 else if after return: fixed
 stdlib cmd/go/internal/load/pkg.go:2186:13 else after return: fixed
 stdlib cmd/go/internal/load/pkg.go:2726:11 else if after return: fixed
@@ -166,7 +192,12 @@ stdlib cmd/go/internal/modload/search.go:213:10 else if after continue: fixed
 stdlib cmd/go/internal/test/test.go:1533:11 else if after return: fixed
 stdlib cmd/go/internal/test/testflag.go:279:12 else after continue: fixed
 stdlib cmd/go/internal/vcs/vcs.go:247:9 else if after return: fixed
+stdlib cmd/go/internal/vcweb/vcstest/vcstest_test.go:164:13 else after call: fixed
 stdlib cmd/go/internal/vet/vetflag.go:71:10 else if after break: fixed
+stdlib cmd/go/internal/web/url_test.go:32:12 else after call: fixed
+stdlib cmd/go/internal/web/url_test.go:59:12 else after call: fixed
+stdlib cmd/go/internal/work/build.go:539:10 else if after call: fixed
+stdlib cmd/go/internal/work/build_test.go:253:9 else if after call: not fixed: "err" is already declared in the enclosing block
 stdlib cmd/go/internal/work/buildid.go:316:9 else after return: fixed
 stdlib cmd/go/internal/work/cover.go:126:10 else if after continue: fixed
 stdlib cmd/go/internal/work/exec.go:710:10 else after return: fixed
@@ -175,6 +206,7 @@ stdlib cmd/go/internal/work/exec.go:2770:10 else if after return: fixed
 stdlib cmd/go/internal/work/exec.go:2777:10 else if after return: fixed
 stdlib cmd/go/internal/work/security.go:382:11 else if after continue: fixed
 stdlib cmd/go/internal/workcmd/use.go:139:10 else if after continue: fixed
+stdlib cmd/go/terminal_test.go:50:10 else if after call: fixed
 stdlib cmd/gofmt/gofmt.go:360:9 else if after return: fixed
 stdlib cmd/internal/dwarf/dwarf.go:1683:9 else if after return: not fixed: "err" is already declared in the enclosing block
 stdlib cmd/internal/dwarf/dwarf.go:1688:9 else if after return: not fixed: "err" is already declared in the enclosing block; "v" is also moved into the enclosing block by an earlier fix
@@ -223,16 +255,28 @@ stdlib cmd/internal/obj/ppc64/asm9.go:916:11 else after return: fixed
 stdlib cmd/internal/obj/ppc64/asm9.go:940:11 else if after return: fixed
 stdlib cmd/internal/obj/ppc64/asm9.go:942:11 else after return: fixed
 stdlib cmd/internal/obj/ppc64/asm9.go:1028:10 else after switch: fixed
+stdlib cmd/internal/obj/wasm/wasmobj.go:969:9 else if after call: fixed
+stdlib cmd/internal/obj/x86/asm6.go:2551:12 else after call: fixed
 stdlib cmd/internal/objfile/objfile.go:78:9 else if after return: not fixed: "err" is already declared in the enclosing block
 stdlib cmd/internal/pgo/deserialize.go:24:9 else if after return: fixed
 stdlib cmd/internal/pgo/pprof.go:25:9 else if after return: fixed
 stdlib cmd/internal/pkgpath/pkgpath.go:57:9 else if after return: fixed
 stdlib cmd/internal/pkgpath/pkgpath.go:59:9 else if after return: fixed
 stdlib cmd/internal/pkgpath/pkgpath.go:61:9 else after return: fixed
+stdlib cmd/internal/quoted/quoted_test.go:41:12 else if after call: fixed
+stdlib cmd/internal/quoted/quoted_test.go:75:12 else if after call: fixed
 stdlib cmd/internal/script/conds.go:188:12 else after return: fixed
+stdlib cmd/internal/script/scripttest/scripttest.go:95:10 else after call: fixed
+stdlib cmd/internal/testdir/testdir_test.go:468:9 else if after call: fixed
 stdlib cmd/internal/testdir/testdir_test.go:812:12 else if after return: fixed
 stdlib cmd/internal/testdir/testdir_test.go:1153:10 else after return: fixed
+stdlib cmd/link/dwarf_test.go:92:13 else after call: fixed
+stdlib cmd/link/dwarf_test.go:96:14 else if after call: fixed
 stdlib cmd/link/dwarf_test.go:131:11 else after return: fixed
+stdlib cmd/link/dwarf_test.go:153:11 else if after call: not fixed: "err" is already declared in the enclosing block
+stdlib cmd/link/dwarf_test.go:287:9 else if after call: fixed
+stdlib cmd/link/elf_test.go:422:11 else after call: not fixed: "err" is already declared in the enclosing block
+stdlib cmd/link/elf_test.go:427:11 else after call: not fixed: "err" is already declared in the enclosing block; "fi" is also moved into the enclosing block by an earlier fix
 stdlib cmd/link/internal/amd64/asm.go:176:11 else after break: fixed
 stdlib cmd/link/internal/arm64/asm.go:988:10 else after return: fixed
 stdlib cmd/link/internal/arm64/asm.go:1015:10 else if after return: fixed
@@ -242,6 +286,7 @@ stdlib cmd/link/internal/arm64/asm.go:1055:10 else if after return: fixed
 stdlib cmd/link/internal/arm64/asm.go:1072:10 else after return: fixed
 stdlib cmd/link/internal/ld/data.go:1263:9 else if after return: fixed
 stdlib cmd/link/internal/ld/data.go:1326:9 else if after return: fixed
+stdlib cmd/link/internal/ld/dwarf_test.go:2041:9 else after call: fixed
 stdlib cmd/link/internal/ld/lib.go:2325:10 else after return: fixed
 stdlib cmd/link/internal/ld/lib.go:3001:9 else after return: fixed
 stdlib cmd/link/internal/ld/outbuf.go:316:9 else after return: fixed
@@ -253,23 +298,41 @@ stdlib cmd/link/internal/loong64/asm.go:572:10 else after return: fixed
 stdlib cmd/link/internal/ppc64/asm.go:572:9 else if after return: fixed
 stdlib cmd/trace/main.go:345:10 else if after return: fixed
 stdlib cmd/trace/main.go:361:10 else if after return: fixed
+stdlib crypto/hpke/hpke_test.go:113:11 else if after call: not fixed: "err" is already declared in the enclosing block
+stdlib crypto/internal/fips140/ecdsa/ecdsa_test.go:35:9 else if after call: fixed
+stdlib crypto/internal/fips140/ecdsa/ecdsa_test.go:52:9 else if after call: not fixed: "err" is also moved into the enclosing block by an earlier fix; "k" is also moved into the enclosing block by an earlier fix; "p" is also moved into the enclosing block by an earlier fix
+stdlib crypto/internal/fips140/ecdsa/ecdsa_test.go:74:9 else if after call: not fixed: "err" is also moved into the enclosing block by an earlier fix; "k" is also moved into the enclosing block by an earlier fix; "p" is also moved into the enclosing block by an earlier fix
+stdlib crypto/internal/fips140/edwards25519/scalar.go:275:9 else if after call: fixed
 stdlib crypto/internal/fips140/mldsa/field_test.go:302:9 else after return: fixed
 stdlib crypto/internal/fips140/rsa/pkcs1v15.go:104:9 else if after return: not fixed: "err" is already declared in the enclosing block
 stdlib crypto/internal/fips140/rsa/pkcs1v22.go:334:9 else if after return: not fixed: "err" is already declared in the enclosing block
 stdlib crypto/internal/fips140/rsa/pkcs1v22.go:385:9 else if after return: fixed
 stdlib crypto/internal/fips140/rsa/rsa.go:197:9 else if after return: not fixed: "err" is already declared in the enclosing block
 stdlib crypto/internal/fips140test/acvp_test.go:343:10 else if after break: fixed
+stdlib crypto/internal/fips140test/xaes_test.go:99:9 else if after call: fixed
+stdlib crypto/internal/fips140test/xaes_test.go:112:9 else if after call: not fixed: "decrypted" is also moved into the enclosing block by an earlier fix; "err" is also moved into the enclosing block by an earlier fix
+stdlib crypto/rand/rand_test.go:84:9 else if after call: fixed
 stdlib crypto/rsa/rsa.go:181:10 else after return: fixed
 stdlib crypto/rsa/rsa.go:195:10 else after return: fixed
+stdlib crypto/tls/bogo_shim_test.go:471:11 else if after call: fixed
+stdlib crypto/tls/bogo_shim_test.go:473:11 else if after call: fixed
+stdlib crypto/tls/bogo_shim_test.go:475:11 else if after call: fixed
 stdlib crypto/tls/bogo_shim_test.go:682:9 else if after return: fixed
 stdlib crypto/tls/conn_test.go:108:10 else after return: fixed
 stdlib crypto/tls/defaults.go:64:9 else after return: fixed
+stdlib crypto/tls/fips140_test.go:273:12 else if after call: fixed
 stdlib crypto/tls/handshake_client.go:53:10 else after return: fixed
 stdlib crypto/tls/handshake_client_test.go:462:9 else if after return: fixed
 stdlib crypto/tls/handshake_client_test.go:1448:11 else if after return: fixed
+stdlib crypto/tls/handshake_client_test.go:2909:11 else if after call: fixed
 stdlib crypto/tls/handshake_server.go:172:10 else if after return: fixed
 stdlib crypto/tls/handshake_server_test.go:1321:11 else if after return: fixed
 stdlib crypto/tls/handshake_test.go:257:10 else after return: fixed
+stdlib crypto/tls/handshake_test.go:695:9 else if after call: fixed
+stdlib crypto/tls/handshake_test.go:727:9 else if after call: fixed
+stdlib crypto/tls/handshake_test.go:763:9 else if after call: fixed
+stdlib crypto/tls/handshake_test.go:832:11 else if after call: fixed
+stdlib crypto/tls/quic_test.go:338:9 else if after call: fixed
 stdlib crypto/tls/tls_test.go:1732:11 else if after return: fixed
 stdlib crypto/tls/tls_test.go:1738:11 else if after return: fixed
 stdlib crypto/tls/tls_test.go:1744:11 else if after return: fixed
@@ -282,27 +345,41 @@ stdlib crypto/tls/tls_test.go:1778:11 else if after return: fixed
 stdlib crypto/tls/tls_test.go:1784:11 else if after return: fixed
 stdlib crypto/x509/name_constraints_test.go:2211:10 else after continue: fixed
 stdlib crypto/x509/parser.go:932:10 else after return: fixed
+stdlib crypto/x509/parser_test.go:125:11 else if after call: fixed
+stdlib crypto/x509/root_unix_test.go:216:9 else after call: not fixed: "err" is already declared in the enclosing block
 stdlib crypto/x509/verify.go:465:9 else if after return: fixed
 stdlib crypto/x509/verify.go:707:10 else if after return: fixed
+stdlib crypto/x509/verify_test.go:1711:10 else after call: fixed
+stdlib crypto/x509/verify_test.go:1714:9 else if after nested if: not fixed: "err" is already declared in the enclosing block
+stdlib crypto/x509/verify_test.go:3056:9 else if after call: fixed
 stdlib crypto/x509/x509.go:79:9 else if after return: not fixed: "err" is already declared in the enclosing block
 stdlib crypto/x509/x509.go:1021:10 else after return: fixed
 stdlib crypto/x509/x509.go:1773:9 else if after return: not fixed: "ok" is already declared in the enclosing block
 stdlib crypto/x509/x509.go:1844:9 else if after return: fixed
 stdlib crypto/x509/x509.go:2220:9 else if after return: fixed
 stdlib crypto/x509/x509.go:2254:9 else if after return: not fixed: "err" is already declared in the enclosing block
+stdlib crypto/x509/x509_test.go:2897:11 else if after call: fixed
+stdlib crypto/x509/x509_test.go:2899:11 else if after call: fixed
+stdlib crypto/x509/x509_test.go:3251:9 else if after call: fixed
 stdlib database/sql/driver/types.go:268:10 else after return: fixed
 stdlib database/sql/fakedb_test.go:341:9 else if after return: fixed
 stdlib database/sql/fakedb_test.go:348:9 else after return: fixed
 stdlib database/sql/sql.go:1558:9 else if after return: fixed
+stdlib database/sql/sql_test.go:2703:10 else if after call: fixed
 stdlib debug/buildinfo/buildinfo.go:184:9 else if after return: fixed
 stdlib debug/buildinfo/buildinfo.go:293:9 else if after return: fixed
 stdlib debug/buildinfo/buildinfo.go:306:9 else if after return: fixed
 stdlib debug/buildinfo/buildinfo.go:309:9 else if after return: fixed
 stdlib debug/buildinfo/buildinfo.go:378:10 else if after return: fixed
+stdlib debug/buildinfo/buildinfo_test.go:254:16 else if after call: fixed
 stdlib debug/dwarf/buf.go:110:9 else after return: fixed
 stdlib debug/dwarf/entry.go:1048:9 else if after return: fixed
 stdlib debug/dwarf/line.go:287:11 else if after return: fixed
 stdlib debug/dwarf/line.go:566:11 else if after return: fixed
+stdlib debug/dwarf/line_test.go:215:9 else if after call: fixed
+stdlib debug/dwarf/line_test.go:250:11 else if after call: fixed
+stdlib debug/dwarf/line_test.go:265:10 else if after call: fixed
+stdlib debug/dwarf/line_test.go:284:10 else if after call: fixed
 stdlib debug/elf/symbols_test.go:36:10 else if after return: fixed
 stdlib debug/gosym/pclntab_test.go:139:10 else if after continue: fixed
 stdlib debug/gosym/symtab.go:722:12 else if after break: fixed
@@ -310,20 +387,31 @@ stdlib debug/macho/fat.go:55:9 else if after return: fixed
 stdlib debug/macho/fat.go:63:10 else after return: fixed
 stdlib debug/macho/file.go:355:11 else if after return: fixed
 stdlib debug/macho/file.go:359:11 else if after return: fixed
+stdlib encoding/asn1/asn1_test.go:1002:9 else if after call: fixed
 stdlib encoding/asn1/marshal.go:215:9 else if after return: fixed
 stdlib encoding/asn1/marshal.go:218:9 else after return: fixed
 stdlib encoding/csv/reader.go:369:10 else after break: fixed
+stdlib encoding/json/decode_test.go:1473:11 else if after call: fixed
 stdlib encoding/json/example_test.go:75:10 else if after break: fixed
 stdlib encoding/json/stream_test.go:493:12 else if after break: fixed
 stdlib encoding/json/stream_test.go:621:10 else if after break: fixed
+stdlib encoding/xml/read_test.go:386:9 else if after call: fixed
+stdlib encoding/xml/read_test.go:404:9 else if after call: fixed
+stdlib encoding/xml/read_test.go:1110:9 else if after call: fixed
 stdlib encoding/xml/xml.go:1182:9 else if after return: fixed
 stdlib flag/example_value_test.go:27:9 else after return: fixed
+stdlib flag/flag.go:1014:9 else if after call: fixed
+stdlib go/build/build_test.go:670:9 else if after call: fixed
+stdlib go/build/build_test.go:672:9 else after call: fixed
 stdlib go/doc/exports.go:240:10 else if after return: fixed
+stdlib go/parser/interface.go:104:11 else if after call: fixed
+stdlib go/parser/interface.go:221:11 else if after call: fixed
 stdlib go/printer/nodes.go:509:10 else if after return: fixed
 stdlib go/types/stdlib_test.go:424:11 else after return: fixed
 stdlib go/version/version.go:45:9 else after return: fixed
 stdlib html/escape.go:90:12 else if after continue: fixed
 stdlib html/escape.go:93:12 else if after continue: fixed
+stdlib html/template/escape_test.go:2232:9 else if after call: fixed
 stdlib html/template/html.go:225:9 else if after return: fixed
 stdlib html/template/transition.go:59:10 else if after return: fixed
 stdlib html/template/transition.go:152:9 else if after return: fixed
@@ -337,6 +425,8 @@ stdlib image/gif/reader.go:201:10 else if after return: fixed
 stdlib image/gif/reader.go:211:9 else if after return: fixed
 stdlib image/gif/reader.go:455:9 else if after return: not fixed: "err" is already declared in the enclosing block
 stdlib image/jpeg/reader.go:660:10 else if after return: fixed
+stdlib image/jpeg/reader_test.go:511:9 else if after call: fixed
+stdlib image/jpeg/reader_test.go:513:9 else if after call: fixed
 stdlib image/jpeg/scan.go:313:12 else if after return: fixed
 stdlib image/jpeg/scan.go:528:11 else if after return: fixed
 stdlib image/png/paeth.go:39:9 else if after return: fixed
@@ -346,8 +436,11 @@ stdlib image/png/reader_test.go:747:10 else if after continue: fixed
 stdlib image/png/reader_test.go:750:10 else if after continue: fixed
 stdlib image/png/reader_test.go:753:10 else if after continue: fixed
 stdlib image/png/reader_test.go:765:10 else if after continue: fixed
+stdlib image/png/reader_test.go:827:9 else if after call: fixed
+stdlib image/png/reader_test.go:834:9 else if after call: fixed
 stdlib internal/buildcfg/cfg.go:276:9 else if after return: fixed
 stdlib internal/buildcfg/cfg.go:279:9 else after return: fixed
+stdlib internal/coverage/cfile/ts_test.go:52:9 else after call: not fixed: "err" is already declared in the enclosing block
 stdlib internal/coverage/decodecounter/decodecounterfile.go:120:9 else after return: fixed
 stdlib internal/coverage/decodecounter/decodecounterfile.go:338:11 else if after return: fixed
 stdlib internal/coverage/encodecounter/encode.go:81:10 else if after return: fixed
@@ -355,9 +448,17 @@ stdlib internal/coverage/encodecounter/encode.go:251:10 else if after return: fi
 stdlib internal/coverage/encodemeta/encode.go:106:9 else if after return: fixed
 stdlib internal/coverage/stringtab/stringtab.go:76:10 else if after return: fixed
 stdlib internal/coverage/stringtab/stringtab.go:90:10 else if after return: fixed
+stdlib internal/coverage/test/counter_test.go:116:11 else if after call: fixed
+stdlib internal/coverage/test/counter_test.go:128:10 else if after call: not fixed: "err" is already declared in the enclosing block
+stdlib internal/coverage/test/counter_test.go:210:10 else after call: fixed
+stdlib internal/coverage/test/counter_test.go:217:11 else if after call: fixed
+stdlib internal/coverage/test/counter_test.go:227:11 else if after call: fixed
 stdlib internal/fuzz/encoding.go:189:11 else if after return: fixed
 stdlib internal/fuzz/encoding.go:191:11 else after return: fixed
 stdlib internal/fuzz/fuzz.go:981:9 else if after return: fixed
+stdlib internal/fuzz/queue_test.go:28:10 else if after call: fixed
+stdlib internal/fuzz/queue_test.go:41:11 else if after call: fixed
+stdlib internal/fuzz/queue_test.go:43:11 else after call: fixed
 stdlib internal/fuzz/worker.go:661:11 else after return: fixed
 stdlib internal/gover/gover.go:198:9 else after return: fixed
 stdlib internal/profile/graph.go:358:9 else after return: fixed
@@ -370,7 +471,13 @@ stdlib internal/runtime/cgroup/line_reader.go:143:10 else after return: fixed
 stdlib internal/runtime/cgroup/line_reader_test.go:135:12 else if after break: fixed
 stdlib internal/runtime/maps/map.go:308:9 else after return: not fixed: "overflow" is already declared in the enclosing block
 stdlib internal/runtime/maps/map.go:861:10 else after return: fixed
+stdlib internal/runtime/maps/table.go:120:9 else if after call: fixed
+stdlib internal/runtime/maps/table.go:128:9 else after return: fixed
 stdlib internal/runtime/maps/table.go:1105:12 else after continue: fixed
+stdlib internal/runtime/wasitest/nonblock_test.go:84:11 else if after call: fixed
+stdlib internal/runtime/wasitest/nonblock_test.go:94:12 else if after call: fixed
+stdlib internal/trace/event_test.go:567:12 else if after call: fixed
+stdlib internal/trace/event_test.go:569:12 else if after call: fixed
 stdlib internal/trace/internal/tracev1/parser.go:122:9 else after return: fixed
 stdlib internal/trace/internal/tracev1/parser.go:425:12 else if after continue: fixed
 stdlib internal/trace/internal/tracev1/parser.go:427:12 else after return: fixed
@@ -385,19 +492,32 @@ stdlib internal/trace/mud.go:188:11 else if after break: fixed
 stdlib internal/trace/order.go:1110:9 else if after return: fixed
 stdlib internal/trace/order.go:1117:9 else if after return: fixed
 stdlib internal/trace/order.go:1124:9 else if after return: fixed
+stdlib internal/trace/order_test.go:18:11 else if after call: fixed
 stdlib internal/trace/reader.go:111:10 else if after return: fixed
 stdlib internal/trace/reader.go:208:9 else if after return: not fixed: "err" is already declared in the enclosing block; "ok" is already declared in the enclosing block
 stdlib internal/trace/reader.go:219:11 else if after return: fixed
+stdlib internal/trace/trace_test.go:168:10 else if after call: fixed
+stdlib internal/trace/trace_test.go:294:12 else after call: fixed
 stdlib internal/trace/tracev1.go:232:9 else if after return: fixed
 stdlib internal/zstd/literals.go:25:9 else after return: fixed
 stdlib internal/zstd/window.go:91:9 else after return: fixed
+stdlib iter/iter.go:325:11 else after call: fixed
+stdlib iter/iter.go:345:12 else after call: fixed
+stdlib iter/iter.go:442:11 else after call: fixed
+stdlib iter/iter.go:462:12 else after call: fixed
+stdlib log/syslog/syslog_test.go:317:9 else after call: fixed
 stdlib math/big/alias_test.go:137:9 else if after return: fixed
 stdlib math/big/alias_test.go:161:9 else if after return: not fixed: "out" is also moved into the enclosing block by an earlier fix
 stdlib math/cmplx/exp.go:60:11 else after return: fixed
 stdlib math/cmplx/sqrt.go:68:9 else if after return: fixed
+stdlib math/rand/v2/chacha8_test.go:40:9 else if after call: fixed
+stdlib math/rand/v2/chacha8_test.go:91:10 else if after call: fixed
 stdlib mime/type_unix.go:47:10 else if after continue: fixed
 stdlib net/conf.go:471:10 else after return: fixed
 stdlib net/dial.go:295:9 else after return: fixed
+stdlib net/dnsclient_unix_test.go:1565:9 else if after call: fixed
+stdlib net/dnsclient_unix_test.go:1570:9 else if after call: not fixed: "ok" is also moved into the enclosing block by an earlier fix
+stdlib net/dnsclient_unix_test.go:1596:9 else if after call: fixed
 stdlib net/http/client_test.go:1632:10 else if after return: fixed
 stdlib net/http/cookiejar/jar.go:145:10 else if after return: fixed
 stdlib net/http/cookiejar/jar.go:449:9 else if after return: fixed
@@ -411,16 +531,32 @@ stdlib net/http/server.go:1669:9 else after return: fixed
 stdlib net/http/transfer.go:537:10 else after return: fixed
 stdlib net/http/transport.go:2486:10 else after return: fixed
 stdlib net/http/transport_test.go:4796:11 else after return: fixed
+stdlib net/http/transport_test.go:5062:9 else after call: not fixed: "err" is already declared in the enclosing block; "res" is already declared in the enclosing block
 stdlib net/http/transport_test.go:5546:11 else after return: fixed
+stdlib net/interface_unix_test.go:70:10 else after call: fixed
+stdlib net/interface_unix_test.go:96:10 else after call: fixed
+stdlib net/interface_unix_test.go:125:10 else after call: fixed
+stdlib net/interface_unix_test.go:161:10 else after call: fixed
 stdlib net/iprawsock_test.go:100:10 else if after continue: fixed
+stdlib net/iprawsock_test.go:121:9 else if after call: fixed
 stdlib net/listen_test.go:661:9 else if after return: fixed
+stdlib net/net_test.go:579:9 else if after call: fixed
 stdlib net/netip/netip.go:305:10 else if after return: fixed
 stdlib net/netip/netip.go:1133:9 else if after return: fixed
 stdlib net/netip/netip.go:1446:9 else after return: fixed
+stdlib net/protoconn_test.go:176:9 else if after call: fixed
 stdlib net/sock_posix.go:112:10 else if after return: fixed
+stdlib net/unixsock_test.go:201:9 else if after call: not fixed: "err" is already declared in the enclosing block
+stdlib net/unixsock_test.go:206:9 else if after call: fixed
+stdlib net/unixsock_test.go:211:9 else if after call: fixed
 stdlib net/url/url.go:552:9 else if after return: fixed
 stdlib net/url/url.go:607:9 else if after return: fixed
+stdlib os/exec/dot_test.go:69:14 else if after call: fixed
+stdlib os/exec/dot_test.go:82:14 else if after call: fixed
+stdlib os/exec/dot_test.go:96:13 else if after call: not fixed: "err" is already declared in the enclosing block
 stdlib os/exec/exec_test.go:226:10 else if after break: fixed
+stdlib os/exec/lp_linux_test.go:34:9 else if after call: fixed
+stdlib os/exec/lp_linux_test.go:76:9 else if after call: fixed
 stdlib os/exec_unix.go:26:9 else after return: fixed
 stdlib os/exec_unix.go:87:9 else after return: fixed
 stdlib os/exec_unix.go:128:9 else if after return: fixed
@@ -429,12 +565,20 @@ stdlib os/root_openat.go:263:12 else if after return: fixed
 stdlib os/root_test.go:163:9 else after return: fixed
 stdlib os/root_test.go:1365:11 else after return: not fixed: "err" is already declared in the enclosing block
 stdlib os/root_test.go:1529:11 else after return: fixed
+stdlib os/signal/signal_test.go:298:10 else after call: fixed
 stdlib os/user/lookup_unix.go:123:9 else if after return: fixed
 stdlib os/user/lookup_unix.go:132:9 else if after return: fixed
 stdlib os/user/lookup_unix.go:185:9 else if after return: fixed
 stdlib os/user/lookup_unix.go:194:9 else if after return: fixed
+stdlib os/user/user_test.go:36:10 else after call: fixed
+stdlib os/user/user_test.go:80:10 else after call: fixed
+stdlib os/user/user_test.go:102:10 else after call: fixed
+stdlib os/user/user_test.go:133:10 else after call: fixed
+stdlib os/user/user_test.go:173:10 else after call: fixed
 stdlib path/filepath/symlink.go:44:10 else if after break: fixed
 stdlib path/filepath/symlink.go:47:10 else if after continue: fixed
+stdlib reflect/all_test.go:6386:9 else if after call: fixed
+stdlib reflect/all_test.go:6685:10 else if after call: fixed
 stdlib reflect/tostring_test.go:39:10 else after return: fixed
 stdlib regexp/backtrack.go:247:11 else after continue: fixed
 stdlib regexp/syntax/regexp.go:142:12 else after return: fixed
@@ -442,15 +586,25 @@ stdlib runtime/alg.go:162:9 else after return: fixed
 stdlib runtime/alg.go:189:9 else after return: fixed
 stdlib runtime/arena.go:711:10 else if after break: fixed
 stdlib runtime/arena.go:714:10 else after break: fixed
+stdlib runtime/chan.go:326:10 else after call: not fixed: "racesync" never returns only in some builds
+stdlib runtime/chan.go:959:10 else after call: not fixed: "raceacquire" never returns only in some builds; "racerelease" never returns only in some builds
+stdlib runtime/chan.go:963:9 else after nested if: not fixed: "raceacquire" never returns only in some builds; "racerelease" never returns only in some builds
+stdlib runtime/chan.go:966:10 else after call: not fixed: "racereleaseacquire" never returns only in some builds
+stdlib runtime/crash_unix_test.go:329:9 else if after call: fixed
+stdlib runtime/decoratemappings_test.go:54:9 else after call: fixed
+stdlib runtime/fds_unix.go:40:10 else if after call: not fixed: "ret" is already declared in the enclosing block
 stdlib runtime/lock_futex.go:150:11 else after return: fixed
 stdlib runtime/lock_spinbit.go:114:9 else if after return: fixed
 stdlib runtime/lock_spinbit.go:116:9 else after return: fixed
 stdlib runtime/lock_spinbit.go:219:11 else if after continue: fixed
 stdlib runtime/lock_spinbit.go:332:9 else after return: fixed
 stdlib runtime/malloc.go:1082:10 else after return: fixed
+stdlib runtime/malloc_test.go:682:11 else if after call: fixed
 stdlib runtime/mbitmap.go:412:9 else if after return: fixed
 stdlib runtime/mcache.go:362:9 else if after return: fixed
+stdlib runtime/mgc.go:1490:9 else if after call: fixed
 stdlib runtime/mgcpacer_test.go:643:14 else after break: fixed
+stdlib runtime/mgcscavenge.go:898:9 else if after call: fixed
 stdlib runtime/mheap.go:638:9 else after return: fixed
 stdlib runtime/mheap.go:652:9 else after return: fixed
 stdlib runtime/mpagealloc.go:133:9 else after return: fixed
@@ -459,7 +613,18 @@ stdlib runtime/mpagealloc.go:628:10 else after return: fixed
 stdlib runtime/mpallocbits.go:236:9 else if after return: fixed
 stdlib runtime/mprof.go:704:10 else after return: fixed
 stdlib runtime/mranges.go:63:9 else if after return: fixed
+stdlib runtime/mranges.go:65:9 else if after call: fixed
 stdlib runtime/pprof/label.go:64:9 else if after return: fixed
+stdlib runtime/pprof/pprof_test.go:1200:9 else after call: fixed
+stdlib runtime/proc_test.go:1005:9 else if after call: fixed
+stdlib runtime/runtime-lldb_test.go:43:10 else if after call: fixed
+stdlib runtime/runtime-lldb_test.go:50:10 else if after call: fixed
+stdlib runtime/select.go:424:10 else if after call: not fixed: "raceReadObjectPC" never returns only in some builds
+stdlib runtime/select.go:431:10 else if after call: not fixed: "msanread" never returns only in some builds
+stdlib runtime/select.go:438:10 else if after call: not fixed: "asanread" never returns only in some builds
+stdlib runtime/signal_unix.go:606:9 else after call: fixed
+stdlib runtime/sigqueue.go:206:10 else after call: not fixed: "sigNoteSetup" never returns only in some builds
+stdlib runtime/stack_test.go:133:11 else after call: fixed
 stdlib runtime/string.go:443:9 else if after return: fixed
 stdlib runtime/symtab.go:1052:13 else after break: fixed
 stdlib runtime/trace.go:905:11 else if after return: fixed
@@ -468,7 +633,20 @@ stdlib runtime/traceback.go:1026:13 else if after break: fixed
 stdlib runtime/traceback.go:1710:10 else if after return: fixed
 stdlib runtime/tracestack.go:294:9 else if after return: fixed
 stdlib strings/strings.go:1146:9 else if after return: fixed
+stdlib sync/oncefunc_test.go:401:11 else if after call: fixed
+stdlib sync/oncefunc_test.go:411:11 else if after call: fixed
+stdlib sync/oncefunc_test.go:424:11 else if after call: fixed
+stdlib syscall/exec_linux_test.go:254:9 else if after call: fixed
+stdlib syscall/exec_linux_test.go:317:9 else if after call: fixed
 stdlib syscall/syscall_linux.go:256:11 else if after return: fixed
+stdlib syscall/syscall_linux_test.go:124:9 else if after call: fixed
+stdlib syscall/syscall_linux_test.go:126:9 else if after call: fixed
+stdlib syscall/syscall_linux_test.go:775:9 else if after call: not fixed: "err" is already declared in the enclosing block
+stdlib syscall/syscall_linux_test.go:791:9 else if after call: not fixed: "err" is already declared in the enclosing block; "n" is also moved into the enclosing block by an earlier fix
+stdlib syscall/syscall_linux_test.go:818:9 else if after call: not fixed: "err" is already declared in the enclosing block
+stdlib syscall/syscall_linux_test.go:825:9 else if after call: not fixed: "err" is already declared in the enclosing block; "n" is also moved into the enclosing block by an earlier fix
+stdlib syscall/syscall_linux_test.go:882:9 else if after call: fixed
+stdlib testing/example.go:93:9 else if after call: fixed
 stdlib time/sleep_test.go:813:10 else after return: fixed
 stdlib time/time_test.go:866:11 else after return: fixed
 stdlib time/time_test.go:873:11 else after return: fixed
@@ -490,7 +668,9 @@ nats-server conf/lex.go:788:9 else if after return: fixed
 nats-server conf/lex.go:802:9 else if after return: fixed
 nats-server conf/lex.go:806:9 else if after return: fixed
 nats-server conf/parse.go:479:10 else after return: fixed
+nats-server conf/parse_test.go:469:10 else if after call: fixed
 nats-server internal/ldap/dn.go:164:11 else if after return: fixed
+nats-server main.go:112:9 else if after call: fixed
 nats-server server/accounts.go:966:10 else after break: fixed
 nats-server server/accounts.go:1627:9 else after return: fixed
 nats-server server/accounts.go:2196:11 else after return: fixed
@@ -508,6 +688,10 @@ nats-server server/accounts.go:4273:9 else if after return: fixed
 nats-server server/accounts.go:4407:12 else if after break: fixed
 nats-server server/accounts.go:4694:10 else if after return: fixed
 nats-server server/accounts.go:4726:9 else after return: fixed
+nats-server server/accounts_test.go:3392:9 else if after call: not fixed: "err" is already declared in the enclosing block
+nats-server server/accounts_test.go:3435:11 else if after call: fixed
+nats-server server/accounts_test.go:3446:11 else if after call: fixed
+nats-server server/accounts_test.go:4611:12 else if after call: fixed
 nats-server server/auth.go:515:10 else if after return: fixed
 nats-server server/auth.go:636:9 else if after return: fixed
 nats-server server/auth.go:638:9 else if after return: fixed
@@ -523,10 +707,13 @@ nats-server server/auth_callout.go:240:11 else if after return: fixed
 nats-server server/auth_callout.go:244:12 else if after return: fixed
 nats-server server/auth_callout.go:246:12 else if after return: fixed
 nats-server server/auth_test.go:297:11 else if after return: fixed
+nats-server server/avl/norace_test.go:106:9 else after call: fixed
+nats-server server/avl/norace_test.go:115:9 else after call: not fixed: "elapsed" is also moved into the enclosing block by an earlier fix
 nats-server server/avl/seqset.go:73:10 else if after continue: fixed
 nats-server server/avl/seqset.go:552:9 else if after return: fixed
 nats-server server/avl/seqset.go:684:9 else if after return: fixed
 nats-server server/avl/seqset.go:712:9 else if after return: fixed
+nats-server server/benchmark_publish_test.go:174:15 else if after call: fixed
 nats-server server/client.go:620:10 else if after return: fixed
 nats-server server/client.go:912:9 else if after return: fixed
 nats-server server/client.go:2062:9 else after return: fixed
@@ -536,6 +723,9 @@ nats-server server/client.go:6522:10 else if after return: fixed
 nats-server server/client.go:6525:10 else if after return: fixed
 nats-server server/client.go:7013:9 else after return: fixed
 nats-server server/client.go:7022:9 else after return: fixed
+nats-server server/client_test.go:2253:13 else after call: fixed
+nats-server server/client_test.go:3578:10 else if after call: fixed
+nats-server server/client_test.go:5069:9 else if after call: not fixed: "err" is already declared in the enclosing block; "msg" is already declared in the enclosing block
 nats-server server/consumer.go:1194:11 else if after return: fixed
 nats-server server/consumer.go:4522:11 else if after return: fixed
 nats-server server/consumer.go:4524:11 else if after return: fixed
@@ -573,8 +763,41 @@ nats-server server/events.go:2259:10 else if after return: fixed
 nats-server server/events.go:2319:10 else if after return: fixed
 nats-server server/events.go:2340:9 else if after return: fixed
 nats-server server/events.go:3188:9 else if after return: fixed
+nats-server server/events_test.go:247:9 else if after call: fixed
+nats-server server/events_test.go:249:9 else if after call: fixed
+nats-server server/events_test.go:316:9 else if after call: fixed
+nats-server server/events_test.go:322:9 else if after call: fixed
+nats-server server/events_test.go:324:9 else if after call: fixed
 nats-server server/events_test.go:1135:10 else after return: fixed
+nats-server server/events_test.go:1398:10 else if after call: fixed
+nats-server server/events_test.go:1400:10 else if after call: fixed
+nats-server server/events_test.go:1402:10 else if after call: fixed
+nats-server server/events_test.go:1404:10 else if after call: fixed
+nats-server server/events_test.go:1406:10 else if after call: fixed
+nats-server server/events_test.go:1408:10 else if after call: fixed
+nats-server server/events_test.go:1410:10 else if after call: fixed
+nats-server server/events_test.go:1412:10 else if after call: fixed
+nats-server server/events_test.go:1414:10 else if after call: fixed
+nats-server server/events_test.go:1416:10 else if after call: fixed
+nats-server server/events_test.go:1431:9 else if after call: not fixed: "err" is already declared in the enclosing block
+nats-server server/events_test.go:1433:9 else if after call: not fixed: an earlier "else" in the chain is not fixed automatically
+nats-server server/events_test.go:1435:9 else if after call: not fixed: an earlier "else" in the chain is not fixed automatically
+nats-server server/events_test.go:1437:9 else if after call: not fixed: an earlier "else" in the chain is not fixed automatically
+nats-server server/events_test.go:1439:9 else if after call: not fixed: an earlier "else" in the chain is not fixed automatically
+nats-server server/events_test.go:1441:9 else if after call: not fixed: an earlier "else" in the chain is not fixed automatically
+nats-server server/events_test.go:1443:9 else if after call: not fixed: an earlier "else" in the chain is not fixed automatically
+nats-server server/events_test.go:1445:9 else after call: not fixed: an earlier "else" in the chain is not fixed automatically
+nats-server server/events_test.go:1452:9 else if after call: not fixed: "err" is already declared in the enclosing block; "resp" is also moved into the enclosing block by an earlier fix
+nats-server server/events_test.go:1454:9 else if after call: not fixed: an earlier "else" in the chain is not fixed automatically
+nats-server server/events_test.go:1456:9 else if after call: not fixed: an earlier "else" in the chain is not fixed automatically
+nats-server server/events_test.go:1472:9 else if after call: fixed
+nats-server server/events_test.go:1474:9 else if after call: fixed
+nats-server server/events_test.go:1476:9 else after call: fixed
 nats-server server/events_test.go:1760:11 else if after return: fixed
+nats-server server/events_test.go:3052:9 else after call: not fixed: "err" is already declared in the enclosing block
+nats-server server/events_test.go:3186:11 else after call: fixed
+nats-server server/events_test.go:3208:11 else after call: not fixed: "ok" is also moved into the enclosing block by an earlier fix; "resp" is also moved into the enclosing block by an earlier fix
+nats-server server/events_test.go:3212:13 else if after call: fixed
 nats-server server/filestore.go:510:9 else if after return: fixed
 nats-server server/filestore.go:544:11 else if after return: fixed
 nats-server server/filestore.go:920:9 else if after return: not fixed: "err" is already declared in the enclosing block
@@ -624,6 +847,14 @@ nats-server server/filestore.go:14404:9 else if after return: fixed
 nats-server server/filestore.go:14406:9 else after return: fixed
 nats-server server/filestore.go:14715:9 else if after return: fixed
 nats-server server/filestore.go:14725:9 else if after return: not fixed: "err" is also moved into the enclosing block by an earlier fix; "n" is also moved into the enclosing block by an earlier fix
+nats-server server/filestore_test.go:98:11 else if after call: fixed
+nats-server server/filestore_test.go:100:11 else if after call: fixed
+nats-server server/filestore_test.go:204:11 else if after call: fixed
+nats-server server/filestore_test.go:244:11 else if after call: fixed
+nats-server server/filestore_test.go:1427:10 else if after call: not fixed: "err" is already declared in the enclosing block
+nats-server server/filestore_test.go:1478:10 else if after call: not fixed: "err" is already declared in the enclosing block; "ld" is also moved into the enclosing block by an earlier fix
+nats-server server/filestore_test.go:5392:9 else after call: fixed
+nats-server server/filestore_test.go:5409:9 else after call: not fixed: "st" is also moved into the enclosing block by an earlier fix; "expected" is also moved into the enclosing block by an earlier fix; "received" is also moved into the enclosing block by an earlier fix
 nats-server server/filestore_test.go:11216:14 else if after return: not fixed: "err" is already declared in the enclosing block
 nats-server server/filestore_test.go:11218:14 else after return: not fixed: an earlier "else" in the chain is not fixed automatically
 nats-server server/filestore_test.go:11236:15 else if after return: fixed
@@ -690,6 +921,8 @@ nats-server server/jetstream_cluster.go:10700:12 else after return: fixed
 nats-server server/jetstream_cluster.go:10797:12 else if after break: fixed
 nats-server server/jetstream_cluster.go:11268:10 else after return: fixed
 nats-server server/jetstream_cluster.go:11786:9 else if after return: fixed
+nats-server server/jetstream_cluster_1_test.go:1053:9 else after call: not fixed: "err" is already declared in the enclosing block
+nats-server server/jetstream_cluster_1_test.go:1162:9 else after call: not fixed: "err" is already declared in the enclosing block
 nats-server server/jetstream_cluster_1_test.go:2594:10 else after return: fixed
 nats-server server/jetstream_cluster_1_test.go:6195:10 else if after return: fixed
 nats-server server/jetstream_cluster_1_test.go:6197:10 else if after return: fixed
@@ -705,6 +938,7 @@ nats-server server/jetstream_cluster_1_test.go:6240:11 else if after return: fix
 nats-server server/jetstream_cluster_1_test.go:6242:11 else if after return: fixed
 nats-server server/jetstream_cluster_1_test.go:6244:11 else after return: fixed
 nats-server server/jetstream_cluster_1_test.go:6642:11 else if after return: fixed
+nats-server server/jetstream_cluster_1_test.go:7028:9 else after call: not fixed: "err" is already declared in the enclosing block
 nats-server server/jetstream_cluster_1_test.go:7914:11 else if after return: fixed
 nats-server server/jetstream_cluster_1_test.go:7916:11 else if after return: not fixed: "err" is also declared by an earlier "if" initialiser
 nats-server server/jetstream_cluster_1_test.go:7918:11 else if after return: not fixed: an earlier "else" in the chain is not fixed automatically
@@ -714,6 +948,7 @@ nats-server server/jetstream_cluster_1_test.go:8047:11 else if after return: not
 nats-server server/jetstream_cluster_1_test.go:8173:12 else if after return: fixed
 nats-server server/jetstream_cluster_1_test.go:8175:12 else if after return: not fixed: "err" is also declared by an earlier "if" initialiser
 nats-server server/jetstream_cluster_1_test.go:8177:12 else if after return: not fixed: an earlier "else" in the chain is not fixed automatically
+nats-server server/jetstream_cluster_1_test.go:8509:11 else if after call: fixed
 nats-server server/jetstream_cluster_1_test.go:11598:11 else if after return: fixed
 nats-server server/jetstream_cluster_1_test.go:11600:11 else if after return: not fixed: "err" is also declared by an earlier "if" initialiser
 nats-server server/jetstream_cluster_1_test.go:11633:11 else if after return: fixed
@@ -732,7 +967,11 @@ nats-server server/jetstream_cluster_1_test.go:13544:13 else if after return: fi
 nats-server server/jetstream_cluster_1_test.go:13700:13 else if after return: fixed
 nats-server server/jetstream_cluster_1_test.go:13937:13 else if after return: fixed
 nats-server server/jetstream_cluster_1_test.go:15884:10 else if after continue: fixed
+nats-server server/jetstream_cluster_2_test.go:5437:9 else if after call: fixed
+nats-server server/jetstream_cluster_2_test.go:8105:13 else if after call: fixed
 nats-server server/jetstream_cluster_2_test.go:8868:11 else if after return: fixed
+nats-server server/jetstream_cluster_3_test.go:158:11 else if after call: fixed
+nats-server server/jetstream_cluster_3_test.go:167:11 else if after call: not fixed: "apiErr" is also moved into the enclosing block by an earlier fix
 nats-server server/jetstream_cluster_3_test.go:1136:9 else if after return: fixed
 nats-server server/jetstream_cluster_3_test.go:1984:10 else after continue: fixed
 nats-server server/jetstream_cluster_3_test.go:2028:11 else after continue: fixed
@@ -742,6 +981,8 @@ nats-server server/jetstream_cluster_3_test.go:7482:10 else if after return: fix
 nats-server server/jetstream_cluster_3_test.go:7508:10 else if after return: fixed
 nats-server server/jetstream_cluster_3_test.go:7525:10 else if after return: fixed
 nats-server server/jetstream_cluster_3_test.go:8025:12 else if after return: fixed
+nats-server server/jetstream_cluster_3_test.go:8379:10 else if after call: fixed
+nats-server server/jetstream_cluster_3_test.go:8434:10 else if after call: fixed
 nats-server server/jetstream_cluster_3_test.go:8806:10 else if after return: fixed
 nats-server server/jetstream_cluster_3_test.go:9103:11 else if after return: fixed
 nats-server server/jetstream_cluster_3_test.go:9468:11 else if after return: fixed
@@ -751,14 +992,26 @@ nats-server server/jetstream_cluster_4_test.go:3817:11 else if after return: fix
 nats-server server/jetstream_cluster_4_test.go:3819:11 else if after return: not fixed: "err" is also declared by an earlier "if" initialiser
 nats-server server/jetstream_cluster_4_test.go:4660:11 else if after return: fixed
 nats-server server/jetstream_cluster_4_test.go:4762:11 else if after return: fixed
+nats-server server/jetstream_cluster_4_test.go:5251:9 else after call: fixed
 nats-server server/jetstream_cluster_4_test.go:6771:10 else if after continue: fixed
+nats-server server/jetstream_consumer_test.go:5535:12 else after call: fixed
+nats-server server/jetstream_consumer_test.go:5717:11 else after call: fixed
 nats-server server/jetstream_helpers_test.go:1121:9 else after return: fixed
+nats-server server/jetstream_helpers_test.go:1859:9 else after call: fixed
+nats-server server/jetstream_jwt_test.go:44:10 else after call: fixed
+nats-server server/jetstream_jwt_test.go:48:11 else if after call: fixed
+nats-server server/jetstream_jwt_test.go:71:10 else if after call: fixed
+nats-server server/jetstream_jwt_test.go:73:10 else if after call: fixed
+nats-server server/jetstream_jwt_test.go:82:10 else if after call: fixed
+nats-server server/jetstream_jwt_test.go:84:10 else after call: fixed
 nats-server server/jetstream_jwt_test.go:361:11 else if after return: fixed
 nats-server server/jetstream_jwt_test.go:363:11 else if after return: fixed
 nats-server server/jetstream_jwt_test.go:365:11 else if after return: fixed
 nats-server server/jetstream_jwt_test.go:367:11 else if after return: fixed
 nats-server server/jetstream_jwt_test.go:373:11 else if after return: not fixed: "err" is also moved into the enclosing block by an earlier fix
 nats-server server/jetstream_jwt_test.go:375:11 else if after return: not fixed: an earlier "else" in the chain is not fixed automatically
+nats-server server/jetstream_jwt_test.go:2160:10 else after call: fixed
+nats-server server/jetstream_jwt_test.go:2164:11 else if after call: fixed
 nats-server server/jetstream_jwt_test.go:2272:10 else if after return: fixed
 nats-server server/jetstream_sourcing_scaling_test.go:238:10 else if after return: fixed
 nats-server server/jetstream_sourcing_scaling_test.go:242:10 else after return: fixed
@@ -767,6 +1020,7 @@ nats-server server/jetstream_super_cluster_test.go:883:12 else if after return: 
 nats-server server/jetstream_super_cluster_test.go:2497:12 else if after return: fixed
 nats-server server/jetstream_super_cluster_test.go:2556:13 else if after return: fixed
 nats-server server/jetstream_super_cluster_test.go:2680:10 else if after return: fixed
+nats-server server/jetstream_super_cluster_test.go:2700:10 else after call: fixed
 nats-server server/jetstream_super_cluster_test.go:2769:13 else if after return: fixed
 nats-server server/jetstream_super_cluster_test.go:2895:10 else if after return: fixed
 nats-server server/jetstream_super_cluster_test.go:2982:10 else if after return: fixed
@@ -801,12 +1055,45 @@ nats-server server/jetstream_super_cluster_test.go:3890:12 else if after return:
 nats-server server/jetstream_super_cluster_test.go:3892:12 else if after return: not fixed: "ok" is also declared by an earlier "if" initialiser
 nats-server server/jetstream_super_cluster_test.go:5141:11 else if after return: not fixed: "err" is already declared in the enclosing block
 nats-server server/jetstream_super_cluster_test.go:5143:11 else if after return: not fixed: an earlier "else" in the chain is not fixed automatically
+nats-server server/jetstream_super_cluster_test.go:5472:11 else if after call: fixed
 nats-server server/jetstream_super_cluster_test.go:5943:10 else if after return: fixed
+nats-server server/jetstream_test.go:190:9 else if after call: fixed
+nats-server server/jetstream_test.go:2247:11 else if after call: fixed
+nats-server server/jetstream_test.go:5353:11 else if after call: not fixed: "err" is already declared in the enclosing block
+nats-server server/jetstream_test.go:5436:11 else if after call: not fixed: "err" is already declared in the enclosing block
+nats-server server/jetstream_test.go:5525:12 else after call: fixed
+nats-server server/jetstream_test.go:5536:12 else if after call: fixed
+nats-server server/jetstream_test.go:5573:12 else if after call: fixed
+nats-server server/jetstream_test.go:5711:11 else if after call: fixed
+nats-server server/jetstream_test.go:5804:12 else if after call: fixed
+nats-server server/jetstream_test.go:5888:9 else if after call: not fixed: "err" is already declared in the enclosing block
+nats-server server/jetstream_test.go:5926:9 else if after call: not fixed: "err" is already declared in the enclosing block; "rd" is also moved into the enclosing block by an earlier fix; "rm" is also moved into the enclosing block by an earlier fix
+nats-server server/jetstream_test.go:6196:11 else if after call: fixed
+nats-server server/jetstream_test.go:6949:9 else if after call: not fixed: "err" is already declared in the enclosing block
+nats-server server/jetstream_test.go:6951:9 else after call: not fixed: an earlier "else" in the chain is not fixed automatically
+nats-server server/jetstream_test.go:8186:11 else after call: not fixed: "err" is already declared in the enclosing block
+nats-server server/jetstream_test.go:8203:12 else after call: fixed
+nats-server server/jetstream_test.go:10143:12 else if after call: fixed
+nats-server server/jetstream_test.go:10145:12 else if after call: fixed
+nats-server server/jetstream_test.go:10147:12 else if after call: fixed
+nats-server server/jetstream_test.go:10212:10 else if after call: fixed
+nats-server server/jetstream_test.go:10214:10 else if after call: fixed
 nats-server server/jetstream_test.go:10737:11 else after return: fixed
 nats-server server/jetstream_test.go:10893:10 else if after return: fixed
 nats-server server/jetstream_test.go:10908:10 else if after return: fixed
+nats-server server/jetstream_test.go:11058:9 else if after call: fixed
+nats-server server/jetstream_test.go:11086:9 else if after call: not fixed: "shdr" is also moved into the enclosing block by an earlier fix
+nats-server server/jetstream_test.go:11117:9 else if after call: fixed
+nats-server server/jetstream_test.go:11127:9 else if after call: fixed
+nats-server server/jetstream_test.go:11182:9 else if after call: not fixed: "err" is already declared in the enclosing block; "m" is already declared in the enclosing block
+nats-server server/jetstream_test.go:11184:9 else if after call: not fixed: an earlier "else" in the chain is not fixed automatically
+nats-server server/jetstream_test.go:11189:9 else if after call: not fixed: "err" is already declared in the enclosing block; "m" is already declared in the enclosing block
 nats-server server/jetstream_test.go:11252:10 else if after return: fixed
+nats-server server/jetstream_test.go:12420:10 else after call: fixed
+nats-server server/jetstream_test.go:12424:11 else if after call: fixed
+nats-server server/jetstream_test.go:13601:11 else if after call: fixed
 nats-server server/jetstream_test.go:14740:10 else if after return: fixed
+nats-server server/jetstream_test.go:16892:9 else if after call: fixed
 nats-server server/jetstream_test.go:19717:10 else if after return: fixed
 nats-server server/jetstream_test.go:19723:10 else if after return: fixed
 nats-server server/jetstream_test.go:22579:11 else if after return: fixed
@@ -822,24 +1109,48 @@ nats-server server/jwt.go:185:9 else if after return: fixed
 nats-server server/jwt.go:187:9 else if after return: fixed
 nats-server server/jwt.go:197:10 else if after return: fixed
 nats-server server/jwt.go:211:9 else if after return: fixed
+nats-server server/jwt_test.go:2276:9 else if after call: not fixed: "err" is already declared in the enclosing block
+nats-server server/jwt_test.go:2724:9 else if after call: not fixed: "l" is already declared in the enclosing block
+nats-server server/jwt_test.go:3458:11 else if after call: fixed
+nats-server server/jwt_test.go:3474:11 else if after call: fixed
+nats-server server/jwt_test.go:5033:11 else if after call: fixed
+nats-server server/jwt_test.go:5341:10 else if after call: not fixed: "err" is already declared in the enclosing block
+nats-server server/jwt_test.go:5352:10 else if after call: not fixed: "err" is already declared in the enclosing block
+nats-server server/jwt_test.go:5627:10 else if after call: fixed
 nats-server server/leafnode.go:354:10 else after return: fixed
 nats-server server/leafnode.go:3886:10 else if after return: fixed
+nats-server server/leafnode_test.go:1815:9 else if after call: fixed
 nats-server server/leafnode_test.go:2040:12 else if after return: fixed
 nats-server server/leafnode_test.go:5534:14 else if after return: fixed
 nats-server server/memstore.go:573:12 else after continue: fixed
 nats-server server/memstore.go:1446:11 else if after return: fixed
 nats-server server/memstore.go:1448:11 else after return: fixed
+nats-server server/memstore_test.go:41:9 else if after call: not fixed: "err" is already declared in the enclosing block
+nats-server server/memstore_test.go:43:9 else if after call: not fixed: an earlier "else" in the chain is not fixed automatically
+nats-server server/memstore_test.go:640:9 else after call: fixed
+nats-server server/memstore_test.go:657:9 else after call: not fixed: "st" is also moved into the enclosing block by an earlier fix; "expected" is also moved into the enclosing block by an earlier fix; "received" is also moved into the enclosing block by an earlier fix
 nats-server server/monitor.go:1207:10 else if after return: fixed
 nats-server server/monitor.go:2864:9 else after return: fixed
+nats-server server/monitor_test.go:1649:11 else if after call: fixed
+nats-server server/monitor_test.go:2587:10 else if after call: fixed
+nats-server server/monitor_test.go:2589:10 else after call: fixed
 nats-server server/mqtt.go:1445:9 else if after return: not fixed: "err" is already declared in the enclosing block; "si" is already declared in the enclosing block
 nats-server server/mqtt.go:1464:9 else if after return: not fixed: "err" is already declared in the enclosing block; "si" is already declared in the enclosing block
 nats-server server/mqtt.go:1480:9 else if after return: not fixed: "err" is already declared in the enclosing block; "si" is already declared in the enclosing block
 nats-server server/mqtt.go:1502:9 else if after return: not fixed: "err" is already declared in the enclosing block; "si" is already declared in the enclosing block
 nats-server server/mqtt.go:1783:11 else after return: fixed
 nats-server server/mqtt.go:3960:9 else if after return: not fixed: "err" is already declared in the enclosing block
+nats-server server/mqtt_test.go:566:11 else if after call: fixed
 nats-server server/mqtt_test.go:740:11 else if after return: fixed
+nats-server server/mqtt_test.go:1196:12 else if after call: fixed
 nats-server server/mqtt_test.go:2874:12 else after return: fixed
+nats-server server/mqtt_test.go:3075:10 else if after call: fixed
+nats-server server/mqtt_test.go:3080:10 else if after call: not fixed: "ok" is also moved into the enclosing block by an earlier fix; "sub" is also moved into the enclosing block by an earlier fix
+nats-server server/mqtt_test.go:3086:10 else if after call: not fixed: "ok" is also moved into the enclosing block by an earlier fix; "sub" is also moved into the enclosing block by an earlier fix
 nats-server server/mqtt_test.go:7818:11 else if after return: fixed
+nats-server server/msgtrace_test.go:3927:10 else after call: fixed
+nats-server server/msgtrace_test.go:3944:10 else after call: fixed
+nats-server server/norace_1_test.go:4129:9 else if after call: fixed
 nats-server server/norace_1_test.go:5788:10 else if after return: fixed
 nats-server server/norace_1_test.go:7326:10 else if after return: fixed
 nats-server server/norace_2_test.go:238:11 else after return: fixed
@@ -870,11 +1181,25 @@ nats-server server/opts.go:5369:13 else after nested if: fixed
 nats-server server/opts.go:5664:12 else after continue: fixed
 nats-server server/opts.go:6385:9 else if after return: fixed
 nats-server server/opts.go:6388:9 else if after return: fixed
+nats-server server/opts_test.go:1016:10 else if after call: fixed
+nats-server server/opts_test.go:1018:10 else if after call: fixed
+nats-server server/opts_test.go:1020:10 else if after call: fixed
+nats-server server/opts_test.go:1336:9 else after call: fixed
+nats-server server/opts_test.go:2005:10 else if after call: fixed
+nats-server server/opts_test.go:2007:10 else if after call: fixed
+nats-server server/opts_test.go:2349:11 else if after call: fixed
+nats-server server/opts_test.go:2868:12 else if after call: fixed
+nats-server server/opts_test.go:2907:11 else if after call: fixed
+nats-server server/opts_test.go:2951:11 else after call: not fixed: "err" is already declared in the enclosing block
+nats-server server/opts_test.go:3001:9 else if after call: fixed
+nats-server server/opts_test.go:3071:9 else if after call: fixed
+nats-server server/opts_test.go:3121:9 else if after call: fixed
 nats-server server/opts_test.go:3700:11 else after return: fixed
 nats-server server/opts_test.go:3822:11 else after return: fixed
 nats-server server/parser.go:1309:10 else after return: fixed
 nats-server server/parser.go:1315:10 else after return: fixed
 nats-server server/parser.go:1321:10 else after return: fixed
+nats-server server/parser_test.go:1087:13 else if after call: fixed
 nats-server server/raft.go:1942:10 else if after return: fixed
 nats-server server/raft.go:1964:9 else if after return: fixed
 nats-server server/raft.go:1967:9 else if after return: fixed
@@ -883,6 +1208,7 @@ nats-server server/raft.go:2760:9 else after return: fixed
 nats-server server/raft.go:3454:10 else if after return: fixed
 nats-server server/raft.go:3938:10 else after return: fixed
 nats-server server/raft.go:4408:12 else if after return: fixed
+nats-server server/raft_chain_of_blocks_helpers_test.go:250:9 else if after call: fixed
 nats-server server/raft_test.go:6057:10 else after return: fixed
 nats-server server/raft_test.go:6273:10 else after return: fixed
 nats-server server/raft_test.go:6313:10 else after return: fixed
@@ -890,6 +1216,11 @@ nats-server server/reload.go:1296:9 else if after return: fixed
 nats-server server/reload.go:1904:11 else after return: fixed
 nats-server server/reload.go:2427:9 else if after return: fixed
 nats-server server/reload_test.go:1905:10 else after break: fixed
+nats-server server/reload_test.go:2506:10 else if after call: fixed
+nats-server server/reload_test.go:3388:10 else if after call: fixed
+nats-server server/reload_test.go:3403:10 else if after call: fixed
+nats-server server/reload_test.go:4734:9 else if after call: fixed
+nats-server server/reload_test.go:4836:10 else after call: fixed
 nats-server server/route.go:1180:10 else if after return: fixed
 nats-server server/route.go:2707:9 else if after return: fixed
 nats-server server/routes_test.go:687:11 else after continue: fixed
@@ -902,10 +1233,16 @@ nats-server server/server.go:1648:9 else if after return: fixed
 nats-server server/server.go:2451:15 else if after continue: fixed
 nats-server server/server.go:4804:9 else if after return: fixed
 nats-server server/server.go:4833:9 else after return: fixed
+nats-server server/server_test.go:865:9 else if after call: fixed
+nats-server server/server_test.go:1687:10 else if after call: fixed
 nats-server server/server_test.go:1938:11 else if after return: fixed
 nats-server server/server_test.go:1986:11 else if after return: fixed
 nats-server server/server_test.go:2101:11 else if after return: fixed
 nats-server server/server_test.go:2164:11 else if after return: fixed
+nats-server server/server_test.go:2342:12 else if after call: fixed
+nats-server server/server_test.go:2344:12 else if after call: fixed
+nats-server server/server_test.go:2346:12 else if after call: fixed
+nats-server server/server_test.go:2348:12 else after call: fixed
 nats-server server/store_test.go:541:14 else if after return: fixed
 nats-server server/store_test.go:545:14 else after return: fixed
 nats-server server/store_test.go:627:14 else if after return: fixed
@@ -933,18 +1270,32 @@ nats-server server/stream.go:6951:12 else after return: fixed
 nats-server server/stree/dump.go:62:9 else after return: fixed
 nats-server server/stree/parts.go:107:11 else if after continue: fixed
 nats-server server/stree/stree.go:223:10 else after return: fixed
+nats-server server/stree/stree_test.go:486:10 else if after call: fixed
 nats-server server/subject_transform.go:264:12 else after return: fixed
 nats-server server/sublist.go:1300:11 else after return: fixed
 nats-server server/sublist.go:1363:9 else if after return: fixed
 nats-server server/sublist.go:1724:11 else if after return: fixed
 nats-server server/sublist.go:1741:10 else if after return: fixed
+nats-server server/util_test.go:107:10 else if after call: fixed
+nats-server server/websocket_test.go:1211:11 else if after call: fixed
 nats-server server/websocket_test.go:1775:11 else if after return: fixed
+nats-server server/websocket_test.go:1868:11 else if after call: fixed
 nats-server server/websocket_test.go:2307:12 else if after continue: fixed
+nats-server server/websocket_test.go:2607:12 else if after call: fixed
+nats-server server/websocket_test.go:2711:12 else if after call: fixed
+nats-server server/websocket_test.go:3753:11 else if after call: fixed
+nats-server server/websocket_test.go:3799:11 else if after call: fixed
+nats-server server/websocket_test.go:3891:11 else if after call: fixed
+nats-server server/websocket_test.go:4023:11 else if after call: fixed
+nats-server server/websocket_test.go:4221:11 else if after call: fixed
+nats-server test/fanout_test.go:121:10 else after call: fixed
+nats-server test/operator_test.go:177:9 else if after call: fixed
 nats-server test/ports_test.go:37:10 else after continue: fixed
 nats-server test/user_authorization_test.go:193:10 else after continue: fixed
 esbuild cmd/esbuild/main.go:271:11 else after return: fixed
 esbuild cmd/esbuild/main.go:282:11 else after return: fixed
 esbuild cmd/esbuild/main.go:294:11 else after return: fixed
+esbuild cmd/esbuild/main.go:367:15 else after call: fixed
 esbuild cmd/esbuild/service.go:653:10 else after return: fixed
 esbuild cmd/esbuild/service.go:892:10 else after return: fixed
 esbuild cmd/esbuild/service.go:898:10 else after return: not fixed: "callbacks" is also moved into the enclosing block by an earlier fix; "err" is also moved into the enclosing block by an earlier fix
@@ -981,6 +1332,7 @@ esbuild internal/css_parser/css_parser_media.go:355:9 else after return: fixed
 esbuild internal/css_parser/css_reduce_calc.go:478:10 else if after return: fixed
 esbuild internal/fs/filepath.go:187:10 else if after break: fixed
 esbuild internal/fs/filepath.go:190:10 else if after continue: fixed
+esbuild internal/helpers/dataurl_test.go:15:10 else if after call: fixed
 esbuild internal/helpers/quote.go:15:9 else after return: fixed
 esbuild internal/js_ast/js_ast.go:1661:10 else after return: fixed
 esbuild internal/js_ast/js_ast_helpers.go:156:10 else after return: fixed
@@ -998,12 +1350,15 @@ esbuild internal/js_ast/js_ast_helpers.go:1536:11 else after nested if: fixed
 esbuild internal/js_ast/js_ast_helpers.go:2123:12 else after return: fixed
 esbuild internal/js_ast/js_ast_helpers.go:2163:11 else after return: fixed
 esbuild internal/js_ast/js_ast_helpers.go:2173:11 else after return: fixed
+esbuild internal/js_lexer/js_lexer.go:388:10 else after call: fixed
+esbuild internal/js_lexer/js_lexer.go:515:9 else after call: fixed
 esbuild internal/js_lexer/js_lexer.go:1721:9 else after return: fixed
 esbuild internal/js_parser/js_parser.go:595:9 else after return: fixed
 esbuild internal/js_parser/js_parser.go:1915:9 else after return: fixed
 esbuild internal/js_parser/js_parser.go:1930:9 else after return: fixed
 esbuild internal/js_parser/js_parser.go:2026:11 else if after break: fixed
 esbuild internal/js_parser/js_parser.go:4166:10 else if after return: fixed
+esbuild internal/js_parser/js_parser.go:7868:12 else after call: fixed
 esbuild internal/js_parser/js_parser.go:8065:14 else if after return: fixed
 esbuild internal/js_parser/js_parser.go:8068:14 else after break: fixed
 esbuild internal/js_parser/js_parser.go:9457:13 else if after continue: fixed
@@ -1091,10 +1446,12 @@ x-net html/token.go:662:10 else if after return: fixed
 x-net http2/clientconn_go126_test.go:50:9 else after return: fixed
 x-net http2/frame.go:1818:10 else after return: fixed
 x-net http2/frame_test.go:1340:12 else after return: fixed
+x-net http2/hpack/hpack_test.go:21:9 else after call: fixed
 x-net http2/server.go:2945:9 else after return: fixed
 x-net http2/transport.go:135:10 else if after return: fixed
 x-net http2/transport.go:1926:10 else if after continue: fixed
 x-net http2/transport_common.go:450:9 else if after return: fixed
+x-net http2/transport_test.go:3676:9 else if after call: fixed
 x-net http2/write.go:256:9 else after return: fixed
 x-net http2/write.go:305:9 else after return: fixed
 x-net icmp/diag_test.go:186:9 else if after return: not fixed: "err" is already declared in the enclosing block; "n" is already declared in the enclosing block
@@ -1104,38 +1461,96 @@ x-net internal/httpcommon/request.go:171:11 else if after continue: fixed
 x-net internal/httpsfv/httpsfv.go:547:9 else after return: not fixed: "ok" is already declared in the enclosing block
 x-net internal/socket/socket_dontwait_test.go:63:11 else if after break: fixed
 x-net internal/socket/socket_dontwait_test.go:72:11 else if after break: fixed
+x-net ipv4/multicast_test.go:108:11 else if after call: not fixed: "err" is already declared in the enclosing block
+x-net ipv4/multicast_test.go:114:11 else if after call: not fixed: "err" is already declared in the enclosing block; "n" is also moved into the enclosing block by an earlier fix
+x-net ipv4/multicast_test.go:221:12 else if after call: not fixed: "err" is already declared in the enclosing block
+x-net ipv4/multicast_test.go:227:12 else after call: not fixed: "err" is already declared in the enclosing block; "n" is also moved into the enclosing block by an earlier fix; "err" is already declared in the enclosing block
+x-net ipv4/multicast_test.go:340:11 else after call: not fixed: "err" is already declared in the enclosing block; "err" is already declared in the enclosing block
 x-net ipv4/multicastsockopt_test.go:120:9 else if after return: fixed
 x-net ipv4/multicastsockopt_test.go:133:10 else if after return: fixed
+x-net ipv4/unicast_test.go:74:10 else if after call: fixed
+x-net ipv4/unicast_test.go:149:10 else after call: not fixed: "err" is already declared in the enclosing block; "err" is already declared in the enclosing block
+x-net ipv4/unicast_test.go:224:10 else after call: not fixed: "err" is already declared in the enclosing block; "err" is already declared in the enclosing block
+x-net ipv4/unicastsockopt_test.go:131:9 else if after call: fixed
+x-net ipv4/unicastsockopt_test.go:140:9 else if after call: not fixed: "err" is also moved into the enclosing block by an earlier fix; "v" is also moved into the enclosing block by an earlier fix
+x-net ipv6/icmp_test.go:85:9 else if after call: not fixed: "err" is already declared in the enclosing block
+x-net ipv6/multicast_test.go:125:11 else if after call: fixed
+x-net ipv6/multicast_test.go:256:11 else if after call: not fixed: "err" is already declared in the enclosing block
+x-net ipv6/multicast_test.go:267:11 else after call: not fixed: "err" is already declared in the enclosing block; "n" is also moved into the enclosing block by an earlier fix; "err" is already declared in the enclosing block
+x-net ipv6/multicast_test.go:270:12 else if after call: fixed
 x-net ipv6/multicastsockopt_test.go:86:9 else if after return: fixed
 x-net ipv6/multicastsockopt_test.go:99:10 else if after return: fixed
+x-net ipv6/sockopt_test.go:46:9 else after call: not fixed: "err" is already declared in the enclosing block
+x-net ipv6/sockopt_test.go:79:9 else after call: not fixed: "err" is already declared in the enclosing block
+x-net ipv6/sockopt_test.go:106:10 else if after call: fixed
+x-net ipv6/sockopt_test.go:109:11 else after call: fixed
+x-net ipv6/sockopt_test.go:117:10 else after call: not fixed: "err" is also moved into the enclosing block by an earlier fix
+x-net ipv6/unicast_test.go:81:10 else if after call: fixed
+x-net ipv6/unicast_test.go:124:9 else if after call: not fixed: "err" is already declared in the enclosing block
+x-net ipv6/unicast_test.go:186:10 else after call: not fixed: "err" is already declared in the enclosing block; "err" is already declared in the enclosing block
+x-net ipv6/unicast_test.go:189:11 else if after call: fixed
+x-net ipv6/unicastsockopt_test.go:103:9 else if after call: fixed
+x-net ipv6/unicastsockopt_test.go:113:9 else if after call: not fixed: "err" is also moved into the enclosing block by an earlier fix; "v" is also moved into the enclosing block by an earlier fix
 x-net quic/conn_send.go:288:10 else if after return: fixed
 x-net quic/conn_streams.go:177:9 else after return: fixed
 x-net quic/conn_test.go:521:11 else after return: fixed
 x-net quic/conn_test.go:531:11 else after return: fixed
+x-net quic/loss_test.go:1652:9 else after call: fixed
+x-net quic/loss_test.go:1716:9 else after call: fixed
 x-net quic/packet_protection.go:490:9 else after return: fixed
 x-net quic/quic.go:107:9 else after return: fixed
 x-net quic/stream_test.go:1701:9 else after return: fixed
 x-net trace/histogram.go:123:9 else if after return: fixed
 x-net trace/histogram.go:148:10 else if after return: fixed
+x-net webdav/internal/xml/read_test.go:384:9 else if after call: fixed
+x-net webdav/internal/xml/read_test.go:402:9 else if after call: fixed
 x-net webdav/internal/xml/xml.go:812:11 else after return: fixed
 x-net webdav/webdav_test.go:183:10 else after continue: not fixed: "err" is already declared in the enclosing block; "h" is already declared in the enclosing block
 x-crypto acme/autocert/renewal.go:51:10 else after return: fixed
+x-crypto acme/pebble_test.go:463:10 else after call: fixed
+x-crypto blake2b/blake2b_test.go:212:9 else if after call: not fixed: "err" is already declared in the enclosing block
+x-crypto blake2s/blake2s_test.go:235:9 else if after call: not fixed: "err" is already declared in the enclosing block
+x-crypto chacha20/chacha_generic.go:219:9 else if after call: fixed
 x-crypto cryptobyte/builder.go:246:10 else if after return: fixed
 x-crypto otr/otr.go:335:11 else after return: fixed
+x-crypto otr/otr_test.go:454:11 else after call: fixed
+x-crypto ssh/agent/client_pipeline_test.go:287:9 else if after call: fixed
+x-crypto ssh/agent/client_test.go:136:9 else if after call: not fixed: "err" is already declared in the enclosing block
+x-crypto ssh/agent/client_test.go:161:9 else if after call: not fixed: "err" is already declared in the enclosing block; "keys" is also moved into the enclosing block by an earlier fix
+x-crypto ssh/agent/client_test.go:163:9 else if after call: not fixed: an earlier "else" in the chain is not fixed automatically
+x-crypto ssh/agent/client_test.go:165:9 else if after call: not fixed: an earlier "else" in the chain is not fixed automatically
 x-crypto ssh/agent/keyring.go:65:10 else after continue: fixed
 x-crypto ssh/agent/keyring.go:223:11 else after return: fixed
 x-crypto ssh/agent/keyring.go:226:12 else after return: fixed
+x-crypto ssh/agent/keyring_test.go:45:10 else after call: fixed
 x-crypto ssh/certs.go:249:9 else if after return: not fixed: "ok" is already declared in the enclosing block
 x-crypto ssh/certs.go:503:9 else if after return: fixed
+x-crypto ssh/cipher_test.go:272:10 else if after call: fixed
+x-crypto ssh/client_auth_test.go:1379:11 else if after call: fixed
+x-crypto ssh/client_auth_test.go:1426:9 else if after call: fixed
 x-crypto ssh/handshake.go:761:9 else if after return: not fixed: "err" is already declared in the enclosing block
 x-crypto ssh/handshake_test.go:285:11 else if after break: fixed
+x-crypto ssh/handshake_test.go:1045:9 else if after call: not fixed: "err" is already declared in the enclosing block
+x-crypto ssh/handshake_test.go:1157:9 else if after call: not fixed: "err" is already declared in the enclosing block
+x-crypto ssh/handshake_test.go:1273:9 else after call: not fixed: "err" is already declared in the enclosing block
 x-crypto ssh/keys.go:1335:10 else if after return: fixed
 x-crypto ssh/keys_test.go:1122:10 else if after continue: fixed
+x-crypto ssh/knownhosts/knownhosts_test.go:78:9 else if after call: fixed
+x-crypto ssh/knownhosts/knownhosts_test.go:119:9 else if after call: fixed
+x-crypto ssh/knownhosts/knownhosts_test.go:121:9 else if after call: fixed
+x-crypto ssh/knownhosts/knownhosts_test.go:131:9 else if after call: fixed
+x-crypto ssh/knownhosts/knownhosts_test.go:133:9 else if after call: fixed
+x-crypto ssh/knownhosts/knownhosts_test.go:143:9 else if after call: fixed
+x-crypto ssh/knownhosts/knownhosts_test.go:145:9 else if after call: fixed
+x-crypto ssh/knownhosts/knownhosts_test.go:147:9 else if after call: fixed
 x-crypto ssh/server.go:710:10 else if after return: fixed
+x-crypto ssh/server_test.go:155:10 else if after call: fixed
 x-crypto ssh/server_test.go:1140:9 else after return: fixed
 x-crypto ssh/server_test.go:1149:9 else after return: fixed
+x-crypto ssh/test/recording_client_test.go:203:10 else after call: fixed
 x-crypto ssh/test/sshcli_test.go:226:10 else if after break: fixed
 x-crypto x509roots/nss/parser.go:259:10 else if after continue: fixed
+x-crypto x509roots/nss/parser_test.go:158:12 else if after call: fixed
 x-mod modfile/read.go:826:11 else if after return: fixed
 x-mod modfile/rule.go:388:10 else if after return: fixed
 x-mod modfile/rule.go:413:10 else if after return: fixed
@@ -1152,35 +1567,79 @@ x-mod sumdb/dirhash/hash.go:93:10 else if after return: fixed
 x-mod sumdb/tlog/tlog.go:445:9 else after return: fixed
 x-mod sumdb/tlog/tlog.go:598:9 else after return: fixed
 x-mod zip/zip.go:1024:9 else after return: fixed
+x-mod zip/zip_test.go:440:12 else if after call: fixed
+x-mod zip/zip_test.go:442:12 else after call: fixed
+x-mod zip/zip_test.go:445:11 else if after nested if: fixed
+x-mod zip/zip_test.go:455:11 else if after call: not fixed: "err" is already declared in the enclosing block
+x-mod zip/zip_test.go:500:12 else if after call: fixed
+x-mod zip/zip_test.go:502:12 else after call: fixed
+x-mod zip/zip_test.go:505:11 else if after nested if: fixed
+x-mod zip/zip_test.go:512:11 else if after call: not fixed: "err" is already declared in the enclosing block
+x-mod zip/zip_test.go:585:11 else if after call: not fixed: "err" is already declared in the enclosing block
+x-mod zip/zip_test.go:623:12 else if after call: fixed
+x-mod zip/zip_test.go:625:12 else after call: fixed
+x-mod zip/zip_test.go:628:11 else if after nested if: fixed
+x-mod zip/zip_test.go:636:11 else if after call: not fixed: "err" is already declared in the enclosing block
+x-mod zip/zip_test.go:763:11 else if after call: fixed
+x-mod zip/zip_test.go:765:11 else if after call: fixed
+x-mod zip/zip_test.go:775:11 else if after call: not fixed: "err" is also moved into the enclosing block by an earlier fix
+x-mod zip/zip_test.go:777:11 else if after call: not fixed: an earlier "else" in the chain is not fixed automatically
+x-mod zip/zip_test.go:832:11 else if after call: fixed
+x-mod zip/zip_test.go:834:11 else if after call: fixed
+x-mod zip/zip_test.go:844:11 else if after call: not fixed: "err" is already declared in the enclosing block
+x-mod zip/zip_test.go:846:11 else if after call: not fixed: an earlier "else" in the chain is not fixed automatically
 x-mod zip/zip_test.go:918:13 else after break: fixed
+x-mod zip/zip_test.go:963:11 else if after call: not fixed: "err" is already declared in the enclosing block
+x-mod zip/zip_test.go:965:11 else if after call: not fixed: an earlier "else" in the chain is not fixed automatically
+x-mod zip/zip_test.go:1264:11 else if after call: fixed
+x-mod zip/zip_test.go:1280:12 else after call: fixed
+x-mod zip/zip_test.go:1372:12 else if after call: fixed
+x-mod zip/zip_test.go:1374:12 else after call: fixed
 compress dict/builder.go:316:13 else after break: fixed
 compress flate/deflate.go:556:16 else after break: fixed
 compress flate/deflate.go:597:18 else after break: fixed
 compress flate/level3.go:112:11 else after break: fixed
 compress flate/token.go:373:10 else if after return: fixed
 compress flate/token.go:375:10 else after return: fixed
+compress gzhttp/compress_test.go:2010:9 else if after call: fixed
 compress gzip/gzip_test.go:485:10 else if after break: fixed
 compress internal/lz4ref/block.go:608:10 else if after break: fixed
+compress internal/snapref/encode.go:23:9 else if after call: fixed
 compress lzw/reader.go:220:10 else if after continue: fixed
 compress lzw/reader.go:343:10 else if after continue: fixed
 compress lzw/reader.go:346:10 else if after break: fixed
+compress s2/dict.go:145:9 else if after call: not fixed: "n" is already declared in the enclosing block
+compress s2/dict.go:189:9 else if after call: not fixed: "n" is already declared in the enclosing block
+compress s2/dict.go:231:9 else if after call: not fixed: "n" is already declared in the enclosing block
+compress s2/encode.go:32:9 else if after call: not fixed: "n" is already declared in the enclosing block
+compress s2/encode.go:120:9 else if after call: not fixed: "n" is already declared in the enclosing block
+compress s2/encode.go:164:9 else if after call: not fixed: "n" is already declared in the enclosing block
+compress s2/encode.go:207:9 else if after call: not fixed: "n" is already declared in the enclosing block
+compress s2/encode.go:251:9 else if after call: not fixed: "n" is already declared in the enclosing block
+compress s2/encode.go:295:9 else if after call: not fixed: "n" is already declared in the enclosing block
+compress s2/encode_all.go:35:9 else if after call: not fixed: "n" is already declared in the enclosing block
 compress s2/index.go:260:9 else after return: fixed
 compress s2/index.go:268:9 else after return: not fixed: "n" is also moved into the enclosing block by an earlier fix; "v" is also moved into the enclosing block by an earlier fix
 compress s2/index.go:276:9 else after return: not fixed: "n" is also moved into the enclosing block by an earlier fix; "v" is also moved into the enclosing block by an earlier fix
 compress s2/index.go:287:9 else after return: not fixed: "n" is also moved into the enclosing block by an earlier fix; "v" is also moved into the enclosing block by an earlier fix
 compress s2/index.go:315:11 else after return: fixed
 compress s2/index.go:342:10 else after return: fixed
+compress s2/lz4convert_test.go:116:9 else after call: fixed
 compress s2/reader.go:376:12 else after return: fixed
 compress s2/reader.go:635:12 else after return: fixed
 compress s2/writer.go:750:10 else after return: fixed
 compress zip/reader.go:265:10 else after return: fixed
 compress zip/reader.go:876:12 else after break: fixed
 compress zip/reader.go:1026:10 else if after return: fixed
+compress zip/reader_test.go:1325:9 else if after call: fixed
 compress zip/writer_test.go:130:10 else after continue: fixed
 compress zstd/seqdec.go:255:11 else after continue: fixed
 age age.go:142:9 else after return: fixed
 age age.go:371:9 else if after return: fixed
 age armor/armor.go:108:10 else if after return: fixed
+age cmd/age/age.go:436:9 else if after call: fixed
+age cmd/age/age.go:518:9 else if after call: fixed
+age cmd/age/age.go:522:9 else if after call: fixed
 age internal/format/format.go:311:9 else if after return: fixed
 age internal/stream/stream_test.go:176:11 else if after break: fixed
 age internal/term/term.go:65:9 else if after return: fixed
@@ -1196,8 +1655,18 @@ age plugin/plugin.go:457:10 else if after return: fixed
 age plugin/plugin.go:469:11 else if after return: fixed
 age plugin/plugin.go:471:11 else if after continue: fixed
 age plugin/tui.go:34:11 else after return: not fixed: "err" is already declared in the enclosing block
+age recipients_test.go:25:9 else if after call: not fixed: "err" is already declared in the enclosing block
+age recipients_test.go:30:9 else if after call: not fixed: "err" is already declared in the enclosing block
+age recipients_test.go:62:9 else if after call: not fixed: "err" is already declared in the enclosing block
+age recipients_test.go:67:9 else if after call: not fixed: "err" is already declared in the enclosing block
 age scrypt.go:208:9 else if after return: fixed
 age tag/internal/age-plugin-tagtest/plugin-tagtest.go:56:9 else if after return: fixed
+age testkit_test.go:164:9 else if after call: fixed
+age testkit_test.go:170:9 else if after call: fixed
+age testkit_test.go:176:9 else if after call: fixed
+age testkit_test.go:182:9 else if after call: fixed
+age testkit_test.go:189:9 else if after call: fixed
+age testkit_test.go:200:9 else if after return: fixed
 age x25519.go:193:9 else if after return: fixed
 encoding json/decode.go:395:9 else if after return: not fixed: "err" is already declared in the enclosing block
 encoding json/decode.go:633:11 else after return: not fixed: "err" would hide the "err" used after the "if"
@@ -1216,6 +1685,8 @@ encoding proto/proto.go:85:9 else after return: fixed
 encoding proto/proto.go:93:9 else after return: fixed
 encoding proto/proto.go:198:9 else after return: fixed
 encoding proto/reflect.go:605:9 else after return: fixed
+encoding thrift/struct.go:128:11 else if after call: fixed
+encoding thrift/struct.go:130:11 else after call: fixed
 encoding thrift/thrift.go:148:10 else after return: fixed
 encoding thrift/thrift.go:154:10 else after return: fixed
 goccy-yaml ast/ast.go:546:9 else after return: fixed
@@ -1248,3 +1719,4 @@ goccy-yaml scanner/scanner.go:368:10 else if after continue: fixed
 goccy-yaml scanner/scanner.go:552:10 else if after continue: fixed
 goccy-yaml scanner/scanner.go:577:10 else if after continue: fixed
 goccy-yaml scanner/scanner.go:715:11 else after return: fixed
+goccy-yaml yaml_test.go:248:9 else after call: fixed

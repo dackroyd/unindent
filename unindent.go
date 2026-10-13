@@ -11,8 +11,10 @@ import (
 	"strings"
 
 	"golang.org/x/tools/go/analysis"
+	"golang.org/x/tools/go/analysis/passes/ctrlflow"
 	"golang.org/x/tools/go/analysis/passes/inspect"
 	"golang.org/x/tools/go/ast/inspector"
+	"golang.org/x/tools/go/types/typeutil"
 )
 
 type analyzer struct{}
@@ -24,7 +26,7 @@ func NewAnalyzer() *analysis.Analyzer {
 	return &analysis.Analyzer{
 		Doc:      "Identifies unnecessarily indented code",
 		Name:     "unindent",
-		Requires: []*analysis.Analyzer{inspect.Analyzer},
+		Requires: []*analysis.Analyzer{inspect.Analyzer, ctrlflow.Analyzer, buildAnalyzer},
 		Run:      a.run,
 		URL:      "https://github.com/dackroyd/unindent",
 	}
@@ -32,6 +34,19 @@ func NewAnalyzer() *analysis.Analyzer {
 
 type nodeInfo struct {
 	Returns bool
+	// Dependent lists the calls that never return only in some builds that the if, or an earlier link of its chain,
+	// relies on to exit.
+	Dependent []string
+}
+
+// checker holds what the analysis of one package needs: the type information, and which functions never return.
+type checker struct {
+	pass   *analysis.Pass
+	cfgs   *ctrlflow.CFGs
+	builds *buildDependents
+	// strict counts the calls that never return only in some builds as returning, and records them in dependent.
+	strict    bool
+	dependent []string
 }
 
 func (analyzer) run(pass *analysis.Pass) (interface{}, error) {
@@ -39,6 +54,18 @@ func (analyzer) run(pass *analysis.Pass) (interface{}, error) {
 	if !ok {
 		return nil, fmt.Errorf("unexpected analyzer type for initial inspection %T", pass.ResultOf[inspect.Analyzer])
 	}
+
+	cfgs, ok := pass.ResultOf[ctrlflow.Analyzer].(*ctrlflow.CFGs)
+	if !ok {
+		return nil, fmt.Errorf("unexpected analyzer type for control flow %T", pass.ResultOf[ctrlflow.Analyzer])
+	}
+
+	builds, ok := pass.ResultOf[buildAnalyzer].(*buildDependents)
+	if !ok {
+		return nil, fmt.Errorf("unexpected analyzer type for build-dependent calls %T", pass.ResultOf[buildAnalyzer])
+	}
+
+	c := &checker{pass: pass, cfgs: cfgs, builds: builds}
 
 	// Track the analysis of the stack to use when evaluating deeper elements.
 	infoStack := []nodeInfo{{Returns: true}}
@@ -51,7 +78,7 @@ func (analyzer) run(pass *analysis.Pass) (interface{}, error) {
 
 		if push {
 			parentInfo := infoStack[len(infoStack)-1]
-			info := analyze(pass, stmt, stack, parentInfo)
+			info := c.analyze(stmt, stack, parentInfo)
 
 			infoStack = append(infoStack, info)
 
@@ -66,28 +93,50 @@ func (analyzer) run(pass *analysis.Pass) (interface{}, error) {
 	return analysis.Fact(nil), nil
 }
 
-func analyze(pass *analysis.Pass, stmt *ast.IfStmt, stack []ast.Node, parentInfo nodeInfo) nodeInfo {
+func (c *checker) analyze(stmt *ast.IfStmt, stack []ast.Node, parentInfo nodeInfo) nodeInfo {
 	parent, ok := stack[len(stack)-2].(*ast.IfStmt)
 	if ok && parent.Else == stmt && !parentInfo.Returns {
 		// This is an 'else if' where the 'if' doesn't return, so the 'else' is not redundant
 		return nodeInfo{}
 	}
 
-	if !ifAlwaysReturns(stmt, false) {
+	if !c.ifAlwaysReturns(stmt, false) {
 		return nodeInfo{}
 	}
 
-	reportUnnecessaryElse(pass, stmt, stack)
+	var dependent []string
+	if ok && parent.Else == stmt {
+		dependent = parentInfo.Dependent
+	}
 
-	return nodeInfo{Returns: true}
+	dependent = slices.Concat(dependent, c.buildDependentExits(stmt))
+
+	c.reportUnnecessaryElse(stmt, stack, dependent)
+
+	return nodeInfo{Returns: true, Dependent: dependent}
+}
+
+// buildDependentExits returns the calls that never return only in some builds that stmt's body needs to exit, if it
+// does not exit in every build.
+func (c *checker) buildDependentExits(stmt *ast.IfStmt) []string {
+	c.strict, c.dependent = true, nil
+	defer func() { c.strict = false }()
+
+	if c.ifAlwaysReturns(stmt, false) {
+		return nil
+	}
+
+	slices.Sort(c.dependent)
+
+	return slices.Compact(c.dependent)
 }
 
 // alwaysReturns reports whether s always leaves the block it is in. inSwitch is set within the cases of a switch, where an
 // unlabeled break only leaves the switch.
-func alwaysReturns(s ast.Node, inSwitch bool) bool {
+func (c *checker) alwaysReturns(s ast.Node, inSwitch bool) bool {
 	switch t := s.(type) {
 	case *ast.BlockStmt:
-		return blockAlwaysReturns(t, inSwitch)
+		return c.blockAlwaysReturns(t, inSwitch)
 	case *ast.ReturnStmt:
 		return true
 	case *ast.BranchStmt:
@@ -99,37 +148,77 @@ func alwaysReturns(s ast.Node, inSwitch bool) bool {
 
 		return t.Tok == token.BREAK || t.Tok == token.CONTINUE
 	case *ast.IfStmt:
-		if !ifAlwaysReturns(t, inSwitch) {
+		if !c.ifAlwaysReturns(t, inSwitch) {
 			return false
 		}
 
 		// When we're looking into nested if/else of the IfStmt being analyzed,
 		// we must also evaluate the else cases as part of the body of our main if
-		return alwaysReturns(t.Else, inSwitch)
+		return c.alwaysReturns(t.Else, inSwitch)
+	case *ast.ExprStmt:
+		call, ok := t.X.(*ast.CallExpr)
+
+		return ok && c.neverReturns(call)
 	case *ast.SwitchStmt:
-		return switchAlwaysReturns(t)
+		return c.switchAlwaysReturns(t)
 	case *ast.TypeSwitchStmt:
-		return typeswitchAlwaysReturns(t)
+		return c.typeswitchAlwaysReturns(t)
 	}
 
 	return false
 }
 
-func ifAlwaysReturns(stmt *ast.IfStmt, inSwitch bool) bool {
+// testingExits are the methods of testing.T, B, F and TB that stop the test by calling runtime.Goexit.
+var testingExits = []string{"Fatal", "Fatalf", "FailNow", "Skip", "Skipf", "SkipNow"}
+
+// neverReturns reports whether call never returns to its caller: a panic, a call to testing.TB's methods that stop the
+// test, or a function the control flow analysis finds cannot return, such as os.Exit, log.Fatal or a function that
+// always calls one of them.
+func (c *checker) neverReturns(call *ast.CallExpr) bool {
+	if id, ok := ast.Unparen(call.Fun).(*ast.Ident); ok {
+		if b, ok := c.pass.TypesInfo.Uses[id].(*types.Builtin); ok {
+			return b.Name() == "panic"
+		}
+	}
+
+	fn := typeutil.Callee(c.pass.TypesInfo, call)
+
+	f, ok := fn.(*types.Func)
+	if !ok {
+		return false
+	}
+
+	if f.Pkg() != nil && f.Pkg().Path() == "testing" && slices.Contains(testingExits, f.Name()) {
+		return true
+	}
+
+	if !c.cfgs.NoReturn(f) {
+		return false
+	}
+
+	if c.strict && c.builds.Has(f) {
+		c.dependent = append(c.dependent, mustFormatNode(call.Fun))
+		return false
+	}
+
+	return true
+}
+
+func (c *checker) ifAlwaysReturns(stmt *ast.IfStmt, inSwitch bool) bool {
 	if stmt.Else == nil {
 		return false
 	}
 
-	return blockAlwaysReturns(stmt.Body, inSwitch)
+	return c.blockAlwaysReturns(stmt.Body, inSwitch)
 }
 
-func blockAlwaysReturns(block *ast.BlockStmt, inSwitch bool) bool {
+func (c *checker) blockAlwaysReturns(block *ast.BlockStmt, inSwitch bool) bool {
 	// Where the return statement is declared directly in the block, it should be the last statement
 	// However, Go allows other statements after this, even if they can never be reached
 	for i := len(block.List) - 1; i >= 0; i-- {
 		b := block.List[i]
 
-		if alwaysReturns(b, inSwitch) {
+		if c.alwaysReturns(b, inSwitch) {
 			return true
 		}
 	}
@@ -137,29 +226,29 @@ func blockAlwaysReturns(block *ast.BlockStmt, inSwitch bool) bool {
 	return false
 }
 
-func switchAlwaysReturns(s *ast.SwitchStmt) bool {
-	return switchBodyAlwaysReturns(s.Body)
+func (c *checker) switchAlwaysReturns(s *ast.SwitchStmt) bool {
+	return c.switchBodyAlwaysReturns(s.Body)
 }
 
-func typeswitchAlwaysReturns(s *ast.TypeSwitchStmt) bool {
-	return switchBodyAlwaysReturns(s.Body)
+func (c *checker) typeswitchAlwaysReturns(s *ast.TypeSwitchStmt) bool {
+	return c.switchBodyAlwaysReturns(s.Body)
 }
 
-func switchBodyAlwaysReturns(body *ast.BlockStmt) bool {
+func (c *checker) switchBodyAlwaysReturns(body *ast.BlockStmt) bool {
 	var defaultReturns bool
 
 	for _, b := range body.List {
-		c, ok := b.(*ast.CaseClause)
+		clause, ok := b.(*ast.CaseClause)
 		if !ok {
-			panic(fmt.Sprintf("unexpected switch body statement %+v", c))
+			panic(fmt.Sprintf("unexpected switch body statement %+v", b))
 		}
 
-		if c.List == nil {
-			defaultReturns = caseAlwaysReturns(c)
+		if clause.List == nil {
+			defaultReturns = c.caseAlwaysReturns(clause)
 			continue
 		}
 
-		if !caseAlwaysReturns(c) {
+		if !c.caseAlwaysReturns(clause) {
 			return false
 		}
 	}
@@ -167,11 +256,11 @@ func switchBodyAlwaysReturns(body *ast.BlockStmt) bool {
 	return defaultReturns
 }
 
-func caseAlwaysReturns(c *ast.CaseClause) bool {
-	for i := len(c.Body) - 1; i >= 0; i-- {
-		cb := c.Body[i]
+func (c *checker) caseAlwaysReturns(clause *ast.CaseClause) bool {
+	for i := len(clause.Body) - 1; i >= 0; i-- {
+		cb := clause.Body[i]
 
-		if alwaysReturns(cb, true) {
+		if c.alwaysReturns(cb, true) {
 			return true
 		}
 	}
@@ -179,7 +268,11 @@ func caseAlwaysReturns(c *ast.CaseClause) bool {
 	return false
 }
 
-func reportUnnecessaryElse(pass *analysis.Pass, stmt *ast.IfStmt, stack []ast.Node) {
+// reportUnnecessaryElse reports the else of stmt, with a fix unless the fix would not compile or would change
+// behaviour, as it would in a build where one of the dependent calls returns.
+func (c *checker) reportUnnecessaryElse(stmt *ast.IfStmt, stack []ast.Node, dependent []string) {
+	pass := c.pass
+
 	var (
 		args      []any
 		msg       strings.Builder
@@ -188,9 +281,14 @@ func reportUnnecessaryElse(pass *analysis.Pass, stmt *ast.IfStmt, stack []ast.No
 
 	edits := []analysis.TextEdit{}
 	links, enclosing := chainLinks(stack)
-	conflicts = initConflicts(pass.TypesInfo, links, enclosing)
 
-	msg.WriteString(`Unnecessary "else": preceding conditions always end in a "return", "break" or "continue". `)
+	for _, call := range dependent {
+		conflicts = append(conflicts, fmt.Sprintf("%q never returns only in some builds", call))
+	}
+
+	conflicts = append(conflicts, c.initConflicts(pass.TypesInfo, links, enclosing)...)
+
+	msg.WriteString(`Unnecessary "else": preceding conditions always end in a "return", "break", "continue" or a call that never returns. `)
 
 	if hoistsInit(stmt) {
 		in := nodeSource(pass, stmt.Init)
@@ -235,7 +333,7 @@ func reportUnnecessaryElse(pass *analysis.Pass, stmt *ast.IfStmt, stack []ast.No
 
 		msg.WriteString(` wrapping the block of statements`)
 
-		conflicts = append(conflicts, moveConflicts(pass.TypesInfo, els, links, enclosing)...)
+		conflicts = append(conflicts, c.moveConflicts(pass.TypesInfo, els, links, enclosing)...)
 	default:
 		pass.Reportf(els.Pos(), `Unexpected ast in "else": %s`, mustFormatNode(stmt.Else))
 		return
@@ -288,7 +386,7 @@ func hoistsInit(stmt *ast.IfStmt) bool {
 // initConflicts describes why the fix for the last link cannot move initialisers into the block enclosing the chain.
 // Every earlier link with a hoisted initialiser moves it into the same block. The rest of the chain uses what that
 // initialiser declares, so when an earlier one cannot move, no later link can be fixed either.
-func initConflicts(info *types.Info, links []*ast.IfStmt, enclosing ast.Node) []string {
+func (c *checker) initConflicts(info *types.Info, links []*ast.IfStmt, enclosing ast.Node) []string {
 	if enclosing == nil {
 		return nil
 	}
@@ -296,7 +394,7 @@ func initConflicts(info *types.Info, links []*ast.IfStmt, enclosing ast.Node) []
 	var conflicts []string
 
 	for i := range links[:len(links)-1] {
-		if hoistsInit(links[i]) && len(initConflicts(info, links[:i+1], enclosing)) > 0 {
+		if hoistsInit(links[i]) && len(c.initConflicts(info, links[:i+1], enclosing)) > 0 {
 			conflicts = append(conflicts, `an earlier "else" in the chain is not fixed automatically`)
 			break
 		}
@@ -310,7 +408,7 @@ func initConflicts(info *types.Info, links []*ast.IfStmt, enclosing ast.Node) []
 	}
 
 	outer := headScope.Parent()
-	earlier := movedBefore(info, enclosing, links[0])
+	earlier := c.movedBefore(info, enclosing, links[0])
 
 	for _, name := range stmtScope.Names() {
 		switch {
@@ -342,7 +440,7 @@ func hoistedBefore(info *types.Info, links []*ast.IfStmt, name string) bool {
 // moveConflicts describes the names declared at the top level of els that cannot move into the block enclosing the
 // if/else chain: a name already declared in that block or by a hoisted initialiser, or one that would hide a variable
 // used after the chain.
-func moveConflicts(info *types.Info, els *ast.BlockStmt, links []*ast.IfStmt, enclosing ast.Node) []string {
+func (c *checker) moveConflicts(info *types.Info, els *ast.BlockStmt, links []*ast.IfStmt, enclosing ast.Node) []string {
 	head := links[0]
 	elseScope, headScope := info.Scopes[els], info.Scopes[head]
 	if elseScope == nil || headScope == nil || enclosing == nil {
@@ -350,11 +448,11 @@ func moveConflicts(info *types.Info, els *ast.BlockStmt, links []*ast.IfStmt, en
 	}
 
 	outer := headScope.Parent()
-	earlier := movedBefore(info, enclosing, head)
+	earlier := c.movedBefore(info, enclosing, head)
 
 	var conflicts []string
 
-	for _, name := range movedNames(info, els) {
+	for _, name := range c.movedNames(info, els) {
 		if outer.Lookup(name) != nil {
 			conflicts = append(conflicts, fmt.Sprintf("%q is already declared in the enclosing block", name))
 			continue
@@ -381,7 +479,7 @@ func moveConflicts(info *types.Info, els *ast.BlockStmt, links []*ast.IfStmt, en
 // movedNames returns the names that end up declared at the top level of els once the fixes inside it are applied: its
 // own declarations, the initialisers that fixes of if/else chains directly inside it move up, and recursively the
 // declarations of the else blocks those fixes move up.
-func movedNames(info *types.Info, els *ast.BlockStmt) []string {
+func (c *checker) movedNames(info *types.Info, els *ast.BlockStmt) []string {
 	scope := info.Scopes[els]
 	if scope == nil {
 		return nil
@@ -390,7 +488,7 @@ func movedNames(info *types.Info, els *ast.BlockStmt) []string {
 	names := scope.Names()
 
 	for _, stmt := range els.List {
-		names = append(names, chainMovedNames(info, stmt)...)
+		names = append(names, c.chainMovedNames(info, stmt)...)
 	}
 
 	slices.Sort(names)
@@ -399,7 +497,7 @@ func movedNames(info *types.Info, els *ast.BlockStmt) []string {
 }
 
 // movedBefore returns the names that fixes of if/else chains before head move into enclosing.
-func movedBefore(info *types.Info, enclosing ast.Node, head *ast.IfStmt) []string {
+func (c *checker) movedBefore(info *types.Info, enclosing ast.Node, head *ast.IfStmt) []string {
 	var list []ast.Stmt
 
 	switch n := enclosing.(type) {
@@ -418,7 +516,7 @@ func movedBefore(info *types.Info, enclosing ast.Node, head *ast.IfStmt) []strin
 			break
 		}
 
-		names = append(names, chainMovedNames(info, stmt)...)
+		names = append(names, c.chainMovedNames(info, stmt)...)
 	}
 
 	return names
@@ -426,7 +524,7 @@ func movedBefore(info *types.Info, enclosing ast.Node, head *ast.IfStmt) []strin
 
 // chainMovedNames returns the names that the fixes of the if/else chain at stmt move into the block holding it: the
 // initialisers they hoist, and the declarations of the else block they move up, including what fixes inside it move.
-func chainMovedNames(info *types.Info, stmt ast.Stmt) []string {
+func (c *checker) chainMovedNames(info *types.Info, stmt ast.Stmt) []string {
 	if labeled, ok := stmt.(*ast.LabeledStmt); ok {
 		stmt = labeled.Stmt
 	}
@@ -435,7 +533,7 @@ func chainMovedNames(info *types.Info, stmt ast.Stmt) []string {
 
 	var names []string
 
-	for link != nil && ifAlwaysReturns(link, false) {
+	for link != nil && c.ifAlwaysReturns(link, false) {
 		if s := info.Scopes[link]; s != nil && hoistsInit(link) {
 			names = append(names, s.Names()...)
 		}
@@ -444,7 +542,7 @@ func chainMovedNames(info *types.Info, stmt ast.Stmt) []string {
 		case *ast.IfStmt:
 			link = e
 		case *ast.BlockStmt:
-			names = append(names, movedNames(info, e)...)
+			names = append(names, c.movedNames(info, e)...)
 			link = nil
 		}
 	}

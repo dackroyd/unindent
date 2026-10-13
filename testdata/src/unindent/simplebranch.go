@@ -5,7 +5,7 @@ func ContainsBreak(s []int, x int) (attempts int, present bool) {
 		if v == x {
 			present = true
 			break
-		} else { // want `^Unnecessary "else": preceding conditions always end in a "return", "break" or "continue". Remove the "else" wrapping the block of statements$`
+		} else { // want `^Unnecessary "else": preceding conditions always end in a "return", "break", "continue" or a call that never returns. Remove the "else" wrapping the block of statements$`
 			attempts++
 		}
 	}
@@ -18,7 +18,7 @@ func ContainsContinue(s []int, x int) (attempts int, present bool) {
 		if v != x {
 			attempts++
 			continue
-		} else { // want `^Unnecessary "else": preceding conditions always end in a "return", "break" or "continue". Remove the "else" wrapping the block of statements$`
+		} else { // want `^Unnecessary "else": preceding conditions always end in a "return", "break", "continue" or a call that never returns. Remove the "else" wrapping the block of statements$`
 			return attempts, true
 		}
 	}
@@ -31,10 +31,10 @@ func CountingContains(s []int, x int) (smaller, larger int, present bool) {
 		if v > x {
 			larger++
 			continue
-		} else if v < x { // want `^Unnecessary "else": preceding conditions always end in a "return", "break" or "continue". Remove the "else", leaving "if v < x { ... }"$`
+		} else if v < x { // want `^Unnecessary "else": preceding conditions always end in a "return", "break", "continue" or a call that never returns. Remove the "else", leaving "if v < x { ... }"$`
 			smaller++
 			continue
-		} else { // want `^Unnecessary "else": preceding conditions always end in a "return", "break" or "continue". Remove the "else" wrapping the block of statements$`
+		} else { // want `^Unnecessary "else": preceding conditions always end in a "return", "break", "continue" or a call that never returns. Remove the "else" wrapping the block of statements$`
 			present = true
 		}
 	}

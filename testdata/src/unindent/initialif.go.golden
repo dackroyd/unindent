@@ -5,7 +5,7 @@ func InitByIfOnly(x int) int {
 		return y
 	}
 
-	// want `^Unnecessary "else": preceding conditions always end in a "return", "break" or "continue". Remove the "else" wrapping the block of statements$`
+	// want `^Unnecessary "else": preceding conditions always end in a "return", "break", "continue" or a call that never returns. Remove the "else" wrapping the block of statements$`
 	return x
 }
 
@@ -15,7 +15,7 @@ func InitByIfAndElse(x int) int {
 		return y
 	}
 
-	// want `^Unnecessary "else": preceding conditions always end in a "return", "break" or "continue". Move variable declaration "y := 1" before the "if", and remove the "else" wrapping the block of statements$`
+	// want `^Unnecessary "else": preceding conditions always end in a "return", "break", "continue" or a call that never returns. Move variable declaration "y := 1" before the "if", and remove the "else" wrapping the block of statements$`
 	return x * y
 }
 
@@ -25,11 +25,11 @@ func InitByIfAndElseMulti(x int) int {
 		return y
 	}
 
-	if x < 10 { // want `^Unnecessary "else": preceding conditions always end in a "return", "break" or "continue". Move variable declaration "y := 1" before the "if", and remove the "else", leaving "if x < 10 { ... }"$`
+	if x < 10 { // want `^Unnecessary "else": preceding conditions always end in a "return", "break", "continue" or a call that never returns. Move variable declaration "y := 1" before the "if", and remove the "else", leaving "if x < 10 { ... }"$`
 		return y - x
 	}
 
-	// want `^Unnecessary "else": preceding conditions always end in a "return", "break" or "continue". Remove the "else" wrapping the block of statements$`
+	// want `^Unnecessary "else": preceding conditions always end in a "return", "break", "continue" or a call that never returns. Remove the "else" wrapping the block of statements$`
 	return x * y
 }
 
@@ -39,7 +39,7 @@ func InitMultiByIfAndElse(x int) int {
 		return y
 	}
 
-	// want `^Unnecessary "else": preceding conditions always end in a "return", "break" or "continue". Move variable declaration "y, z := 1, 2" before the "if", and remove the "else" wrapping the block of statements$`
+	// want `^Unnecessary "else": preceding conditions always end in a "return", "break", "continue" or a call that never returns. Move variable declaration "y, z := 1, 2" before the "if", and remove the "else" wrapping the block of statements$`
 	return x * y * z
 }
 
@@ -49,6 +49,6 @@ func InitWithComment(x int) int {
 		return y
 	}
 
-	// want `^Unnecessary "else": preceding conditions always end in a "return", "break" or "continue". Move variable declaration "y := max\(x, 1 /\* at least one \*/\)" before the "if", and remove the "else" wrapping the block of statements$`
+	// want `^Unnecessary "else": preceding conditions always end in a "return", "break", "continue" or a call that never returns. Move variable declaration "y := max\(x, 1 /\* at least one \*/\)" before the "if", and remove the "else" wrapping the block of statements$`
 	return x * y
 }

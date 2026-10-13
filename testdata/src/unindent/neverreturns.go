@@ -1,0 +1,127 @@
+package unindent
+
+import (
+	"log"
+	"os"
+	"runtime"
+	"testing"
+)
+
+func PanicExits(x int) int {
+	if x < 0 {
+		panic("negative")
+	} else { // want `^Unnecessary "else": preceding conditions always end in a "return", "break", "continue" or a call that never returns. Remove the "else" wrapping the block of statements$`
+		return x
+	}
+}
+
+func OsExitExits(code int) int {
+	if code != 0 {
+		os.Exit(code)
+	} else { // want `^Unnecessary "else": preceding conditions always end in a "return", "break", "continue" or a call that never returns. Remove the "else" wrapping the block of statements$`
+		code++
+	}
+
+	return code
+}
+
+func LogFatalExits(err error) int {
+	if err != nil {
+		log.Fatalf("failed: %v", err)
+	} else if err == nil { // want `^Unnecessary "else": preceding conditions always end in a "return", "break", "continue" or a call that never returns. Remove the "else", leaving "if err == nil { ... }"$`
+		return 1
+	}
+
+	return 0
+}
+
+func GoexitExits(done bool) int {
+	n := 0
+
+	if !done {
+		runtime.Goexit()
+	} else { // want `^Unnecessary "else": preceding conditions always end in a "return", "break", "continue" or a call that never returns. Remove the "else" wrapping the block of statements$`
+		n++
+	}
+
+	return n
+}
+
+func TestFatalExits(t *testing.T) {
+	v, err := parse()
+	if err != nil {
+		t.Fatalf("parse: %v", err)
+	} else { // want `^Unnecessary "else": preceding conditions always end in a "return", "break", "continue" or a call that never returns. Remove the "else" wrapping the block of statements$`
+		_ = v
+	}
+}
+
+func TestSkipExits(t *testing.T) {
+	if testing.Short() {
+		t.Skip("slow")
+	} else { // want `^Unnecessary "else": preceding conditions always end in a "return", "break", "continue" or a call that never returns. Remove the "else" wrapping the block of statements$`
+		_ = t.Name()
+	}
+}
+
+func helperFatalExits(tb testing.TB, err error) {
+	if err != nil {
+		tb.Fatal(err)
+	} else { // want `^Unnecessary "else": preceding conditions always end in a "return", "break", "continue" or a call that never returns. Remove the "else" wrapping the block of statements$`
+		tb.Log("ok")
+	}
+}
+
+func failNow(msg string) {
+	log.Print(msg)
+	os.Exit(2)
+}
+
+func HelperExits(x int) int {
+	if x < 0 {
+		failNow("negative")
+	} else { // want `^Unnecessary "else": preceding conditions always end in a "return", "break", "continue" or a call that never returns. Remove the "else" wrapping the block of statements$`
+		x *= 2
+	}
+
+	return x
+}
+
+func TestErrorContinues(t *testing.T) {
+	v, err := parse()
+	if err != nil {
+		t.Errorf("parse: %v", err)
+	} else {
+		_ = v
+	}
+}
+
+func LogPrintContinues(err error) int {
+	if err != nil {
+		log.Print(err)
+	} else {
+		return 1
+	}
+
+	return 0
+}
+
+func DeferredPanicContinues(x int) int {
+	if x < 0 {
+		defer func() { panic("negative") }()
+	} else {
+		return x
+	}
+
+	return 0
+}
+
+func FuncValueContinues(exit func(int), code int) int {
+	if code != 0 {
+		exit(code)
+	} else {
+		code++
+	}
+
+	return code
+}
