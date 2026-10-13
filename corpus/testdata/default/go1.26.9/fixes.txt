@@ -2,8 +2,7 @@
 nats-server: 66 files changed, 0 comments lost
 nats-server .: build passes; vet passes
 nats-server tests: not broken by the fixes
-esbuild: 27 files changed, 1 comments lost
-esbuild lost internal/resolver/resolver.go: /* forbidImports */
+esbuild: 27 files changed, 0 comments lost
 esbuild .: build passes; vet passes
 esbuild tests: not broken by the fixes
 x-net: 22 files changed, 0 comments lost

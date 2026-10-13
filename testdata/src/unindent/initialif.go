@@ -33,3 +33,11 @@ func InitMultiByIfAndElse(x int) int {
 		return x * y * z
 	}
 }
+
+func InitWithComment(x int) int {
+	if y := max(x, 1 /* at least one */); x > 1 {
+		return y
+	} else { // want `^Unnecessary "else": preceding conditions always end in a "return", "break" or "continue". Move variable declaration "y := max\(x, 1 /\* at least one \*/\)" before the "if", and remove the "else" wrapping the block of statements$`
+		return x * y
+	}
+}

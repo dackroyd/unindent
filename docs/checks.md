@@ -49,7 +49,7 @@ if s == "" {
 ### Initialisers
 
 When the `else` block uses a variable that the `if` statement's initialiser declares, the fix moves the initialiser
-before the `if` so the variable stays in scope:
+before the `if` so the variable stays in scope. It moves as written, comments included:
 
 ```go
 if y := f(); x > 1 {

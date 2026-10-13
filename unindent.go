@@ -193,7 +193,7 @@ func reportUnnecessaryElse(pass *analysis.Pass, stmt *ast.IfStmt, stack []ast.No
 	msg.WriteString(`Unnecessary "else": preceding conditions always end in a "return", "break" or "continue". `)
 
 	if hoistsInit(stmt) {
-		in := mustFormatNode(stmt.Init)
+		in := nodeSource(pass, stmt.Init)
 		edits = append(edits, analysis.TextEdit{
 			Pos:     stmt.Pos(),
 			End:     stmt.Init.End(),
@@ -201,7 +201,7 @@ func reportUnnecessaryElse(pass *analysis.Pass, stmt *ast.IfStmt, stack []ast.No
 		})
 
 		msg.WriteString(`Move variable declaration %q before the "if", and remove the "else"`)
-		args = append(args, mustFormatNode(stmt.Init))
+		args = append(args, in)
 	} else {
 		msg.WriteString(`Remove the "else"`)
 	}
@@ -517,6 +517,18 @@ func elseUsesInit(stmt *ast.IfStmt) bool {
 	})
 
 	return varUsed
+}
+
+// nodeSource returns the source text of n, comments included. Where the file cannot be read, it returns n formatted,
+// without its comments.
+func nodeSource(pass *analysis.Pass, n ast.Node) string {
+	if tf := pass.Fset.File(n.Pos()); tf != nil && pass.ReadFile != nil {
+		if src, err := pass.ReadFile(tf.Name()); err == nil && len(src) == tf.Size() {
+			return string(src[tf.Offset(n.Pos()):tf.Offset(n.End())])
+		}
+	}
+
+	return mustFormatNode(n)
 }
 
 func mustFormatNode(n any) string {
