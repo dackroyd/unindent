@@ -1,0 +1,61 @@
+package unindent
+
+// AloneAfterExit leaves the "else if" to the "else if" check, whose fix edits the start of its line. Once the link
+// starts its own "if", the next run combines it.
+func AloneAfterExit(a, b, c bool) int {
+	if c {
+		return 0
+	} else if a { // want `^Unnecessary "else": .* Remove the "else", leaving "if a { ... }"$`
+		if b {
+			use()
+		}
+	}
+
+	return 1
+}
+
+// AloneInMovedElse combines the pair inside an else block that the exit-in-else fix copies, which waits for the next
+// run.
+func AloneInMovedElse(a, b, c bool) int {
+	if c {
+		use(c)
+	} else { // want `^Exit in "else": .* Not fixed automatically: another fix inside the "if" statement has to be applied first$`
+		if a { // want `^If alone in an "if": .* leaving "if a && b { ... }"$`
+			if b {
+				use()
+			}
+		}
+
+		return 0
+	}
+
+	return 1
+}
+
+// AloneInRemovedElse combines the pair inside an else block whose "else" is removed in the same run.
+func AloneInRemovedElse(a, b, c bool) int {
+	if c {
+		return 0
+	} else { // want `^Unnecessary "else": .* Remove the "else" wrapping the block of statements$`
+		if a { // want `^If alone in an "if": .* leaving "if a && b { ... }"$`
+			if b {
+				use()
+			}
+		}
+	}
+
+	return 1
+}
+
+// AloneThenWrapping is combined first, and the combined "if" then wraps the rest of the loop on the next run.
+func AloneThenWrapping(xs []int, a bool) {
+	for _, x := range xs {
+		if a { // want `^If alone in an "if": .* leaving "if a && x > 0 { ... }"$`
+			if x > 0 {
+				use(1)
+				use(2)
+				use(3)
+			}
+		}
+	}
+}

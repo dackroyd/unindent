@@ -17,13 +17,28 @@ import (
 const notFixed = "Not fixed automatically: "
 
 // exitInElse starts the message of the check that inverts an if whose else block exits, and the kind of its findings,
-// and ifWrappingRest those of the check that inverts an if wrapping the rest of a function or loop.
+// ifWrappingRest those of the check that inverts an if wrapping the rest of a function or loop, and ifAloneInIf those of
+// the check that combines an if holding only another if.
 const (
 	exitInElseMessage     = `Exit in "else"`
 	exitInElseKind        = "exit in else"
 	ifWrappingRestMessage = "If wrapping the rest of the"
 	ifWrappingRestKind    = "if wrapping the rest"
+	ifAloneInIfMessage    = `If alone in an "if"`
+	ifAloneInIfKind       = "if alone in an if"
 )
+
+// kindMessage returns the start of the message of the check whose findings are of kind, for fileIfs.reported.
+func kindMessage(kind string) string {
+	switch {
+	case strings.HasPrefix(kind, ifWrappingRestKind):
+		return ifWrappingRestMessage
+	case kind == ifAloneInIfKind:
+		return ifAloneInIfMessage
+	}
+
+	return ""
+}
 
 // position is a place in a project's source, with File relative to the project.
 type position struct {
@@ -113,7 +128,7 @@ func (r *runner) report(bin string, p project, dir string) ([]finding, error) {
 				}
 
 				seen[pos] = true
-				is := ifs.file(p.Name, pos.File).reported(pos, strings.HasPrefix(d.Message, ifWrappingRestMessage))
+				is := ifs.file(p.Name, pos.File).reported(pos, d.Message)
 
 				findings = append(findings, finding{
 					Pos:     pos,
@@ -178,10 +193,15 @@ func isGenerated(cache map[string]bool, file string) bool {
 
 // findingKind describes the if statement with an else that a finding with message is about: whether the else is an
 // "else if", and how the branch before it ends, its last statement. For an exit in an else block, it is how the else
-// block ends, and for an if wrapping the rest of a function or loop, which of the two it ends.
+// block ends, and for an if wrapping the rest of a function or loop, which of the two it ends. An if alone in an if has
+// a kind of its own.
 func findingKind(is *ifStmt, message string) string {
 	if is == nil {
 		return "not on an else"
+	}
+
+	if strings.HasPrefix(message, ifAloneInIfMessage) {
+		return ifAloneInIfKind
 	}
 
 	if is.wraps != "" {

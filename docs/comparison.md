@@ -20,6 +20,7 @@ how their reports overlap with `unindent`'s on real code.
 | `if` wrapping the rest of a loop body, when it is the only statement of the body           | yes, except searches | —                                       | `nestingReduce` | —                        |
 | `if` wrapping the rest of a loop body after other statements                               | yes                  | —                                       | —               | —                        |
 | `if` wrapping the rest of a function or function literal                                   | yes                  | —                                       | —               | —                        |
+| `if` whose block holds only another `if`, combined with `&&`                               | yes                  | —                                       | —               | —                        |
 | Deeply nested `if` statements                                                              | —                    | `max-control-nesting`                   | —               | yes, by complexity score |
 | Suggested fix                                                                              | yes                  | —                                       | —               | —                        |
 
@@ -28,7 +29,9 @@ a single `if` holding 5 statements or more, its default `bodyWidth`. `unindent` 
 `if` from 3 statements by default, not counting a final `continue`, which its fix removes, except a search: an `if`
 whose block ends in a `return`, `break` or `goto`, which acts once on the element the loop looks for. On the default
 set's projects other than the standard library, `nestingReduce` reports 42 loops: `unindent` reports 25, and the other
-17 are searches. nestif reports how complex a nested `if` is, not what to change.
+17 are searches. No other linter combines an `if` alone in an `if`; revive's `unnecessary-if` reports an `if`/`else`
+that only returns or assigns a boolean, which is a different construct. nestif reports how complex a nested `if` is, not
+what to change.
 
 ## Measured overlap
 
@@ -50,17 +53,17 @@ The corpus check produces these numbers, and every change that alters them updat
 
 |                             | `if` statements |
 | --------------------------- | --------------- |
-| Reported by `unindent`      | 1268            |
+| Reported by `unindent`      | 1509            |
 | Reported by revive          | 306             |
 | Reported by both            | 300             |
-| Reported by `unindent` only | 968             |
+| Reported by `unindent` only | 1209            |
 | Reported by revive only     | 6               |
 
-Of the 968 that only `unindent` reported, 344 are `if` statements wrapping the rest of a loop body and 190 the rest of a
-function, which revive has no rule for, 340 are `else if` chains, 59 follow a branch ending in a call that never
-returns, 19 are exits in an `else` block that ends in such a call, 9 are inside `select` cases, 4 exit through a nested
-`if`/`else` or `switch`, 1 is an exit in an `else` block through a nested `if` or `switch`, 1 follows a `for` loop that
-never ends and 1 is another nested form.
+Of the 1209 that only `unindent` reported, 344 are `if` statements wrapping the rest of a loop body and 190 the rest of
+a function, and 241 are `if` statements alone in an `if`, which revive has no rules for, 340 are `else if` chains, 59
+follow a branch ending in a call that never returns, 19 are exits in an `else` block that ends in such a call, 9 are
+inside `select` cases, 4 exit through a nested `if`/`else` or `switch`, 1 is an exit in an `else` block through a nested
+`if` or `switch`, 1 follows a `for` loop that never ends and 1 is another nested form.
 
 The 6 that only revive reported are all `early-return` inversions. 5 are of an `else if`, whose body can't move out of
 its chain. 4 of those have an empty body, holding only a comment that explains the case, after a branch that doesn't

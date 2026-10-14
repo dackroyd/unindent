@@ -25,6 +25,9 @@ const (
 	flagIfWrappingRest  = "if-wrapping-rest"
 	// flagIfWrappingRestMin is a setting of the if-wrapping-rest check, so it sits beside the check's flag.
 	flagIfWrappingRestMin = flagIfWrappingRest + "-min-statements"
+	flagIfAloneInIf       = "if-alone-in-if"
+	// flagIfAloneInIfMax is a setting of the if-alone-in-if check, so it sits beside the check's flag.
+	flagIfAloneInIfMax = flagIfAloneInIf + "-max-operands"
 )
 
 // checks are the checks that are turned on.
@@ -33,20 +36,26 @@ type checks struct {
 	elseIfAfterExit bool
 	exitInElse      bool
 	ifWrappingRest  bool
+	ifAloneInIf     bool
 }
 
 type analyzer struct {
 	checks checks
 	// wrappingMin is the fewest statements an if wrapping the rest of a function or loop is reported with.
 	wrappingMin minStatements
+	// aloneMax is the most operands of "&&" and "||" in a condition combined by the if-alone-in-if check.
+	aloneMax maxOperands
 }
 
 // NewAnalyzer which checks that whether code blocks can be unindented without changing behaviour. Every check is on;
 // its flag in the analyzer's Flags turns it off. Each analyzer has its own flags.
 func NewAnalyzer() *analysis.Analyzer {
 	a := &analyzer{
-		checks:      checks{elseAfterExit: true, elseIfAfterExit: true, exitInElse: true, ifWrappingRest: true},
+		checks: checks{
+			elseAfterExit: true, elseIfAfterExit: true, exitInElse: true, ifWrappingRest: true, ifAloneInIf: true,
+		},
 		wrappingMin: defaultWrappingMin,
+		aloneMax:    defaultAloneMaxOperands,
 	}
 
 	an := &analysis.Analyzer{
@@ -67,6 +76,10 @@ func NewAnalyzer() *analysis.Analyzer {
 		`report an "if" without an "else" that ends a function or loop body, which the inverted condition can leave first`)
 	an.Flags.Var(&a.wrappingMin, flagIfWrappingRestMin,
 		`the fewest statements in the block of an "if" that the `+flagIfWrappingRest+` check reports`)
+	an.Flags.BoolVar(&a.checks.ifAloneInIf, flagIfAloneInIf, true,
+		`report an "if" whose block holds only another "if", neither with an "else", which one condition joined with "&&" can replace`)
+	an.Flags.Var(&a.aloneMax, flagIfAloneInIfMax,
+		`the most operands of "&&" and "||" in the condition that the `+flagIfAloneInIf+` check combines`)
 
 	return an
 }
@@ -86,6 +99,8 @@ type checker struct {
 	checks checks
 	// wrappingMin is the fewest statements an if wrapping the rest of a function or loop is reported with.
 	wrappingMin int
+	// aloneMax is the most operands of "&&" and "||" in a condition combined by the if-alone-in-if check.
+	aloneMax int
 	// strict counts the calls that never return only in some builds as returning, and records them in dependent.
 	strict    bool
 	dependent []string
@@ -117,7 +132,9 @@ func (a *analyzer) run(pass *analysis.Pass) (interface{}, error) {
 		pass.ReadFile = cachedReadFile(pass.ReadFile)
 	}
 
-	c := &checker{pass: pass, cfgs: cfgs, builds: builds, checks: a.checks, wrappingMin: int(a.wrappingMin)}
+	c := &checker{pass: pass, cfgs: cfgs, builds: builds, checks: a.checks, wrappingMin: int(a.wrappingMin),
+		aloneMax: int(a.aloneMax),
+	}
 
 	// Track the analysis of the stack to use when evaluating deeper elements.
 	infoStack := []nodeInfo{{Returns: true}}
@@ -131,6 +148,10 @@ func (a *analyzer) run(pass *analysis.Pass) (interface{}, error) {
 		if push {
 			parentInfo := infoStack[len(infoStack)-1]
 			info := c.analyze(stmt, stack, parentInfo)
+
+			if c.checks.ifAloneInIf {
+				c.reportIfAloneInIf(stmt, stack, parentInfo)
+			}
 
 			infoStack = append(infoStack, info)
 

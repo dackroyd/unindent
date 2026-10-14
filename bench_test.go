@@ -17,7 +17,7 @@ import (
 
 // BenchmarkSynthetic analyzes generated code shaped to expose costs that grow faster than the code: long "else if"
 // chains whose initialisers move before the "if", blocks with many reported statements, and deep nesting, for an
-// unnecessary "else", an exit in an else and an if wrapping the rest of a loop.
+// unnecessary "else", an exit in an else, an if wrapping the rest of a loop and an if alone in an if.
 func BenchmarkSynthetic(b *testing.B) {
 	for _, bc := range []struct {
 		name string
@@ -31,6 +31,8 @@ func BenchmarkSynthetic(b *testing.B) {
 		{"nestedinverted", genNestedInverted, 40},
 		{"wrapping", genWrapping, 400},
 		{"nestedwrapping", genNestedWrapping, 40},
+		{"alone", genAlone, 400},
+		{"nestedalone", genNestedAlone, 40},
 	} {
 		b.Run(fmt.Sprintf("%s=%d", bc.name, bc.n), func(b *testing.B) {
 			var src strings.Builder
@@ -177,6 +179,35 @@ func genNestedWrapping(src *strings.Builder, n int) {
 	for i := n - 1; i >= 0; i-- {
 		indent := strings.Repeat("\t", 2*i+1)
 		fmt.Fprintf(src, "%s\t}\n%s}\n", indent, indent)
+	}
+
+	src.WriteString("}\n\n")
+}
+
+// genAlone writes a function of n if statements that each hold only another if, whose conditions combine.
+func genAlone(src *strings.Builder, n int) {
+	src.WriteString("func Alone(x int) int {\n")
+
+	for i := range n {
+		fmt.Fprintf(src, "\tif v, err := f(x); err == nil {\n\t\tif v > %d {\n\t\t\tx += v\n\t\t}\n\t}\n\n", i)
+	}
+
+	src.WriteString("\treturn x\n}\n\n")
+}
+
+// genNestedAlone writes a chain of if statements nested n deep, each alone in the one before, which combine in pairs.
+func genNestedAlone(src *strings.Builder, n int) {
+	src.WriteString("func NestedAlone(x int) {\n")
+
+	for i := range n {
+		indent := strings.Repeat("\t", i+1)
+		fmt.Fprintf(src, "%sif x != %d {\n", indent, i)
+	}
+
+	fmt.Fprintf(src, "%sf(x)\n", strings.Repeat("\t", n+1))
+
+	for i := n - 1; i >= 0; i-- {
+		fmt.Fprintf(src, "%s}\n", strings.Repeat("\t", i+1))
 	}
 
 	src.WriteString("}\n\n")

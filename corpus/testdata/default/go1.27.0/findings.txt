@@ -15,12 +15,14 @@ stdlib cmd/asm/internal/asm/parse.go:809:9 else after return: fixed
 stdlib cmd/asm/internal/flags/flags.go:85:2 if wrapping the rest of a function: fixed
 stdlib cmd/asm/main.go:121:2 if wrapping the rest of a function: fixed
 stdlib cmd/cgo/ast.go:81:5 if wrapping the rest of a loop: fixed
+stdlib cmd/cgo/ast.go:203:2 if alone in an if: fixed
 stdlib cmd/cgo/gcc.go:268:10 else if after continue: fixed
 stdlib cmd/cgo/gcc.go:1572:3 if wrapping the rest of a loop: fixed
 stdlib cmd/cgo/gcc.go:1780:10 else if after return: fixed
 stdlib cmd/cgo/gcc.go:1786:10 else if after return: fixed
 stdlib cmd/cgo/gcc.go:2400:10 exit in else ending in break: fixed
 stdlib cmd/cgo/gcc.go:2661:12 exit in else ending in break: fixed
+stdlib cmd/cgo/gcc.go:2812:4 if alone in an if: fixed
 stdlib cmd/cgo/gcc.go:3102:4 if wrapping the rest of a loop: fixed
 stdlib cmd/cgo/internal/testcarchive/carchive_test.go:568:2 if wrapping the rest of a function: fixed
 stdlib cmd/cgo/internal/testcarchive/carchive_test.go:583:9 else if after call: fixed
@@ -67,7 +69,10 @@ stdlib cmd/compile/internal/coverage/cover.go:76:3 if wrapping the rest of a loo
 stdlib cmd/compile/internal/dwarfgen/dwarf.go:239:4 if wrapping the rest of a loop: fixed
 stdlib cmd/compile/internal/dwarfgen/dwarf.go:257:4 if wrapping the rest of a loop: fixed
 stdlib cmd/compile/internal/dwarfgen/dwarf.go:417:11 else after return: fixed
+stdlib cmd/compile/internal/dwarfgen/scope_test.go:288:3 if alone in an if: fixed
+stdlib cmd/compile/internal/escape/call.go:92:3 if alone in an if: fixed
 stdlib cmd/compile/internal/escape/escape.go:523:3 if wrapping the rest of a loop: fixed
+stdlib cmd/compile/internal/escape/graph.go:272:2 if alone in an if: fixed
 stdlib cmd/compile/internal/escape/solve.go:181:4 if wrapping the rest of a loop: fixed
 stdlib cmd/compile/internal/escape/solve.go:256:3 if wrapping the rest of a loop: fixed
 stdlib cmd/compile/internal/gc/compile.go:58:10 exit in else ending in return: fixed
@@ -75,8 +80,13 @@ stdlib cmd/compile/internal/gc/obj.go:74:2 if wrapping the rest of a function: n
 stdlib cmd/compile/internal/gc/util.go:115:2 if wrapping the rest of a function: fixed
 stdlib cmd/compile/internal/inline/inl.go:109:10 exit in else ending in call: fixed
 stdlib cmd/compile/internal/inline/inl.go:308:9 else if after return: fixed
+stdlib cmd/compile/internal/inline/inl.go:607:4 if alone in an if: fixed
 stdlib cmd/compile/internal/inline/inl.go:738:11 else after return: fixed
+stdlib cmd/compile/internal/inline/inl.go:1220:2 if alone in an if: fixed
+stdlib cmd/compile/internal/inline/inl.go:1283:3 if alone in an if: fixed
+stdlib cmd/compile/internal/inline/inl.go:1298:3 if alone in an if: fixed
 stdlib cmd/compile/internal/inline/inlheur/analyze.go:204:9 else if after return: fixed
+stdlib cmd/compile/internal/inline/inlheur/analyze_func_flags.go:196:2 if alone in an if: fixed
 stdlib cmd/compile/internal/inline/inlheur/analyze_func_params.go:137:3 if wrapping the rest of a loop: fixed
 stdlib cmd/compile/internal/inline/inlheur/dumpscores_test.go:43:10 else after call: not fixed: "err" is already declared in the enclosing block
 stdlib cmd/compile/internal/inline/inlheur/eclassify.go:122:10 else if after return: fixed
@@ -106,6 +116,7 @@ stdlib cmd/compile/internal/liveness/mergelocals.go:232:4 if wrapping the rest o
 stdlib cmd/compile/internal/liveness/mergelocals.go:517:5 if wrapping the rest of a loop: fixed
 stdlib cmd/compile/internal/liveness/mergelocals.go:758:11 else after continue: fixed
 stdlib cmd/compile/internal/liveness/mergelocals.go:764:3 if wrapping the rest of a loop: fixed
+stdlib cmd/compile/internal/liveness/mergelocals.go:929:6 if alone in an if: fixed
 stdlib cmd/compile/internal/loong64/ssa.go:32:10 else after return: fixed
 stdlib cmd/compile/internal/loong64/ssa.go:35:9 else after nested if: fixed
 stdlib cmd/compile/internal/loong64/ssa.go:40:11 else after return: fixed
@@ -133,6 +144,7 @@ stdlib cmd/compile/internal/mips64/ssa.go:74:9 else after nested if: fixed
 stdlib cmd/compile/internal/noder/html.go:185:2 if wrapping the rest of a function: fixed
 stdlib cmd/compile/internal/noder/html.go:385:3 if wrapping the rest of a loop: fixed
 stdlib cmd/compile/internal/noder/html.go:403:2 if wrapping the rest of a function: fixed
+stdlib cmd/compile/internal/noder/irgen.go:226:4 if alone in an if: fixed
 stdlib cmd/compile/internal/noder/reader.go:973:10 exit in else ending in call: fixed
 stdlib cmd/compile/internal/noder/reader.go:1684:2 if wrapping the rest of a function: fixed
 stdlib cmd/compile/internal/noder/reader.go:3014:10 else after return: fixed
@@ -147,6 +159,7 @@ stdlib cmd/compile/internal/noder/writer.go:1562:11 else if after return: fixed
 stdlib cmd/compile/internal/noder/writer.go:1564:11 else after return: fixed
 stdlib cmd/compile/internal/noder/writer.go:2414:5 if wrapping the rest of a loop: fixed
 stdlib cmd/compile/internal/noder/writer.go:3078:10 else after return: fixed
+stdlib cmd/compile/internal/noder/writer.go:3379:3 if alone in an if: fixed
 stdlib cmd/compile/internal/pgoir/irgraph.go:437:3 if wrapping the rest of a loop: fixed
 stdlib cmd/compile/internal/pkginit/init.go:52:4 if wrapping the rest of a loop: fixed
 stdlib cmd/compile/internal/ppc64/ssa.go:60:11 else after return: fixed
@@ -163,6 +176,7 @@ stdlib cmd/compile/internal/s390x/ssa.go:110:9 else after return: fixed
 stdlib cmd/compile/internal/s390x/ssa.go:115:11 else after return: fixed
 stdlib cmd/compile/internal/s390x/ssa.go:121:11 else after return: fixed
 stdlib cmd/compile/internal/s390x/ssa.go:127:11 else after return: fixed
+stdlib cmd/compile/internal/slice/slice.go:355:5 if alone in an if: fixed
 stdlib cmd/compile/internal/ssa/compile.go:46:3 if wrapping the rest of a function: fixed
 stdlib cmd/compile/internal/ssa/compile.go:193:2 if wrapping the rest of a function: fixed
 stdlib cmd/compile/internal/ssa/cse.go:278:12 exit in else ending in break: fixed
@@ -176,6 +190,7 @@ stdlib cmd/compile/internal/ssa/debug.go:331:3 if wrapping the rest of a loop: f
 stdlib cmd/compile/internal/ssa/debug.go:471:10 else after return: fixed
 stdlib cmd/compile/internal/ssa/debug.go:614:4 if wrapping the rest of a loop: fixed
 stdlib cmd/compile/internal/ssa/debug.go:1258:11 else after return: fixed
+stdlib cmd/compile/internal/ssa/debug.go:1639:4 if alone in an if: fixed
 stdlib cmd/compile/internal/ssa/debug_lines_test.go:266:3 if wrapping the rest of a loop: fixed
 stdlib cmd/compile/internal/ssa/debug_test.go:194:10 exit in else ending in call: fixed
 stdlib cmd/compile/internal/ssa/debug_test.go:208:10 exit in else ending in call: fixed
@@ -193,7 +208,9 @@ stdlib cmd/compile/internal/ssa/func.go:372:2 if wrapping the rest of a function
 stdlib cmd/compile/internal/ssa/func_test.go:359:3 if wrapping the rest of a loop: fixed
 stdlib cmd/compile/internal/ssa/func_test.go:440:3 if wrapping the rest of a loop: fixed
 stdlib cmd/compile/internal/ssa/fuse.go:120:10 exit in else ending in return: fixed
+stdlib cmd/compile/internal/ssa/known_bits_test.go:20:4 if alone in an if: fixed
 stdlib cmd/compile/internal/ssa/licm.go:146:3 if wrapping the rest of a loop: fixed
+stdlib cmd/compile/internal/ssa/likelyadjust.go:184:5 if alone in an if: fixed
 stdlib cmd/compile/internal/ssa/loopbce.go:281:12 else after return: fixed
 stdlib cmd/compile/internal/ssa/loopbce.go:318:4 if wrapping the rest of a loop: fixed
 stdlib cmd/compile/internal/ssa/memcombine.go:153:3 if wrapping the rest of a loop: fixed
@@ -215,6 +232,8 @@ stdlib cmd/compile/internal/ssa/prove.go:781:2 if wrapping the rest of a functio
 stdlib cmd/compile/internal/ssa/prove.go:1592:10 else after continue: fixed
 stdlib cmd/compile/internal/ssa/prove.go:2372:3 if wrapping the rest of a loop: fixed
 stdlib cmd/compile/internal/ssa/prove.go:3000:11 exit in else ending in continue: fixed
+stdlib cmd/compile/internal/ssa/regalloc.go:564:2 if alone in an if: fixed
+stdlib cmd/compile/internal/ssa/regalloc.go:797:2 if alone in an if: fixed
 stdlib cmd/compile/internal/ssa/regalloc.go:854:4 if wrapping the rest of a loop: fixed
 stdlib cmd/compile/internal/ssa/regalloc.go:1009:10 else after return: fixed
 stdlib cmd/compile/internal/ssa/regalloc.go:1348:5 if wrapping the rest of a loop: fixed
@@ -226,13 +245,17 @@ stdlib cmd/compile/internal/ssa/rewrite.go:1619:9 else if after call: fixed
 stdlib cmd/compile/internal/ssa/rewritetern.go:264:13 else after return: fixed
 stdlib cmd/compile/internal/ssa/sccp.go:141:10 else after return: fixed
 stdlib cmd/compile/internal/ssa/sccp.go:257:5 if wrapping the rest of a loop: fixed
+stdlib cmd/compile/internal/ssa/sccp.go:364:2 if alone in an if: fixed
 stdlib cmd/compile/internal/ssa/sccp.go:579:3 if wrapping the rest of a loop: fixed
+stdlib cmd/compile/internal/ssa/sccp_test.go:58:3 if alone in an if: fixed
+stdlib cmd/compile/internal/ssa/sccp_test.go:88:4 if alone in an if: fixed
 stdlib cmd/compile/internal/ssa/sparsemap.go:65:2 if wrapping the rest of a function: fixed
 stdlib cmd/compile/internal/ssa/sparsemappos.go:65:2 if wrapping the rest of a function: fixed
 stdlib cmd/compile/internal/ssa/sparseset.go:57:2 if wrapping the rest of a function: fixed
 stdlib cmd/compile/internal/ssa/sparsetree.go:67:3 if wrapping the rest of a loop: fixed
 stdlib cmd/compile/internal/ssa/stackalloc.go:195:3 if wrapping the rest of a loop: fixed
 stdlib cmd/compile/internal/ssa/stackalloc.go:471:4 if wrapping the rest of a loop: fixed
+stdlib cmd/compile/internal/ssa/tighten.go:154:5 if alone in an if: fixed
 stdlib cmd/compile/internal/ssa/tighten.go:243:4 if wrapping the rest of a loop: fixed
 stdlib cmd/compile/internal/ssa/trim.go:110:2 if wrapping the rest of a function: fixed
 stdlib cmd/compile/internal/ssa/value.go:197:10 else after return: fixed
@@ -242,6 +265,7 @@ stdlib cmd/compile/internal/ssagen/intrinsics.go:1674:2 if wrapping the rest of 
 stdlib cmd/compile/internal/ssagen/intrinsics.go:1941:10 else after call: fixed
 stdlib cmd/compile/internal/ssagen/intrinsics.go:2412:10 exit in else ending in return: fixed
 stdlib cmd/compile/internal/ssagen/ssa.go:67:2 if wrapping the rest of a function: fixed
+stdlib cmd/compile/internal/ssagen/ssa.go:251:2 if alone in an if: fixed
 stdlib cmd/compile/internal/ssagen/ssa.go:3608:10 else after return: fixed
 stdlib cmd/compile/internal/ssagen/ssa.go:5321:10 else after return: fixed
 stdlib cmd/compile/internal/ssagen/ssa.go:5453:2 if wrapping the rest of a function: fixed
@@ -279,8 +303,10 @@ stdlib cmd/compile/internal/types2/builtins.go:998:11 else after return: fixed
 stdlib cmd/compile/internal/types2/call.go:583:4 if wrapping the rest of a loop: fixed
 stdlib cmd/compile/internal/types2/check.go:525:2 if wrapping the rest of a function: fixed
 stdlib cmd/compile/internal/types2/const.go:278:11 else after return: fixed
+stdlib cmd/compile/internal/types2/conversions.go:214:4 if alone in an if: fixed
 stdlib cmd/compile/internal/types2/conversions.go:235:3 if wrapping the rest of a function: fixed
 stdlib cmd/compile/internal/types2/decl.go:646:2 if wrapping the rest of a function: fixed
+stdlib cmd/compile/internal/types2/errorcalls_test.go:49:6 if alone in an if: fixed
 stdlib cmd/compile/internal/types2/errors.go:18:2 if wrapping the rest of a function: fixed
 stdlib cmd/compile/internal/types2/expr.go:79:9 exit in else ending in return: fixed
 stdlib cmd/compile/internal/types2/expr.go:640:9 exit in else ending in return: fixed
@@ -300,6 +326,8 @@ stdlib cmd/compile/internal/types2/object.go:709:10 else after return: fixed
 stdlib cmd/compile/internal/types2/object_test.go:140:12 exit in else ending in call: fixed
 stdlib cmd/compile/internal/types2/operand.go:313:9 else after return: fixed
 stdlib cmd/compile/internal/types2/operand.go:415:3 if wrapping the rest of a function: fixed
+stdlib cmd/compile/internal/types2/predicates.go:290:3 if alone in an if: fixed
+stdlib cmd/compile/internal/types2/predicates.go:314:3 if alone in an if: fixed
 stdlib cmd/compile/internal/types2/range.go:258:11 else after return: fixed
 stdlib cmd/compile/internal/types2/range.go:267:11 else after return: fixed
 stdlib cmd/compile/internal/types2/resolver.go:480:4 if wrapping the rest of a loop: fixed
@@ -312,8 +340,12 @@ stdlib cmd/compile/internal/types2/stmt.go:830:2 if wrapping the rest of a funct
 stdlib cmd/compile/internal/types2/subst.go:439:3 if wrapping the rest of a loop: fixed
 stdlib cmd/compile/internal/types2/termlist.go:79:4 if wrapping the rest of a loop: fixed
 stdlib cmd/compile/internal/types2/typeset.go:240:6 if wrapping the rest of a function: fixed
+stdlib cmd/compile/internal/types2/typestring.go:213:3 if alone in an if: fixed
 stdlib cmd/compile/internal/types2/typexpr.go:165:3 if wrapping the rest of a function: fixed
 stdlib cmd/compile/internal/types2/typexpr.go:355:4 if wrapping the rest of a function: fixed
+stdlib cmd/compile/internal/types2/typexpr.go:493:3 if alone in an if: fixed
+stdlib cmd/compile/internal/types2/unify.go:615:3 if alone in an if: fixed
+stdlib cmd/compile/internal/types2/unify.go:639:3 if alone in an if: fixed
 stdlib cmd/compile/internal/types2/validtype.go:97:4 if wrapping the rest of a loop: fixed
 stdlib cmd/compile/internal/walk/expr.go:664:3 if wrapping the rest of a loop: fixed
 stdlib cmd/compile/internal/walk/order.go:1558:3 if wrapping the rest of a loop: fixed
@@ -333,6 +365,7 @@ stdlib cmd/cover/cfg_test.go:260:9 else after call: not fixed: "err" is also dec
 stdlib cmd/cover/cover.go:173:10 else after return: fixed
 stdlib cmd/cover/cover.go:193:11 else after return: fixed
 stdlib cmd/cover/cover.go:758:2 if wrapping the rest of a function: fixed
+stdlib cmd/cover/html.go:84:2 if alone in an if: fixed
 stdlib cmd/dist/build.go:1244:2 if wrapping the rest of a function: fixed
 stdlib cmd/dist/build.go:1321:2 if wrapping the rest of a function: fixed
 stdlib cmd/dist/build.go:1765:2 if wrapping the rest of a function: fixed
@@ -346,6 +379,8 @@ stdlib cmd/dist/test.go:248:3 if wrapping the rest of a loop: fixed
 stdlib cmd/dist/test.go:253:11 exit in else ending in call: fixed
 stdlib cmd/dist/test.go:1047:2 if wrapping the rest of a function: fixed
 stdlib cmd/dist/test.go:1089:9 else if after call: fixed
+stdlib cmd/dist/test.go:1472:5 if alone in an if: fixed
+stdlib cmd/dist/test.go:1698:3 if alone in an if: fixed
 stdlib cmd/dist/test.go:1725:3 if wrapping the rest of a loop: fixed
 stdlib cmd/dist/testjson.go:146:11 else if after break: fixed
 stdlib cmd/distpack/pack.go:259:9 else if after return: fixed
@@ -367,9 +402,11 @@ stdlib cmd/go/internal/cache/cache.go:218:9 else if after return: not fixed: an 
 stdlib cmd/go/internal/cache/cache.go:231:9 else if after return: fixed
 stdlib cmd/go/internal/cache/cache.go:244:9 else if after return: fixed
 stdlib cmd/go/internal/cache/cache.go:254:9 else if after return: fixed
+stdlib cmd/go/internal/cache/cache.go:399:2 if alone in an if: fixed
 stdlib cmd/go/internal/cache/default.go:91:3 if wrapping the rest of a function: fixed
 stdlib cmd/go/internal/cache/prog.go:177:10 exit in else ending in call: fixed
 stdlib cmd/go/internal/cache/prog.go:216:3 if wrapping the rest of a function: fixed
+stdlib cmd/go/internal/cfg/cfg.go:171:3 if alone in an if: fixed
 stdlib cmd/go/internal/doc/dirs.go:144:4 if wrapping the rest of a loop: fixed
 stdlib cmd/go/internal/doc/doc.go:431:10 else if after return: fixed
 stdlib cmd/go/internal/doc/doc.go:532:10 else after call: fixed
@@ -386,6 +423,7 @@ stdlib cmd/go/internal/fsys/fsys.go:254:4 if wrapping the rest of a loop: fixed
 stdlib cmd/go/internal/fsys/fsys.go:611:3 if wrapping the rest of a loop: fixed
 stdlib cmd/go/internal/generate/generate.go:281:3 if wrapping the rest of a function: fixed
 stdlib cmd/go/internal/gover/toolchain.go:35:9 exit in else ending in return: fixed
+stdlib cmd/go/internal/imports/build.go:108:4 if alone in an if: fixed
 stdlib cmd/go/internal/list/list.go:649:4 if wrapping the rest of a loop: fixed
 stdlib cmd/go/internal/list/list.go:972:10 else if after return: fixed
 stdlib cmd/go/internal/load/pkg.go:955:12 else if after goto: fixed
@@ -399,6 +437,8 @@ stdlib cmd/go/internal/modfetch/cache.go:100:9 else if after return: not fixed: 
 stdlib cmd/go/internal/modfetch/cache.go:102:9 else if after return: not fixed: an earlier "else" in the chain is not fixed automatically
 stdlib cmd/go/internal/modfetch/cache.go:114:9 else if after return: not fixed: "err" is already declared in the enclosing block
 stdlib cmd/go/internal/modfetch/cache.go:136:9 else if after return: not fixed: "err" is already declared in the enclosing block
+stdlib cmd/go/internal/modfetch/codehost/git.go:239:2 if alone in an if: fixed
+stdlib cmd/go/internal/modfetch/codehost/git.go:268:4 if alone in an if: fixed
 stdlib cmd/go/internal/modfetch/codehost/git.go:486:4 if wrapping the rest of a loop: fixed
 stdlib cmd/go/internal/modfetch/codehost/git_test.go:85:9 else after return: fixed
 stdlib cmd/go/internal/modfetch/codehost/git_test.go:328:3 if wrapping the rest of a loop: fixed
@@ -421,14 +461,19 @@ stdlib cmd/go/internal/modget/get.go:1809:4 if wrapping the rest of a function: 
 stdlib cmd/go/internal/modget/query.go:274:2 if wrapping the rest of a function: fixed
 stdlib cmd/go/internal/modindex/index_test.go:36:3 if wrapping the rest of a function: not fixed: "err" is already declared in the enclosing block
 stdlib cmd/go/internal/modindex/read.go:498:11 else if after continue: fixed
+stdlib cmd/go/internal/modindex/read.go:515:5 if alone in an if: fixed
 stdlib cmd/go/internal/modindex/read.go:696:9 else if after return: fixed
+stdlib cmd/go/internal/modindex/read.go:798:3 if alone in an if: fixed
+stdlib cmd/go/internal/modindex/scan.go:207:3 if alone in an if: fixed
 stdlib cmd/go/internal/modindex/scan.go:224:10 else if after continue: fixed
 stdlib cmd/go/internal/modindex/scan.go:227:10 else if after continue: fixed
+stdlib cmd/go/internal/modload/build.go:41:2 if alone in an if: fixed
 stdlib cmd/go/internal/modload/build.go:155:9 else if after return: fixed
 stdlib cmd/go/internal/modload/build.go:256:9 else if after return: fixed
 stdlib cmd/go/internal/modload/build.go:266:9 else if after return: fixed
 stdlib cmd/go/internal/modload/build.go:313:10 exit in else ending in call: fixed
 stdlib cmd/go/internal/modload/build.go:371:3 if wrapping the rest of a function: fixed
+stdlib cmd/go/internal/modload/buildlist.go:110:2 if alone in an if: fixed
 stdlib cmd/go/internal/modload/buildlist.go:1107:3 if wrapping the rest of a loop: fixed
 stdlib cmd/go/internal/modload/buildlist.go:1481:9 else if after return: fixed
 stdlib cmd/go/internal/modload/edit.go:72:10 else if after break: fixed
@@ -443,8 +488,10 @@ stdlib cmd/go/internal/modload/init.go:199:10 else after return: fixed
 stdlib cmd/go/internal/modload/init.go:1265:2 if wrapping the rest of a function: fixed
 stdlib cmd/go/internal/modload/init.go:1407:3 if wrapping the rest of a loop: fixed
 stdlib cmd/go/internal/modload/init.go:1641:13 exit in else ending in return: fixed
+stdlib cmd/go/internal/modload/init.go:2063:3 if alone in an if: fixed
 stdlib cmd/go/internal/modload/init.go:2156:7 if wrapping the rest of a loop: fixed
 stdlib cmd/go/internal/modload/init.go:2168:5 if wrapping the rest of a loop: fixed
+stdlib cmd/go/internal/modload/list.go:287:4 if alone in an if: fixed
 stdlib cmd/go/internal/modload/load.go:637:11 else if after return: fixed
 stdlib cmd/go/internal/modload/load.go:1409:12 else if after return: fixed
 stdlib cmd/go/internal/modload/load.go:1783:4 if wrapping the rest of a function: fixed
@@ -466,6 +513,7 @@ stdlib cmd/go/internal/modload/vendor.go:111:6 if wrapping the rest of a loop: f
 stdlib cmd/go/internal/modload/vendor.go:245:3 if wrapping the rest of a loop: fixed
 stdlib cmd/go/internal/modload/vendor.go:277:2 if wrapping the rest of a function: fixed
 stdlib cmd/go/internal/test/test.go:802:4 if wrapping the rest of a loop: fixed
+stdlib cmd/go/internal/test/test.go:1012:4 if alone in an if: fixed
 stdlib cmd/go/internal/test/test.go:1082:3 if wrapping the rest of a loop: fixed
 stdlib cmd/go/internal/test/test.go:1543:11 else if after return: fixed
 stdlib cmd/go/internal/test/test.go:2213:2 if wrapping the rest of a function: fixed
@@ -507,12 +555,19 @@ stdlib cmd/go/internal/work/shell_test.go:133:3 if wrapping the rest of a functi
 stdlib cmd/go/internal/workcmd/use.go:142:10 else if after continue: fixed
 stdlib cmd/go/main.go:175:12 exit in else ending in call: fixed
 stdlib cmd/go/proxy_test.go:332:4 if wrapping the rest of a loop: fixed
+stdlib cmd/go/script_test.go:147:4 if alone in an if: fixed
 stdlib cmd/go/terminal_test.go:54:10 else if after call: fixed
 stdlib cmd/gofmt/gofmt.go:360:9 else if after return: fixed
 stdlib cmd/gofmt/gofmt_test.go:118:2 if wrapping the rest of a function: fixed
+stdlib cmd/gofmt/simplify.go:112:2 if alone in an if: fixed
+stdlib cmd/gofmt/simplify.go:122:4 if alone in an if: fixed
+stdlib cmd/internal/archive/archive.go:159:2 if alone in an if: fixed
 stdlib cmd/internal/buildid/buildid_test.go:98:3 if wrapping the rest of a loop: not fixed: "err" is already declared in the enclosing block; "id" is already declared in the enclosing block
+stdlib cmd/internal/buildid/rewrite.go:111:2 if alone in an if: fixed
+stdlib cmd/internal/cov/readcovdata.go:266:2 if alone in an if: fixed
 stdlib cmd/internal/dwarf/dwarf.go:1683:9 else if after return: not fixed: "err" is already declared in the enclosing block
 stdlib cmd/internal/dwarf/dwarf.go:1688:9 else if after return: not fixed: "err" is already declared in the enclosing block; "v" is also moved into the enclosing block by an earlier fix
+stdlib cmd/internal/dwarf/putvarabbrevgen_test.go:183:5 if alone in an if: fixed
 stdlib cmd/internal/dwarf/putvarabbrevgen_test.go:285:9 else if after return: fixed
 stdlib cmd/internal/dwarf/putvarabbrevgen_test.go:291:11 else after return: fixed
 stdlib cmd/internal/dwarf/putvarabbrevgen_test.go:294:10 else after nested if: fixed
@@ -522,6 +577,9 @@ stdlib cmd/internal/obj/arm/asm5.go:634:9 else if after return: fixed
 stdlib cmd/internal/obj/arm/asm5.go:855:10 else after return: fixed
 stdlib cmd/internal/obj/arm/asm5.go:874:12 else after return: fixed
 stdlib cmd/internal/obj/arm/asm5.go:1116:4 if wrapping the rest of a function: fixed
+stdlib cmd/internal/obj/arm/obj5.go:271:2 if alone in an if: fixed
+stdlib cmd/internal/obj/arm/obj5.go:364:4 if alone in an if: fixed
+stdlib cmd/internal/obj/arm64/asm7.go:1770:2 if alone in an if: fixed
 stdlib cmd/internal/obj/arm64/asm7.go:1990:9 else if after return: fixed
 stdlib cmd/internal/obj/arm64/asm7.go:2005:9 else after return: fixed
 stdlib cmd/internal/obj/arm64/asm7.go:2130:13 else after return: fixed
@@ -537,6 +595,8 @@ stdlib cmd/internal/obj/arm64/asm7.go:8531:11 else after return: fixed
 stdlib cmd/internal/obj/arm64/asm7.go:8534:10 else if after nested if: fixed
 stdlib cmd/internal/obj/arm64/encoding_gen.go:1452:9 else if after return: fixed
 stdlib cmd/internal/obj/arm64/encoding_gen.go:1468:9 else if after return: fixed
+stdlib cmd/internal/obj/arm64/inst.go:73:3 if alone in an if: fixed
+stdlib cmd/internal/obj/arm64/inst.go:83:3 if alone in an if: fixed
 stdlib cmd/internal/obj/arm64/inst.go:115:11 else after return: fixed
 stdlib cmd/internal/obj/arm64/inst.go:697:10 exit in else ending in break: fixed
 stdlib cmd/internal/obj/arm64/inst.go:890:11 exit in else ending in return: fixed
@@ -548,6 +608,7 @@ stdlib cmd/internal/obj/arm64/list7.go:153:10 else after return: fixed
 stdlib cmd/internal/obj/arm64/list7.go:159:10 else after return: fixed
 stdlib cmd/internal/obj/arm64/list7.go:165:10 else after return: fixed
 stdlib cmd/internal/obj/arm64/list7.go:171:10 else after return: fixed
+stdlib cmd/internal/obj/arm64/obj7.go:492:2 if alone in an if: fixed
 stdlib cmd/internal/obj/arm64/obj7.go:891:3 if wrapping the rest of a loop: fixed
 stdlib cmd/internal/obj/dwarf.go:84:3 if wrapping the rest of a loop: fixed
 stdlib cmd/internal/obj/inl.go:77:2 if wrapping the rest of a function: fixed
@@ -567,6 +628,13 @@ stdlib cmd/internal/obj/loong64/asm.go:913:10 else after return: fixed
 stdlib cmd/internal/obj/loong64/asm.go:927:9 else if after return: fixed
 stdlib cmd/internal/obj/loong64/asm.go:929:9 else if after return: fixed
 stdlib cmd/internal/obj/loong64/asm.go:931:9 else after return: fixed
+stdlib cmd/internal/obj/loong64/obj.go:172:2 if alone in an if: fixed
+stdlib cmd/internal/obj/loong64/obj.go:209:4 if alone in an if: fixed
+stdlib cmd/internal/obj/mips/obj0.go:151:2 if alone in an if: fixed
+stdlib cmd/internal/obj/mips/obj0.go:196:4 if alone in an if: fixed
+stdlib cmd/internal/obj/mips/obj0.go:876:3 if alone in an if: fixed
+stdlib cmd/internal/obj/mips/obj0.go:886:4 if alone in an if: fixed
+stdlib cmd/internal/obj/mips/obj0.go:1349:2 if alone in an if: fixed
 stdlib cmd/internal/obj/objfile_test.go:81:3 if wrapping the rest of a loop: fixed
 stdlib cmd/internal/obj/plist.go:127:5 if wrapping the rest of a loop: fixed
 stdlib cmd/internal/obj/plist.go:148:4 if wrapping the rest of a loop: fixed
@@ -578,19 +646,27 @@ stdlib cmd/internal/obj/ppc64/asm9.go:916:11 else after return: fixed
 stdlib cmd/internal/obj/ppc64/asm9.go:940:11 else if after return: fixed
 stdlib cmd/internal/obj/ppc64/asm9.go:942:11 else after return: fixed
 stdlib cmd/internal/obj/ppc64/asm9.go:1028:10 else after switch: fixed
+stdlib cmd/internal/obj/ppc64/obj9.go:633:2 if alone in an if: fixed
+stdlib cmd/internal/obj/ppc64/obj9.go:663:4 if alone in an if: fixed
 stdlib cmd/internal/obj/riscv/asm_test.go:82:2 if wrapping the rest of a function: fixed
 stdlib cmd/internal/obj/riscv/asm_test.go:184:2 if wrapping the rest of a function: not fixed: "cmd" is already declared in the enclosing block; "err" is already declared in the enclosing block; "out" is already declared in the enclosing block
 stdlib cmd/internal/obj/riscv/asm_test.go:287:2 if wrapping the rest of a function: fixed
+stdlib cmd/internal/obj/riscv/obj.go:63:2 if alone in an if: fixed
 stdlib cmd/internal/obj/riscv/obj.go:424:3 if wrapping the rest of a loop: fixed
+stdlib cmd/internal/obj/riscv/obj.go:497:2 if alone in an if: fixed
 stdlib cmd/internal/obj/riscv/obj.go:1174:2 if wrapping the rest of a function: fixed
 stdlib cmd/internal/obj/riscv/obj.go:1330:2 if wrapping the rest of a function: fixed
+stdlib cmd/internal/obj/s390x/objz.go:226:2 if alone in an if: fixed
 stdlib cmd/internal/obj/sym.go:452:4 if wrapping the rest of a loop: fixed
+stdlib cmd/internal/obj/sym.go:523:4 if alone in an if: fixed
 stdlib cmd/internal/obj/util.go:180:3 if wrapping the rest of a loop: fixed
 stdlib cmd/internal/obj/util.go:207:3 if wrapping the rest of a loop: fixed
 stdlib cmd/internal/obj/wasm/wasmobj.go:996:9 else if after call: fixed
+stdlib cmd/internal/obj/x86/asm6.go:2010:9 if alone in an if: fixed
 stdlib cmd/internal/obj/x86/asm6.go:2076:3 if wrapping the rest of a loop: fixed
 stdlib cmd/internal/obj/x86/asm6.go:2559:12 else after call: fixed
 stdlib cmd/internal/obj/x86/asm6.go:4309:10 exit in else ending in return: fixed
+stdlib cmd/internal/objabi/flag.go:231:2 if alone in an if: fixed
 stdlib cmd/internal/objfile/objfile.go:78:9 else if after return: not fixed: "err" is already declared in the enclosing block
 stdlib cmd/internal/pgo/deserialize.go:24:9 else if after return: fixed
 stdlib cmd/internal/pgo/pprof.go:25:9 else if after return: fixed
@@ -604,6 +680,8 @@ stdlib cmd/internal/script/conds.go:188:12 else after return: fixed
 stdlib cmd/internal/script/engine.go:668:3 if wrapping the rest of a loop: fixed
 stdlib cmd/internal/script/scripttest/scripttest.go:95:10 else after call: fixed
 stdlib cmd/internal/src/pos.go:160:2 if wrapping the rest of a function: fixed
+stdlib cmd/internal/test2json/test2json.go:329:5 if alone in an if: fixed
+stdlib cmd/internal/test2json/test2json.go:566:6 if alone in an if: fixed
 stdlib cmd/internal/test2json/test2json_test.go:236:9 else if after call: fixed
 stdlib cmd/internal/test2json/test2json_test.go:271:4 if wrapping the rest of a loop: fixed
 stdlib cmd/internal/test2json/test2json_test.go:408:9 else after call: fixed
@@ -656,6 +734,7 @@ stdlib cmd/link/internal/ld/data.go:1263:9 else if after return: fixed
 stdlib cmd/link/internal/ld/data.go:1326:9 else if after return: fixed
 stdlib cmd/link/internal/ld/data.go:1559:2 if wrapping the rest of a function: fixed
 stdlib cmd/link/internal/ld/data.go:1600:3 if wrapping the rest of a loop: fixed
+stdlib cmd/link/internal/ld/data.go:1990:2 if alone in an if: fixed
 stdlib cmd/link/internal/ld/data.go:2337:2 if wrapping the rest of a function: fixed
 stdlib cmd/link/internal/ld/data.go:2479:12 else if after return: fixed
 stdlib cmd/link/internal/ld/data.go:2493:12 else if after return: fixed
@@ -664,6 +743,7 @@ stdlib cmd/link/internal/ld/deadcode.go:306:3 if wrapping the rest of a loop: fi
 stdlib cmd/link/internal/ld/deadcode.go:338:4 if wrapping the rest of a loop: fixed
 stdlib cmd/link/internal/ld/deadcode.go:360:2 if wrapping the rest of a function: fixed
 stdlib cmd/link/internal/ld/dwarf.go:1208:3 if wrapping the rest of a loop: fixed
+stdlib cmd/link/internal/ld/dwarf.go:2047:4 if alone in an if: fixed
 stdlib cmd/link/internal/ld/dwarf.go:2073:3 if wrapping the rest of a loop: fixed
 stdlib cmd/link/internal/ld/dwarf_test.go:1582:3 if wrapping the rest of a loop: fixed
 stdlib cmd/link/internal/ld/dwarf_test.go:2029:3 if wrapping the rest of a loop: fixed
@@ -672,19 +752,25 @@ stdlib cmd/link/internal/ld/elf.go:1629:2 if wrapping the rest of a function: fi
 stdlib cmd/link/internal/ld/errors.go:38:2 if wrapping the rest of a function: fixed
 stdlib cmd/link/internal/ld/fips140.go:580:4 if wrapping the rest of a loop: fixed
 stdlib cmd/link/internal/ld/go.go:65:2 if wrapping the rest of a function: fixed
+stdlib cmd/link/internal/ld/go.go:383:3 if alone in an if: fixed
 stdlib cmd/link/internal/ld/inittask.go:66:2 if wrapping the rest of a function: fixed
 stdlib cmd/link/internal/ld/lib.go:749:3 if wrapping the rest of a loop: fixed
 stdlib cmd/link/internal/ld/lib.go:986:3 if wrapping the rest of a loop: fixed
+stdlib cmd/link/internal/ld/lib.go:1761:5 if alone in an if: fixed
+stdlib cmd/link/internal/ld/lib.go:1777:3 if alone in an if: fixed
 stdlib cmd/link/internal/ld/lib.go:2395:10 else after return: fixed
 stdlib cmd/link/internal/ld/lib.go:2593:3 if wrapping the rest of a loop: fixed
 stdlib cmd/link/internal/ld/lib.go:3069:9 else after return: fixed
+stdlib cmd/link/internal/ld/lib.go:3192:2 if alone in an if: fixed
 stdlib cmd/link/internal/ld/macho.go:877:2 if wrapping the rest of a function: fixed
 stdlib cmd/link/internal/ld/macho.go:927:11 exit in else ending in break: fixed
 stdlib cmd/link/internal/ld/main.go:527:2 if wrapping the rest of a function: fixed
 stdlib cmd/link/internal/ld/outbuf.go:316:9 else after return: fixed
 stdlib cmd/link/internal/ld/pcln.go:102:3 if wrapping the rest of a loop: fixed
 stdlib cmd/link/internal/ld/pcln.go:482:3 if wrapping the rest of a function: fixed
+stdlib cmd/link/internal/ld/pcln.go:689:2 if alone in an if: fixed
 stdlib cmd/link/internal/ld/pcln.go:755:3 if wrapping the rest of a loop: fixed
+stdlib cmd/link/internal/ld/pcln.go:758:4 if alone in an if: fixed
 stdlib cmd/link/internal/ld/pe.go:653:2 if wrapping the rest of a function: fixed
 stdlib cmd/link/internal/ld/stackcheck.go:84:2 if wrapping the rest of a function: fixed
 stdlib cmd/link/internal/ld/stackcheck.go:261:4 if wrapping the rest of a loop: fixed
@@ -705,6 +791,7 @@ stdlib cmd/link/internal/loader/loader.go:2862:6 if wrapping the rest of a loop:
 stdlib cmd/link/internal/loader/symbolbuilder.go:413:9 else after return: fixed
 stdlib cmd/link/internal/loadmacho/ldmacho.go:687:3 if wrapping the rest of a loop: fixed
 stdlib cmd/link/internal/loadpe/ldpe.go:528:10 else if after continue: fixed
+stdlib cmd/link/internal/loadpe/ldpe.go:543:4 if alone in an if: fixed
 stdlib cmd/link/internal/loadxcoff/ldxcoff.go:107:3 if wrapping the rest of a loop: fixed
 stdlib cmd/link/internal/loong64/asm.go:337:2 if wrapping the rest of a function: fixed
 stdlib cmd/link/internal/loong64/asm.go:669:10 else after return: fixed
@@ -722,7 +809,9 @@ stdlib cmd/link/internal/x86/asm.go:383:2 if wrapping the rest of a function: fi
 stdlib cmd/link/link_test.go:1367:2 if wrapping the rest of a function: fixed
 stdlib cmd/link/link_test.go:1874:4 if wrapping the rest of a loop: fixed
 stdlib cmd/link/link_test.go:1905:4 if wrapping the rest of a loop: fixed
+stdlib cmd/nm/nm_test.go:156:4 if alone in an if: fixed
 stdlib cmd/nm/nm_test.go:166:3 if wrapping the rest of a loop: fixed
+stdlib cmd/objdump/objdump_test.go:234:2 if alone in an if: fixed
 stdlib cmd/pack/pack.go:315:2 if wrapping the rest of a function: fixed
 stdlib cmd/pprof/pprof.go:330:3 if wrapping the rest of a loop: fixed
 stdlib cmd/pprof/pprof.go:336:5 if wrapping the rest of a loop: fixed
@@ -767,6 +856,7 @@ stdlib crypto/internal/fips140test/entropy_test.go:77:2 if wrapping the rest of 
 stdlib crypto/internal/fips140test/xaes_test.go:99:9 else if after call: fixed
 stdlib crypto/internal/fips140test/xaes_test.go:112:9 else if after call: not fixed: "decrypted" is also moved into the enclosing block by an earlier fix; "err" is also moved into the enclosing block by an earlier fix
 stdlib crypto/internal/sysrand/rand.go:44:2 if wrapping the rest of a function: fixed
+stdlib crypto/md5/md5_test.go:291:2 if alone in an if: fixed
 stdlib crypto/mldsa/mldsa_test.go:66:2 if wrapping the rest of a function: fixed
 stdlib crypto/rand/rand_test.go:87:9 else if after call: fixed
 stdlib crypto/rsa/rsa.go:187:10 else after return: fixed
@@ -788,9 +878,11 @@ stdlib crypto/tls/handshake_client_test.go:429:2 if wrapping the rest of a funct
 stdlib crypto/tls/handshake_client_test.go:460:9 else if after return: fixed
 stdlib crypto/tls/handshake_client_test.go:1488:11 else if after return: fixed
 stdlib crypto/tls/handshake_client_test.go:2906:11 else if after call: fixed
+stdlib crypto/tls/handshake_messages.go:1877:2 if alone in an if: fixed
 stdlib crypto/tls/handshake_server.go:173:10 else if after return: fixed
 stdlib crypto/tls/handshake_server_test.go:735:9 exit in else ending in call: fixed
 stdlib crypto/tls/handshake_server_test.go:745:2 if wrapping the rest of a function: not fixed: "err" is already declared in the enclosing block
+stdlib crypto/tls/handshake_server_test.go:755:3 if alone in an if: fixed
 stdlib crypto/tls/handshake_server_test.go:1356:11 else if after return: fixed
 stdlib crypto/tls/handshake_test.go:264:10 else after return: fixed
 stdlib crypto/tls/handshake_test.go:488:11 else after return: fixed
@@ -813,9 +905,12 @@ stdlib crypto/tls/tls_test.go:1812:11 else if after return: fixed
 stdlib crypto/tls/tls_test.go:2443:12 else if after call: fixed
 stdlib crypto/tls/tls_test.go:2451:12 else if after call: not fixed: "err" is also moved into the enclosing block by an earlier fix
 stdlib crypto/x509/name_constraints_test.go:2432:10 else after continue: fixed
+stdlib crypto/x509/oid.go:308:3 if alone in an if: fixed
 stdlib crypto/x509/oid.go:338:3 if wrapping the rest of a loop: fixed
 stdlib crypto/x509/oid.go:377:3 if wrapping the rest of a loop: fixed
 stdlib crypto/x509/oid_test.go:86:3 if wrapping the rest of a loop: fixed
+stdlib crypto/x509/parser.go:296:2 if alone in an if: fixed
+stdlib crypto/x509/parser.go:433:2 if alone in an if: fixed
 stdlib crypto/x509/parser.go:1010:10 else after return: fixed
 stdlib crypto/x509/parser.go:1416:3 if wrapping the rest of a loop: fixed
 stdlib crypto/x509/parser_test.go:129:11 else if after call: fixed
@@ -834,6 +929,7 @@ stdlib crypto/x509/x509.go:1555:10 exit in else ending in return: fixed
 stdlib crypto/x509/x509.go:1901:9 else if after return: not fixed: "ok" is already declared in the enclosing block
 stdlib crypto/x509/x509.go:1972:9 else if after return: fixed
 stdlib crypto/x509/x509.go:2355:9 else if after return: fixed
+stdlib crypto/x509/x509_test.go:852:4 if alone in an if: fixed
 stdlib crypto/x509/x509_test.go:2979:11 else if after call: fixed
 stdlib crypto/x509/x509_test.go:2981:11 else if after call: fixed
 stdlib crypto/x509/x509_test.go:3333:9 else if after call: fixed
@@ -845,8 +941,10 @@ stdlib database/sql/driver/types.go:272:10 else after return: fixed
 stdlib database/sql/fakedb_test.go:364:9 else if after return: fixed
 stdlib database/sql/fakedb_test.go:371:9 else after return: fixed
 stdlib database/sql/fakedb_test.go:449:3 if wrapping the rest of a function: fixed
+stdlib database/sql/sql.go:1487:2 if alone in an if: fixed
 stdlib database/sql/sql.go:1563:9 else if after return: fixed
 stdlib database/sql/sql.go:2708:3 if wrapping the rest of a loop: fixed
+stdlib database/sql/sql_test.go:415:3 if alone in an if: fixed
 stdlib database/sql/sql_test.go:2384:2 if wrapping the rest of a function: fixed
 stdlib database/sql/sql_test.go:2943:3 if wrapping the rest of a function: fixed
 stdlib database/sql/sql_test.go:3121:10 else if after call: fixed
@@ -884,6 +982,8 @@ stdlib encoding/ascii85/ascii85.go:205:3 if wrapping the rest of a loop: fixed
 stdlib encoding/ascii85/ascii85_test.go:191:2 if wrapping the rest of a function: fixed
 stdlib encoding/asn1/asn1.go:814:10 exit in else ending in return: fixed
 stdlib encoding/asn1/asn1_test.go:135:3 if wrapping the rest of a loop: not fixed: "err" is already declared in the enclosing block
+stdlib encoding/asn1/asn1_test.go:251:3 if alone in an if: fixed
+stdlib encoding/asn1/asn1_test.go:360:3 if alone in an if: fixed
 stdlib encoding/asn1/asn1_test.go:1002:9 else if after call: fixed
 stdlib encoding/asn1/marshal.go:215:9 else if after return: fixed
 stdlib encoding/asn1/marshal.go:218:9 else after return: fixed
@@ -891,6 +991,7 @@ stdlib encoding/base32/base32_test.go:418:2 if wrapping the rest of a function: 
 stdlib encoding/base64/base64_test.go:369:2 if wrapping the rest of a function: fixed
 stdlib encoding/csv/reader.go:369:10 else after break: fixed
 stdlib encoding/csv/writer.go:88:4 if wrapping the rest of a loop: fixed
+stdlib encoding/gob/decoder.go:149:3 if alone in an if: fixed
 stdlib encoding/gob/encode.go:218:2 if wrapping the rest of a function: fixed
 stdlib encoding/gob/encode.go:229:2 if wrapping the rest of a function: fixed
 stdlib encoding/gob/encode.go:242:2 if wrapping the rest of a function: fixed
@@ -906,6 +1007,8 @@ stdlib encoding/json/internal/jsonwire/encode_test.go:318:4 if wrapping the rest
 stdlib encoding/json/jsontext/decode.go:794:9 else if after return: not fixed: "err" is already declared in the enclosing block; "pos" is already declared in the enclosing block
 stdlib encoding/json/jsontext/decode.go:984:9 else if after call: fixed
 stdlib encoding/json/jsontext/decode.go:1079:9 else if after call: fixed
+stdlib encoding/json/jsontext/encode.go:297:2 if alone in an if: fixed
+stdlib encoding/json/jsontext/encode.go:325:2 if alone in an if: fixed
 stdlib encoding/json/jsontext/encode.go:720:9 else if after call: fixed
 stdlib encoding/json/jsontext/encode.go:831:9 else if after call: fixed
 stdlib encoding/json/jsontext/options.go:57:9 else after return: fixed
@@ -937,6 +1040,7 @@ stdlib encoding/json/v2/arshal_embedded.go:190:11 exit in else ending in return:
 stdlib encoding/json/v2/arshal_embedded.go:203:9 else after return: fixed
 stdlib encoding/json/v2/arshal_funcs.go:368:9 else after call: fixed
 stdlib encoding/json/v2/arshal_test.go:2274:12 else after return: fixed
+stdlib encoding/json/v2/arshal_time.go:139:4 if alone in an if: fixed
 stdlib encoding/json/v2/arshal_time.go:635:9 else after return: fixed
 stdlib encoding/json/v2/arshal_time.go:769:10 else if after return: fixed
 stdlib encoding/json/v2/example_test.go:591:10 else if after break: fixed
@@ -951,6 +1055,7 @@ stdlib encoding/json/v2/options.go:199:9 else after return: fixed
 stdlib encoding/json/v2/options.go:228:9 else after return: fixed
 stdlib encoding/json/v2/options.go:240:9 else after return: fixed
 stdlib encoding/json/v2_bench_test.go:62:2 if wrapping the rest of a function: fixed
+stdlib encoding/json/v2_decode_test.go:1450:4 if alone in an if: fixed
 stdlib encoding/json/v2_decode_test.go:1495:11 else if after call: fixed
 stdlib encoding/json/v2_decode_test.go:1507:4 if wrapping the rest of a function: not fixed: "err" is also moved into the enclosing block by an earlier fix
 stdlib encoding/json/v2_example_test.go:76:10 else if after break: fixed
@@ -971,6 +1076,7 @@ stdlib encoding/json/v2_options.go:492:9 else after return: fixed
 stdlib encoding/json/v2_options.go:523:9 else after return: fixed
 stdlib encoding/json/v2_options.go:540:9 else after return: fixed
 stdlib encoding/json/v2_options.go:550:9 else after return: fixed
+stdlib encoding/json/v2_scanner_test.go:203:4 if alone in an if: fixed
 stdlib encoding/json/v2_stream_test.go:474:12 else if after break: fixed
 stdlib encoding/json/v2_stream_test.go:603:10 else if after break: fixed
 stdlib encoding/json/v2_stream_test.go:623:11 else if after break: fixed
@@ -982,11 +1088,14 @@ stdlib encoding/xml/read_test.go:404:9 else if after call: fixed
 stdlib encoding/xml/read_test.go:1110:9 else if after call: fixed
 stdlib encoding/xml/xml.go:313:4 if wrapping the rest of a loop: fixed
 stdlib encoding/xml/xml.go:886:10 exit in else ending in break: fixed
+stdlib encoding/xml/xml.go:967:2 if alone in an if: fixed
+stdlib encoding/xml/xml.go:1086:5 if alone in an if: fixed
 stdlib encoding/xml/xml.go:1182:9 else if after return: fixed
 stdlib flag/example_value_test.go:27:9 else after return: fixed
 stdlib flag/flag.go:1014:9 else if after call: fixed
 stdlib flag/flag_test.go:47:3 if wrapping the rest of a function: fixed
 stdlib flag/flag_test.go:121:3 if wrapping the rest of a function: fixed
+stdlib flag/flag_test.go:349:2 if alone in an if: fixed
 stdlib fmt/format.go:393:9 exit in else ending in return: fixed
 stdlib fmt/print.go:581:2 if wrapping the rest of a function: fixed
 stdlib fmt/print.go:1166:2 if wrapping the rest of a function: fixed
@@ -1000,7 +1109,9 @@ stdlib go/ast/resolve.go:35:2 if wrapping the rest of a function: fixed
 stdlib go/ast/resolve.go:164:4 if wrapping the rest of a loop: fixed
 stdlib go/build/build.go:666:9 exit in else ending in return: not fixed: "goto Found" would jump over the declaration of "all"; "goto Found" would jump over the declaration of "inTestdata"
 stdlib go/build/build.go:673:10 else if after goto: fixed
+stdlib go/build/build.go:890:3 if alone in an if: fixed
 stdlib go/build/build.go:991:4 if wrapping the rest of a loop: fixed
+stdlib go/build/build.go:1607:4 if alone in an if: fixed
 stdlib go/build/build_test.go:670:9 else if after call: fixed
 stdlib go/build/build_test.go:672:9 else after call: fixed
 stdlib go/constant/value.go:764:3 if wrapping the rest of a loop: fixed
@@ -1029,6 +1140,7 @@ stdlib go/scanner/errors.go:82:3 if wrapping the rest of a loop: fixed
 stdlib go/token/tree.go:80:2 if wrapping the rest of a function: fixed
 stdlib go/types/call.go:585:4 if wrapping the rest of a loop: fixed
 stdlib go/types/decl.go:733:2 if wrapping the rest of a function: fixed
+stdlib go/types/errorcalls_test.go:51:6 if alone in an if: fixed
 stdlib go/types/errors.go:19:2 if wrapping the rest of a function: fixed
 stdlib go/types/eval_test.go:193:5 if wrapping the rest of a loop: fixed
 stdlib go/types/eval_test.go:284:4 if wrapping the rest of a loop: fixed
@@ -1037,6 +1149,8 @@ stdlib go/types/expr.go:629:9 exit in else ending in return: fixed
 stdlib go/types/expr.go:925:2 if wrapping the rest of a function: fixed
 stdlib go/types/expr.go:1018:2 if wrapping the rest of a function: fixed
 stdlib go/types/expr.go:1352:2 if wrapping the rest of a function: fixed
+stdlib go/types/generate_test.go:453:4 if alone in an if: fixed
+stdlib go/types/generate_test.go:477:4 if alone in an if: fixed
 stdlib go/types/hash.go:306:9 else after return: fixed
 stdlib go/types/issues_test.go:733:4 if wrapping the rest of a loop: fixed
 stdlib go/types/methodset.go:165:4 if wrapping the rest of a loop: fixed
@@ -1049,6 +1163,7 @@ stdlib go/types/stmt.go:325:4 if wrapping the rest of a loop: fixed
 stdlib go/types/stmt.go:370:10 exit in else ending in call: fixed
 stdlib go/types/stmt.go:552:5 if wrapping the rest of a loop: fixed
 stdlib go/types/typexpr.go:351:4 if wrapping the rest of a function: fixed
+stdlib go/types/typexpr.go:489:3 if alone in an if: fixed
 stdlib go/version/version.go:45:9 else after return: fixed
 stdlib hash/maphash/maphash.go:128:2 if wrapping the rest of a function: fixed
 stdlib html/escape.go:90:12 else if after continue: fixed
@@ -1063,6 +1178,7 @@ stdlib html/template/transition.go:164:9 else if after return: fixed
 stdlib html/template/transition.go:617:10 exit in else ending in return: fixed
 stdlib html/template/url.go:162:3 if wrapping the rest of a loop: fixed
 stdlib image/draw/bench_test.go:69:10 exit in else ending in call: fixed
+stdlib image/draw/clip_test.go:180:3 if alone in an if: fixed
 stdlib image/draw/draw.go:228:11 else if after return: fixed
 stdlib image/draw/draw.go:295:11 else if after return: fixed
 stdlib image/draw/draw.go:853:10 else if after return: fixed
@@ -1221,6 +1337,7 @@ stdlib math/big/floatconv.go:128:9 exit in else ending in return: fixed
 stdlib math/big/floatconv_test.go:581:3 if wrapping the rest of a loop: not fixed: "got" is already declared in the enclosing block
 stdlib math/big/hilbert_test.go:141:2 if wrapping the rest of a function: fixed
 stdlib math/big/int_test.go:721:3 if wrapping the rest of a loop: fixed
+stdlib math/big/nat.go:235:3 if alone in an if: fixed
 stdlib math/big/natconv.go:522:4 if wrapping the rest of a loop: fixed
 stdlib math/big/natdiv.go:873:3 if wrapping the rest of a loop: fixed
 stdlib math/big/natmul.go:221:2 if wrapping the rest of a function: fixed
@@ -1257,6 +1374,8 @@ stdlib net/http/client_test.go:1639:10 else if after return: fixed
 stdlib net/http/clientserver_test.go:514:2 if wrapping the rest of a function: fixed
 stdlib net/http/clientserver_test.go:1663:4 if wrapping the rest of a function: fixed
 stdlib net/http/cookie.go:95:9 else if after return: fixed
+stdlib net/http/cookie.go:349:2 if alone in an if: fixed
+stdlib net/http/cookie.go:354:2 if alone in an if: fixed
 stdlib net/http/cookiejar/jar.go:147:10 else if after return: fixed
 stdlib net/http/cookiejar/jar.go:451:9 else if after return: fixed
 stdlib net/http/cookiejar/punycode.go:142:3 if wrapping the rest of a loop: fixed
@@ -1275,6 +1394,10 @@ stdlib net/http/internal/http2/connframes_test.go:118:4 if wrapping the rest of 
 stdlib net/http/internal/http2/databuffer.go:93:3 if wrapping the rest of a loop: fixed
 stdlib net/http/internal/http2/frame.go:1822:10 else after return: fixed
 stdlib net/http/internal/http2/frame_test.go:1308:12 else after return: fixed
+stdlib net/http/internal/http2/server.go:747:3 if alone in an if: fixed
+stdlib net/http/internal/http2/server.go:985:3 if alone in an if: fixed
+stdlib net/http/internal/http2/server.go:2708:3 if alone in an if: fixed
+stdlib net/http/internal/http2/server.go:2734:3 if alone in an if: fixed
 stdlib net/http/internal/http2/server.go:2924:9 else after return: fixed
 stdlib net/http/internal/http2/server_test.go:4757:9 exit in else ending in call: fixed
 stdlib net/http/internal/http2/server_test.go:4818:9 exit in else ending in call: fixed
@@ -1289,6 +1412,7 @@ stdlib net/http/internal/http2/transport_test.go:3398:9 else if after call: fixe
 stdlib net/http/internal/http2/write.go:255:9 else after return: fixed
 stdlib net/http/internal/http2/write.go:304:9 else after return: fixed
 stdlib net/http/pprof/pprof.go:125:2 if wrapping the rest of a function: fixed
+stdlib net/http/pprof/pprof.go:389:2 if alone in an if: fixed
 stdlib net/http/request.go:646:10 exit in else ending in return: fixed
 stdlib net/http/request_test.go:850:2 if wrapping the rest of a function: fixed
 stdlib net/http/requestwrite_test.go:766:3 if wrapping the rest of a loop: fixed
@@ -1305,11 +1429,14 @@ stdlib net/http/server.go:1780:2 if wrapping the rest of a function: fixed
 stdlib net/http/server.go:1946:3 if wrapping the rest of a function: fixed
 stdlib net/http/transfer.go:545:10 else after return: fixed
 stdlib net/http/transport.go:2639:10 else after return: fixed
+stdlib net/http/transport.go:2828:4 if alone in an if: fixed
 stdlib net/http/transport_test.go:1561:5 if wrapping the rest of a function: fixed
 stdlib net/http/transport_test.go:1746:4 if wrapping the rest of a function: fixed
+stdlib net/http/transport_test.go:2754:5 if alone in an if: fixed
 stdlib net/http/transport_test.go:3931:3 if wrapping the rest of a function: fixed
 stdlib net/http/transport_test.go:4965:11 else after return: fixed
 stdlib net/http/transport_test.go:5233:9 else after call: not fixed: "err" is already declared in the enclosing block; "res" is already declared in the enclosing block
+stdlib net/http/transport_test.go:5731:4 if alone in an if: fixed
 stdlib net/http/transport_test.go:5942:2 if wrapping the rest of a function: not fixed: "err" is already declared in the enclosing block
 stdlib net/http/transport_test.go:6149:3 if wrapping the rest of a function: fixed
 stdlib net/interface_linux.go:248:3 if wrapping the rest of a loop: fixed
@@ -1323,6 +1450,8 @@ stdlib net/iprawsock_test.go:121:9 else if after call: fixed
 stdlib net/listen_test.go:661:9 else if after return: fixed
 stdlib net/lookup_test.go:1295:14 exit in else ending in call: fixed
 stdlib net/mac_test.go:108:3 if wrapping the rest of a loop: not fixed: "err" is already declared in the enclosing block
+stdlib net/mail/message.go:437:2 if alone in an if: fixed
+stdlib net/mail/message.go:584:3 if alone in an if: fixed
 stdlib net/mail/message_test.go:1155:3 if wrapping the rest of a loop: fixed
 stdlib net/main_test.go:68:2 if wrapping the rest of a function: fixed
 stdlib net/main_test.go:133:2 if wrapping the rest of a function: fixed
@@ -1339,6 +1468,8 @@ stdlib net/protoconn_test.go:176:9 else if after call: fixed
 stdlib net/rpc/client.go:92:2 if wrapping the rest of a function: fixed
 stdlib net/sendfile_test.go:32:2 if wrapping the rest of a function: fixed
 stdlib net/sock_posix.go:109:10 else if after return: fixed
+stdlib net/splice_linux_test.go:66:2 if alone in an if: fixed
+stdlib net/splice_linux_test.go:174:2 if alone in an if: fixed
 stdlib net/splice_linux_test.go:218:2 if wrapping the rest of a function: fixed
 stdlib net/tcpconn_keepalive_test.go:179:11 exit in else ending in call: fixed
 stdlib net/timeout_test.go:1019:11 exit in else ending in call: fixed
@@ -1378,6 +1509,8 @@ stdlib os/signal/signal.go:64:4 if wrapping the rest of a loop: fixed
 stdlib os/signal/signal.go:155:3 if wrapping the rest of a function: fixed
 stdlib os/signal/signal_test.go:298:10 else after call: fixed
 stdlib os/signal/signal_test.go:395:4 if wrapping the rest of a function: fixed
+stdlib os/timeout_test.go:91:7 if alone in an if: fixed
+stdlib os/timeout_test.go:186:8 if alone in an if: fixed
 stdlib os/timeout_test.go:554:13 exit in else ending in call: fixed
 stdlib os/user/listgroups_unix.go:43:11 exit in else ending in return: fixed
 stdlib os/user/lookup_unix.go:123:9 else if after return: fixed
@@ -1392,7 +1525,9 @@ stdlib os/user/user_test.go:173:10 else after call: fixed
 stdlib path/filepath/symlink.go:44:10 else if after break: fixed
 stdlib path/filepath/symlink.go:47:10 else if after continue: fixed
 stdlib reflect/all_test.go:2066:10 exit in else ending in call: fixed
+stdlib reflect/all_test.go:3278:3 if alone in an if: fixed
 stdlib reflect/all_test.go:4098:3 if wrapping the rest of a function: fixed
+stdlib reflect/all_test.go:5123:4 if alone in an if: fixed
 stdlib reflect/all_test.go:6475:9 else if after call: fixed
 stdlib reflect/all_test.go:6774:10 else if after call: fixed
 stdlib reflect/tostring_test.go:39:10 else after return: fixed
@@ -1410,6 +1545,7 @@ stdlib runtime/arena.go:711:10 else if after break: fixed
 stdlib runtime/arena.go:714:10 else after break: fixed
 stdlib runtime/cgocall.go:498:2 if wrapping the rest of a function: fixed
 stdlib runtime/chan.go:326:10 else after call: not fixed: "racesync" never returns only in some builds
+stdlib runtime/chan.go:896:3 if alone in an if: fixed
 stdlib runtime/chan.go:945:10 else after call: not fixed: "raceacquire" never returns only in some builds; "racerelease" never returns only in some builds
 stdlib runtime/chan.go:949:9 else after nested if: not fixed: "raceacquire" never returns only in some builds; "racerelease" never returns only in some builds
 stdlib runtime/chan.go:952:10 else after call: not fixed: "racereleaseacquire" never returns only in some builds
@@ -1458,6 +1594,7 @@ stdlib runtime/mgc.go:1921:3 if wrapping the rest of a loop: fixed
 stdlib runtime/mgcmark.go:774:2 if wrapping the rest of a function: fixed
 stdlib runtime/mgcmark.go:865:10 exit in else ending in break: fixed
 stdlib runtime/mgcmark.go:1364:3 if wrapping the rest of a loop: fixed
+stdlib runtime/mgcmark_greenteagc.go:299:2 if alone in an if: fixed
 stdlib runtime/mgcpacer.go:458:2 if wrapping the rest of a function: fixed
 stdlib runtime/mgcpacer.go:674:2 if wrapping the rest of a function: fixed
 stdlib runtime/mgcpacer_test.go:37:5 if wrapping the rest of a function: fixed
@@ -1503,9 +1640,12 @@ stdlib runtime/pprof/pprof_test.go:2933:4 if wrapping the rest of a loop: fixed
 stdlib runtime/pprof/runtime_test.go:83:2 if wrapping the rest of a function: fixed
 stdlib runtime/preempt_xreg.go:132:2 if wrapping the rest of a function: fixed
 stdlib runtime/proc.go:2203:3 if wrapping the rest of a loop: fixed
+stdlib runtime/proc.go:2487:2 if alone in an if: fixed
+stdlib runtime/proc.go:2622:2 if alone in an if: fixed
 stdlib runtime/proc.go:3786:10 exit in else ending in goto: fixed
 stdlib runtime/proc.go:4226:10 exit in else ending in goto: fixed
 stdlib runtime/proc.go:5536:2 if wrapping the rest of a function: fixed
+stdlib runtime/proc.go:5818:3 if alone in an if: fixed
 stdlib runtime/proc.go:7198:2 if wrapping the rest of a function: fixed
 stdlib runtime/proc.go:7893:2 if wrapping the rest of a function: fixed
 stdlib runtime/proc_test.go:1005:9 else if after call: fixed
@@ -1521,10 +1661,13 @@ stdlib runtime/sema.go:231:2 if wrapping the rest of a function: fixed
 stdlib runtime/semasleep_test.go:132:11 exit in else ending in call: fixed
 stdlib runtime/signal_unix.go:201:2 if wrapping the rest of a function: fixed
 stdlib runtime/signal_unix.go:226:2 if wrapping the rest of a function: fixed
+stdlib runtime/signal_unix.go:318:3 if alone in an if: fixed
 stdlib runtime/signal_unix.go:606:9 else after call: fixed
 stdlib runtime/sigqueue.go:206:10 else after call: not fixed: "sigNoteSetup" never returns only in some builds
 stdlib runtime/stack.go:252:2 if wrapping the rest of a function: fixed
+stdlib runtime/stack.go:1123:2 if alone in an if: fixed
 stdlib runtime/stack_test.go:133:11 else after call: fixed
+stdlib runtime/stack_test.go:712:3 if alone in an if: fixed
 stdlib runtime/string.go:444:9 else if after return: fixed
 stdlib runtime/string_test.go:253:10 exit in else ending in call: fixed
 stdlib runtime/string_test.go:257:10 exit in else ending in call: fixed
@@ -1573,6 +1716,7 @@ stdlib syscall/exec_linux_test.go:254:9 else if after call: fixed
 stdlib syscall/exec_linux_test.go:317:9 else if after call: fixed
 stdlib syscall/rlimit.go:32:2 if wrapping the rest of a function: fixed
 stdlib syscall/syscall_linux.go:256:11 else if after return: fixed
+stdlib syscall/syscall_linux_test.go:88:2 if alone in an if: fixed
 stdlib syscall/syscall_linux_test.go:124:9 else if after call: fixed
 stdlib syscall/syscall_linux_test.go:126:9 else if after call: fixed
 stdlib syscall/syscall_linux_test.go:775:9 else if after call: not fixed: "err" is already declared in the enclosing block
@@ -1587,6 +1731,7 @@ stdlib testing/benchmark.go:709:3 if wrapping the rest of a loop: fixed
 stdlib testing/example.go:93:9 else if after call: fixed
 stdlib testing/fstest/mapfs.go:83:4 if wrapping the rest of a loop: fixed
 stdlib testing/fstest/testfs.go:452:2 if wrapping the rest of a function: not fixed: "err" is already declared in the enclosing block; "finfo2" is already declared in the enclosing block; "info2" is already declared in the enclosing block
+stdlib testing/match.go:267:2 if alone in an if: fixed
 stdlib testing/match_test.go:23:3 if wrapping the rest of a loop: fixed
 stdlib testing/match_test.go:81:3 if wrapping the rest of a loop: fixed
 stdlib text/scanner/scanner_test.go:459:3 if wrapping the rest of a function: fixed
@@ -1651,6 +1796,7 @@ nats-server server/accounts.go:4273:9 else if after return: fixed
 nats-server server/accounts.go:4407:12 else if after break: fixed
 nats-server server/accounts.go:4694:10 else if after return: fixed
 nats-server server/accounts.go:4726:9 else after return: fixed
+nats-server server/accounts_test.go:563:3 if alone in an if: fixed
 nats-server server/accounts_test.go:3392:9 else if after call: not fixed: "err" is already declared in the enclosing block
 nats-server server/accounts_test.go:3435:11 else if after call: fixed
 nats-server server/accounts_test.go:3446:11 else if after call: fixed
@@ -1663,6 +1809,8 @@ nats-server server/auth.go:640:9 else if after return: fixed
 nats-server server/auth.go:1045:10 else if after return: fixed
 nats-server server/auth.go:1049:11 else if after return: fixed
 nats-server server/auth.go:1052:11 else if after return: fixed
+nats-server server/auth.go:1152:5 if alone in an if: fixed
+nats-server server/auth.go:1157:5 if alone in an if: fixed
 nats-server server/auth.go:1254:10 else if after return: fixed
 nats-server server/auth.go:1608:9 else if after return: fixed
 nats-server server/auth.go:1642:9 else if after return: fixed
@@ -1680,12 +1828,14 @@ nats-server server/avl/seqset.go:712:9 else if after return: fixed
 nats-server server/benchmark_publish_test.go:174:15 else if after call: fixed
 nats-server server/client.go:620:10 else if after return: fixed
 nats-server server/client.go:912:9 else if after return: fixed
+nats-server server/client.go:938:3 if alone in an if: fixed
 nats-server server/client.go:1604:10 else after goto: fixed
 nats-server server/client.go:1965:10 exit in else ending in return: fixed
 nats-server server/client.go:2062:9 else after return: fixed
 nats-server server/client.go:2186:10 exit in else ending in return: fixed
 nats-server server/client.go:2844:2 if wrapping the rest of a function: fixed
 nats-server server/client.go:3193:9 else if after return: fixed
+nats-server server/client.go:3308:5 if alone in an if: fixed
 nats-server server/client.go:5294:2 if wrapping the rest of a function: fixed
 nats-server server/client.go:5434:3 if wrapping the rest of a function: fixed
 nats-server server/client.go:5680:12 else after continue: fixed
@@ -1694,6 +1844,7 @@ nats-server server/client.go:6196:2 if wrapping the rest of a function: fixed
 nats-server server/client.go:6522:10 else if after return: fixed
 nats-server server/client.go:6525:10 else if after return: fixed
 nats-server server/client.go:6699:2 if wrapping the rest of a function: fixed
+nats-server server/client.go:6808:4 if alone in an if: fixed
 nats-server server/client.go:7013:9 else after return: fixed
 nats-server server/client.go:7022:9 else after return: fixed
 nats-server server/client_test.go:2253:13 else after call: fixed
@@ -1701,6 +1852,8 @@ nats-server server/client_test.go:3578:10 else if after call: fixed
 nats-server server/client_test.go:5069:9 else if after call: not fixed: "err" is already declared in the enclosing block; "msg" is already declared in the enclosing block
 nats-server server/consumer.go:1194:11 else if after return: fixed
 nats-server server/consumer.go:1209:12 exit in else ending in return: fixed
+nats-server server/consumer.go:2648:2 if alone in an if: fixed
+nats-server server/consumer.go:3200:4 if alone in an if: fixed
 nats-server server/consumer.go:3454:2 if wrapping the rest of a function: fixed
 nats-server server/consumer.go:4438:12 exit in else ending in continue: fixed
 nats-server server/consumer.go:4500:12 exit in else ending in continue: fixed
@@ -1807,6 +1960,7 @@ nats-server server/filestore.go:2992:12 else after continue: fixed
 nats-server server/filestore.go:3302:10 else if after return: fixed
 nats-server server/filestore.go:3564:3 if wrapping the rest of a loop: fixed
 nats-server server/filestore.go:3795:11 else if after return: fixed
+nats-server server/filestore.go:3807:5 if alone in an if: fixed
 nats-server server/filestore.go:5463:11 else if after return: fixed
 nats-server server/filestore.go:5469:11 exit in else ending in break: fixed
 nats-server server/filestore.go:5482:10 exit in else ending in break: fixed
@@ -1815,6 +1969,8 @@ nats-server server/filestore.go:6043:10 else if after return: fixed
 nats-server server/filestore.go:6101:11 else if after return: fixed
 nats-server server/filestore.go:6342:9 else if after return: fixed
 nats-server server/filestore.go:6923:9 else if after return: fixed
+nats-server server/filestore.go:6994:3 if alone in an if: fixed
+nats-server server/filestore.go:7003:3 if alone in an if: fixed
 nats-server server/filestore.go:7086:10 exit in else ending in break: fixed
 nats-server server/filestore.go:7402:2 if wrapping the rest of a function: fixed
 nats-server server/filestore.go:7506:11 else if after return: fixed
@@ -1876,6 +2032,7 @@ nats-server server/gateway.go:1132:11 exit in else ending in return: fixed
 nats-server server/gateway.go:1245:3 if wrapping the rest of a loop: fixed
 nats-server server/gateway.go:1303:3 if wrapping the rest of a loop: fixed
 nats-server server/gateway.go:1414:3 if wrapping the rest of a loop: fixed
+nats-server server/gateway.go:2483:2 if alone in an if: fixed
 nats-server server/gateway.go:2581:6 if wrapping the rest of a loop: fixed
 nats-server server/gateway.go:2874:9 else if after return: fixed
 nats-server server/gateway.go:3160:2 if wrapping the rest of a function: fixed
@@ -1883,6 +2040,7 @@ nats-server server/gateway.go:3292:2 if wrapping the rest of a function: fixed
 nats-server server/gateway_test.go:86:10 else if after return: fixed
 nats-server server/gateway_test.go:143:10 else if after return: fixed
 nats-server server/gateway_test.go:171:11 else after return: fixed
+nats-server server/gateway_test.go:750:2 if alone in an if: fixed
 nats-server server/gateway_test.go:2967:10 exit in else ending in break: fixed
 nats-server server/gateway_test.go:5270:4 if wrapping the rest of a function: fixed
 nats-server server/gsl/gsl.go:238:3 if wrapping the rest of a loop: fixed
@@ -1908,6 +2066,7 @@ nats-server server/jetstream_api.go:3817:10 else if after return: fixed
 nats-server server/jetstream_api.go:3945:10 else if after return: fixed
 nats-server server/jetstream_api.go:4240:10 else if after return: fixed
 nats-server server/jetstream_api.go:5107:9 else if after return: fixed
+nats-server server/jetstream_api.go:5172:3 if alone in an if: fixed
 nats-server server/jetstream_api.go:5641:10 else if after return: fixed
 nats-server server/jetstream_api.go:5648:10 else if after return: fixed
 nats-server server/jetstream_batching.go:491:2 if wrapping the rest of a function: fixed
@@ -1961,6 +2120,7 @@ nats-server server/jetstream_cluster.go:6852:9 else if after return: fixed
 nats-server server/jetstream_cluster.go:6981:13 else if after return: fixed
 nats-server server/jetstream_cluster.go:7076:9 else if after return: fixed
 nats-server server/jetstream_cluster.go:8050:12 else after return: fixed
+nats-server server/jetstream_cluster.go:8916:5 if alone in an if: fixed
 nats-server server/jetstream_cluster.go:9275:2 if wrapping the rest of a function: fixed
 nats-server server/jetstream_cluster.go:10134:4 if wrapping the rest of a loop: fixed
 nats-server server/jetstream_cluster.go:10670:11 else if after return: fixed
@@ -2057,6 +2217,7 @@ nats-server server/jetstream_cluster_4_test.go:5251:9 else after call: fixed
 nats-server server/jetstream_cluster_4_test.go:6187:4 if wrapping the rest of a function: fixed
 nats-server server/jetstream_cluster_4_test.go:6771:10 else if after continue: fixed
 nats-server server/jetstream_cluster_4_test.go:7867:3 if wrapping the rest of a loop: fixed
+nats-server server/jetstream_cluster_4_test.go:7979:3 if alone in an if: fixed
 nats-server server/jetstream_cluster_4_test.go:7989:2 if wrapping the rest of a function: fixed
 nats-server server/jetstream_consumer_test.go:4032:10 exit in else ending in call: fixed
 nats-server server/jetstream_consumer_test.go:5535:12 else after call: fixed
@@ -2221,9 +2382,11 @@ nats-server server/memstore_test.go:766:4 if wrapping the rest of a loop: fixed
 nats-server server/monitor.go:1207:10 else if after return: fixed
 nats-server server/monitor.go:2586:4 if wrapping the rest of a loop: not fixed: "acc" is also declared by the "if" initialiser
 nats-server server/monitor.go:2864:9 else after return: fixed
+nats-server server/monitor.go:3836:6 if alone in an if: fixed
 nats-server server/monitor.go:3968:5 if wrapping the rest of a loop: fixed
 nats-server server/monitor.go:4064:5 if wrapping the rest of a loop: fixed
 nats-server server/monitor.go:4301:10 exit in else ending in return: fixed
+nats-server server/monitor.go:4312:4 if alone in an if: fixed
 nats-server server/monitor_test.go:592:3 if wrapping the rest of a loop: fixed
 nats-server server/monitor_test.go:1200:3 if wrapping the rest of a loop: fixed
 nats-server server/monitor_test.go:1238:3 if wrapping the rest of a loop: fixed
@@ -2240,6 +2403,7 @@ nats-server server/mqtt.go:1783:11 else after return: fixed
 nats-server server/mqtt.go:3290:3 if wrapping the rest of a function: fixed
 nats-server server/mqtt.go:3960:9 else if after return: not fixed: "err" is already declared in the enclosing block
 nats-server server/mqtt.go:4125:10 exit in else ending in return: fixed
+nats-server server/mqtt.go:4272:2 if alone in an if: fixed
 nats-server server/mqtt.go:5355:2 if wrapping the rest of a function: fixed
 nats-server server/mqtt.go:5447:4 if wrapping the rest of a loop: fixed
 nats-server server/mqtt.go:5524:2 if wrapping the rest of a function: fixed
@@ -2260,7 +2424,9 @@ nats-server server/mqtt_test.go:3566:4 if wrapping the rest of a function: fixed
 nats-server server/mqtt_test.go:6077:2 if wrapping the rest of a function: fixed
 nats-server server/mqtt_test.go:7367:11 exit in else ending in call: fixed
 nats-server server/mqtt_test.go:7818:11 else if after return: fixed
+nats-server server/mqtt_test.go:8756:5 if alone in an if: fixed
 nats-server server/msgtrace.go:443:11 exit in else ending in return: fixed
+nats-server server/msgtrace.go:614:6 if alone in an if: fixed
 nats-server server/msgtrace_test.go:638:4 if wrapping the rest of a function: not fixed: "c" is already declared in the enclosing block; "cid" is already declared in the enclosing block; "err" is already declared in the enclosing block
 nats-server server/msgtrace_test.go:3675:14 exit in else ending in call: fixed
 nats-server server/msgtrace_test.go:3927:10 else after call: fixed
@@ -2324,6 +2490,7 @@ nats-server server/opts.go:5369:13 else after nested if: fixed
 nats-server server/opts.go:5553:11 exit in else ending in continue: fixed
 nats-server server/opts.go:5664:12 else after continue: fixed
 nats-server server/opts.go:6159:3 if wrapping the rest of a loop: fixed
+nats-server server/opts.go:6223:2 if alone in an if: fixed
 nats-server server/opts.go:6385:9 else if after return: fixed
 nats-server server/opts.go:6388:9 else if after return: fixed
 nats-server server/opts_test.go:1016:10 else if after call: fixed
@@ -2380,6 +2547,7 @@ nats-server server/raft_test.go:9878:3 if wrapping the rest of a loop: fixed
 nats-server server/raft_transport.go:99:2 if wrapping the rest of a function: fixed
 nats-server server/reload.go:539:4 if wrapping the rest of a loop: fixed
 nats-server server/reload.go:1296:9 else if after return: fixed
+nats-server server/reload.go:1340:3 if alone in an if: fixed
 nats-server server/reload.go:1841:12 exit in else ending in return: fixed
 nats-server server/reload.go:1904:11 else after return: fixed
 nats-server server/reload.go:1975:11 exit in else ending in return: fixed
@@ -2401,6 +2569,8 @@ nats-server server/route.go:1368:3 if wrapping the rest of a loop: fixed
 nats-server server/route.go:1446:9 exit in else ending in return: not fixed: "ok" is already declared in the enclosing block
 nats-server server/route.go:1817:3 if wrapping the rest of a function: fixed
 nats-server server/route.go:2707:9 else if after return: fixed
+nats-server server/route.go:3342:3 if alone in an if: fixed
+nats-server server/routes_test.go:208:3 if alone in an if: fixed
 nats-server server/routes_test.go:687:11 else after continue: fixed
 nats-server server/routes_test.go:2180:12 exit in else ending in call: fixed
 nats-server server/routes_test.go:2694:12 exit in else ending in call: fixed
@@ -2418,6 +2588,8 @@ nats-server server/server.go:1397:5 if wrapping the rest of a loop: fixed
 nats-server server/server.go:1648:9 else if after return: fixed
 nats-server server/server.go:2122:11 exit in else ending in return: fixed
 nats-server server/server.go:2451:15 else if after continue: fixed
+nats-server server/server.go:3018:3 if alone in an if: fixed
+nats-server server/server.go:3226:3 if alone in an if: fixed
 nats-server server/server.go:3732:2 if wrapping the rest of a function: fixed
 nats-server server/server.go:4592:3 if wrapping the rest of a loop: fixed
 nats-server server/server.go:4703:4 if wrapping the rest of a loop: fixed
@@ -2440,9 +2612,13 @@ nats-server server/store_test.go:545:14 else after return: fixed
 nats-server server/store_test.go:627:14 else if after return: fixed
 nats-server server/store_test.go:631:14 else after return: fixed
 nats-server server/stream.go:920:10 else after return: fixed
+nats-server server/stream.go:1580:3 if alone in an if: fixed
+nats-server server/stream.go:2242:2 if alone in an if: fixed
 nats-server server/stream.go:2257:10 exit in else ending in return: fixed
 nats-server server/stream.go:2300:11 exit in else ending in return: fixed
 nats-server server/stream.go:2318:10 else after continue: fixed
+nats-server server/stream.go:2384:3 if alone in an if: fixed
+nats-server server/stream.go:2436:5 if alone in an if: fixed
 nats-server server/stream.go:2462:9 else if after return: fixed
 nats-server server/stream.go:3549:9 else if after return: fixed
 nats-server server/stream.go:3567:10 exit in else ending in return: fixed
@@ -2473,14 +2649,18 @@ nats-server server/stream.go:6861:12 else if after return: fixed
 nats-server server/stream.go:6871:12 else after return: fixed
 nats-server server/stream.go:6942:12 else if after return: fixed
 nats-server server/stream.go:6951:12 else after return: fixed
+nats-server server/stream.go:7019:3 if alone in an if: fixed
 nats-server server/stream.go:7943:4 if wrapping the rest of a function: fixed
 nats-server server/stream.go:8227:10 exit in else ending in return: fixed
 nats-server server/stream.go:9677:3 if wrapping the rest of a loop: fixed
 nats-server server/stream.go:9809:2 if wrapping the rest of a function: fixed
 nats-server server/stree/dump.go:62:9 else after return: fixed
+nats-server server/stree/node256.go:69:3 if alone in an if: fixed
 nats-server server/stree/parts.go:107:11 else if after continue: fixed
 nats-server server/stree/stree.go:99:10 exit in else ending in return: fixed
 nats-server server/stree/stree.go:223:10 else after return: fixed
+nats-server server/stree/stree.go:398:5 if alone in an if: fixed
+nats-server server/stree/stree.go:525:3 if alone in an if: fixed
 nats-server server/stree/stree_test.go:486:10 else if after call: fixed
 nats-server server/stree/stree_test.go:1651:10 exit in else ending in call: fixed
 nats-server server/stree/stree_test.go:1701:11 exit in else ending in call: fixed
@@ -2507,6 +2687,9 @@ nats-server server/sublist.go:1724:11 else if after return: fixed
 nats-server server/sublist.go:1741:10 else if after return: fixed
 nats-server server/util_test.go:107:10 else if after call: fixed
 nats-server server/websocket.go:386:3 if wrapping the rest of a loop: fixed
+nats-server server/websocket.go:948:2 if alone in an if: fixed
+nats-server server/websocket_test.go:526:4 if alone in an if: fixed
+nats-server server/websocket_test.go:628:5 if alone in an if: fixed
 nats-server server/websocket_test.go:1211:11 else if after call: fixed
 nats-server server/websocket_test.go:1775:11 else if after return: fixed
 nats-server server/websocket_test.go:1868:11 else if after call: fixed
@@ -2524,6 +2707,9 @@ nats-server test/cluster_test.go:67:10 exit in else ending in break: fixed
 nats-server test/fanout_test.go:121:10 else after call: fixed
 nats-server test/new_routes_test.go:365:3 if wrapping the rest of a loop: fixed
 nats-server test/new_routes_test.go:431:3 if wrapping the rest of a loop: fixed
+nats-server test/ocsp_peer_test.go:1325:4 if alone in an if: fixed
+nats-server test/ocsp_peer_test.go:1330:4 if alone in an if: fixed
+nats-server test/ocsp_peer_test.go:1335:4 if alone in an if: fixed
 nats-server test/ocsp_peer_test.go:1340:4 if wrapping the rest of a function: fixed
 nats-server test/operator_test.go:177:9 else if after call: fixed
 nats-server test/ports_test.go:37:10 else after continue: fixed
@@ -2531,6 +2717,7 @@ nats-server test/ports_test.go:118:9 exit in else ending in call: fixed
 nats-server test/ports_test.go:205:9 exit in else ending in call: fixed
 nats-server test/proto_test.go:240:10 exit in else ending in break: fixed
 nats-server test/routes_test.go:692:4 if wrapping the rest of a function: fixed
+nats-server test/service_latency_test.go:1573:3 if alone in an if: fixed
 nats-server test/test.go:428:10 exit in else ending in return: fixed
 nats-server test/test_test.go:119:2 if wrapping the rest of a function: fixed
 nats-server test/tls_test.go:1231:2 if wrapping the rest of a function: fixed
@@ -2656,9 +2843,12 @@ esbuild internal/js_parser/js_parser.go:10277:11 else after return: fixed
 esbuild internal/js_parser/js_parser.go:10319:11 else after return: fixed
 esbuild internal/js_parser/js_parser.go:10823:5 if wrapping the rest of a loop: fixed
 esbuild internal/js_parser/js_parser.go:11258:4 if wrapping the rest of a loop: fixed
+esbuild internal/js_parser/js_parser.go:11582:4 if alone in an if: fixed
 esbuild internal/js_parser/js_parser.go:11684:10 else after return: fixed
+esbuild internal/js_parser/js_parser.go:13298:3 if alone in an if: fixed
 esbuild internal/js_parser/js_parser.go:13325:10 else if after return: fixed
 esbuild internal/js_parser/js_parser.go:13357:9 else after return: fixed
+esbuild internal/js_parser/js_parser.go:13462:11 if alone in an if: fixed
 esbuild internal/js_parser/js_parser.go:13774:13 else after return: fixed
 esbuild internal/js_parser/js_parser.go:13885:10 exit in else ending in nested if: not fixed: another fix inside the "if" statement has to be applied first
 esbuild internal/js_parser/js_parser.go:13968:11 else after return: fixed
@@ -2750,6 +2940,7 @@ esbuild internal/resolver/resolver.go:1087:9 else after return: fixed
 esbuild internal/resolver/resolver.go:1334:12 else if after goto: fixed
 esbuild internal/resolver/resolver.go:2089:12 else after return: fixed
 esbuild internal/resolver/resolver.go:2421:10 else if after return: fixed
+esbuild internal/resolver/tsconfig_json.go:343:9 if alone in an if: fixed
 esbuild internal/resolver/yarnpnp.go:317:9 else after return: fixed
 esbuild internal/runtime/runtime_test.go:24:4 if wrapping the rest of a function: fixed
 esbuild internal/test/util.go:20:2 if wrapping the rest of a function: fixed
@@ -2757,6 +2948,7 @@ esbuild pkg/api/api_impl.go:56:10 else after break: fixed
 esbuild pkg/api/api_impl.go:158:10 else after return: fixed
 esbuild pkg/api/api_impl.go:306:9 else after return: fixed
 esbuild pkg/api/api_impl.go:802:3 if wrapping the rest of a loop: fixed
+esbuild pkg/api/api_impl.go:1244:2 if alone in an if: fixed
 esbuild pkg/api/api_impl.go:2302:5 if wrapping the rest of a loop: fixed
 esbuild pkg/api/api_impl.go:2351:6 if wrapping the rest of a loop: fixed
 esbuild pkg/api/api_impl.go:2388:7 if wrapping the rest of a loop: fixed
@@ -2795,6 +2987,7 @@ x-net dns/dnsmessage/message.go:831:10 else if after return: fixed
 x-net dns/dnsmessage/message.go:881:10 else if after return: fixed
 x-net dns/dnsmessage/message.go:2015:3 if wrapping the rest of a loop: fixed
 x-net html/escape.go:102:12 exit in else ending in break: fixed
+x-net html/parse.go:1044:6 if alone in an if: fixed
 x-net html/parse.go:1101:11 else if after return: fixed
 x-net html/token.go:638:12 else if after return: fixed
 x-net html/token.go:641:12 else if after return: fixed
@@ -2853,7 +3046,9 @@ x-net ipv6/unicast_test.go:186:10 else after call: not fixed: "err" is already d
 x-net ipv6/unicast_test.go:189:11 else if after call: fixed
 x-net ipv6/unicastsockopt_test.go:103:9 else if after call: fixed
 x-net ipv6/unicastsockopt_test.go:113:9 else if after call: not fixed: "err" is also moved into the enclosing block by an earlier fix; "v" is also moved into the enclosing block by an earlier fix
+x-net quic/conn.go:338:4 if alone in an if: fixed
 x-net quic/conn_send.go:288:10 else if after return: fixed
+x-net quic/conn_streams.go:146:2 if alone in an if: fixed
 x-net quic/conn_streams.go:177:9 else after return: fixed
 x-net quic/conn_test.go:521:11 else after return: fixed
 x-net quic/conn_test.go:531:11 else after return: fixed
@@ -2881,9 +3076,15 @@ x-net webdav/internal/xml/read_test.go:402:9 else if after call: fixed
 x-net webdav/internal/xml/xml.go:302:4 if wrapping the rest of a loop: fixed
 x-net webdav/internal/xml/xml.go:812:11 else after return: fixed
 x-net webdav/internal/xml/xml.go:858:10 exit in else ending in break: fixed
+x-net webdav/internal/xml/xml.go:931:2 if alone in an if: fixed
+x-net webdav/webdav.go:407:2 if alone in an if: fixed
 x-net webdav/webdav_test.go:183:10 else after continue: not fixed: "err" is already declared in the enclosing block; "h" is already declared in the enclosing block
+x-net websocket/hybi.go:552:2 if alone in an if: fixed
+x-net websocket/websocket_test.go:354:2 if alone in an if: fixed
 x-crypto acme/autocert/internal/acmetest/ca.go:630:3 if wrapping the rest of a loop: fixed
 x-crypto acme/autocert/renewal.go:51:10 else after return: fixed
+x-crypto acme/pebble_test.go:239:3 if alone in an if: fixed
+x-crypto acme/pebble_test.go:376:3 if alone in an if: fixed
 x-crypto acme/pebble_test.go:463:10 else after call: fixed
 x-crypto acme/pebble_test.go:874:3 if wrapping the rest of a function: fixed
 x-crypto blake2b/blake2b_test.go:212:9 else if after call: not fixed: "err" is already declared in the enclosing block
@@ -2919,6 +3120,7 @@ x-crypto ssh/client_auth_test.go:1379:11 else if after call: fixed
 x-crypto ssh/client_auth_test.go:1426:9 else if after call: fixed
 x-crypto ssh/client_auth_test.go:1433:10 exit in else ending in call: fixed
 x-crypto ssh/handshake.go:761:9 else if after return: not fixed: "err" is already declared in the enclosing block
+x-crypto ssh/handshake.go:793:3 if alone in an if: fixed
 x-crypto ssh/handshake_test.go:285:11 else if after break: fixed
 x-crypto ssh/handshake_test.go:1045:9 else if after call: not fixed: "err" is already declared in the enclosing block
 x-crypto ssh/handshake_test.go:1157:9 else if after call: not fixed: "err" is already declared in the enclosing block
@@ -2937,7 +3139,10 @@ x-crypto ssh/knownhosts/knownhosts_test.go:145:9 else if after call: fixed
 x-crypto ssh/knownhosts/knownhosts_test.go:147:9 else if after call: fixed
 x-crypto ssh/messages.go:500:11 exit in else ending in return: fixed
 x-crypto ssh/messages.go:597:11 exit in else ending in call: fixed
+x-crypto ssh/mux_test.go:1226:2 if alone in an if: fixed
 x-crypto ssh/server.go:710:10 else if after return: fixed
+x-crypto ssh/server.go:968:3 if alone in an if: fixed
+x-crypto ssh/server_multi_auth_test.go:319:8 if alone in an if: fixed
 x-crypto ssh/server_test.go:155:10 else if after call: fixed
 x-crypto ssh/server_test.go:1140:9 else after return: fixed
 x-crypto ssh/server_test.go:1149:9 else after return: fixed
@@ -3022,6 +3227,7 @@ compress fse/compress.go:595:4 if wrapping the rest of a loop: fixed
 compress fse/compress.go:638:3 if wrapping the rest of a loop: fixed
 compress fse/fse_test.go:246:4 if wrapping the rest of a function: fixed
 compress gzhttp/compress_test.go:2010:9 else if after call: fixed
+compress gzip/gzip.go:100:2 if alone in an if: fixed
 compress gzip/gzip_test.go:485:10 else if after break: fixed
 compress huff0/bitreader.go:263:2 if wrapping the rest of a function: fixed
 compress huff0/compress.go:298:3 if wrapping the rest of a loop: fixed
@@ -3036,6 +3242,7 @@ compress lzw/reader.go:343:10 else if after continue: fixed
 compress lzw/reader.go:346:10 else if after break: fixed
 compress s2/cmd/s2c/main.go:230:7 if wrapping the rest of a loop: not fixed: "start" is already declared in the enclosing block
 compress s2/cmd/s2c/main.go:303:6 if wrapping the rest of a loop: not fixed: "err" is already declared in the enclosing block; "start" is already declared in the enclosing block
+compress s2/cmd/s2c/main.go:594:3 if alone in an if: fixed
 compress s2/cmd/s2d/main.go:177:6 if wrapping the rest of a loop: fixed
 compress s2/dict.go:145:9 else if after call: not fixed: "n" is already declared in the enclosing block
 compress s2/dict.go:189:9 else if after call: not fixed: "n" is already declared in the enclosing block
@@ -3052,6 +3259,7 @@ compress s2/encode.go:207:9 else if after call: not fixed: "n" is already declar
 compress s2/encode.go:251:9 else if after call: not fixed: "n" is already declared in the enclosing block
 compress s2/encode.go:295:9 else if after call: not fixed: "n" is already declared in the enclosing block
 compress s2/encode_all.go:35:9 else if after call: not fixed: "n" is already declared in the enclosing block
+compress s2/encode_all.go:1062:3 if alone in an if: fixed
 compress s2/fuzz_test.go:236:3 if wrapping the rest of a function: not fixed: "err" is already declared in the enclosing block
 compress s2/index.go:260:9 else after return: fixed
 compress s2/index.go:268:9 else after return: not fixed: "n" is also moved into the enclosing block by an earlier fix; "v" is also moved into the enclosing block by an earlier fix
@@ -3059,11 +3267,15 @@ compress s2/index.go:276:9 else after return: not fixed: "n" is also moved into 
 compress s2/index.go:287:9 else after return: not fixed: "n" is also moved into the enclosing block by an earlier fix; "v" is also moved into the enclosing block by an earlier fix
 compress s2/index.go:315:11 else after return: fixed
 compress s2/index.go:342:10 else after return: fixed
+compress s2/index.go:497:4 if alone in an if: fixed
 compress s2/index_test.go:68:10 exit in else ending in call: fixed
 compress s2/lz4convert_test.go:116:9 else after call: fixed
 compress s2/reader.go:376:12 else after return: fixed
 compress s2/reader.go:635:12 else after return: fixed
+compress s2/reader.go:796:4 if alone in an if: fixed
+compress s2/reader.go:813:4 if alone in an if: fixed
 compress s2/s2_test.go:719:6 if wrapping the rest of a function: fixed
+compress s2/writer.go:155:4 if alone in an if: fixed
 compress s2/writer.go:750:10 else after return: fixed
 compress snappy/snappy_test.go:680:2 if wrapping the rest of a function: not fixed: "buf" is already declared in the enclosing block
 compress zip/reader.go:265:10 else after return: fixed
@@ -3083,19 +3295,26 @@ compress zstd/dict.go:366:3 if wrapping the rest of a loop: fixed
 compress zstd/dict.go:429:5 if wrapping the rest of a loop: fixed
 compress zstd/dict.go:482:3 if wrapping the rest of a loop: fixed
 compress zstd/enc_base.go:189:2 if wrapping the rest of a function: fixed
+compress zstd/enc_dfast.go:455:4 if alone in an if: fixed
 compress zstd/enc_fast.go:251:3 if wrapping the rest of a loop: not fixed: "l" is already declared in the enclosing block
 compress zstd/enc_fast.go:491:3 if wrapping the rest of a loop: not fixed: "l" is already declared in the enclosing block
 compress zstd/enc_fast.go:751:3 if wrapping the rest of a loop: not fixed: "l" is already declared in the enclosing block
+compress zstd/encoder.go:611:2 if alone in an if: fixed
 compress zstd/encoder_test.go:100:4 if wrapping the rest of a function: fixed
+compress zstd/encoder_test.go:1026:2 if alone in an if: fixed
+compress zstd/encoder_test.go:1070:2 if alone in an if: fixed
 compress zstd/encoder_test.go:1102:2 if wrapping the rest of a function: not fixed: "err" is already declared in the enclosing block
 compress zstd/fse_encoder.go:368:4 if wrapping the rest of a loop: fixed
 compress zstd/fse_encoder.go:411:3 if wrapping the rest of a loop: fixed
 compress zstd/fse_encoder.go:578:3 if wrapping the rest of a loop: fixed
+compress zstd/fuzz_test.go:48:3 if alone in an if: fixed
 compress zstd/fuzz_test.go:60:3 if wrapping the rest of a function: fixed
+compress zstd/fuzz_test.go:129:3 if alone in an if: fixed
 compress zstd/fuzz_test.go:309:4 if wrapping the rest of a loop: fixed
 compress zstd/seqdec.go:224:11 exit in else ending in continue: fixed
 compress zstd/seqdec.go:241:11 exit in else ending in continue: fixed
 compress zstd/seqdec.go:255:11 else after continue: fixed
+compress zstd/snappy_test.go:162:2 if alone in an if: fixed
 age age.go:142:9 else after return: fixed
 age age.go:371:9 else if after return: fixed
 age agessh/agessh.go:60:10 exit in else ending in return: fixed
@@ -3134,6 +3353,8 @@ age testkit_test.go:200:9 else if after return: fixed
 age testkit_test.go:242:9 exit in else ending in return: fixed
 age x25519.go:193:9 else if after return: fixed
 encoding ascii/ascii_test.go:217:4 if wrapping the rest of a function: fixed
+encoding iso8601/valid.go:135:2 if alone in an if: fixed
+encoding iso8601/valid_test.go:57:10 if alone in an if: fixed
 encoding json/decode.go:395:9 else if after return: not fixed: "err" is already declared in the enclosing block
 encoding json/decode.go:633:11 else after return: not fixed: "err" would hide the "err" used after the "if"
 encoding json/decode.go:712:11 else after return: not fixed: "err" would hide the "err" used after the "if"
@@ -3142,9 +3363,11 @@ encoding json/decode.go:876:11 else after return: not fixed: "err" would hide th
 encoding json/decode.go:957:11 else after return: not fixed: "err" would hide the "err" used after the "if"
 encoding json/decode.go:1039:11 else after return: not fixed: "err" would hide the "err" used after the "if"
 encoding json/decode.go:1123:11 else after return: not fixed: "err" would hide the "err" used after the "if"
+encoding json/decode.go:1195:4 if alone in an if: fixed
 encoding json/decode.go:1222:11 else after return: not fixed: "err" would hide the "err" used after the "if"
 encoding json/encode.go:954:3 if wrapping the rest of a loop: fixed
 encoding json/golang_bench_test.go:71:2 if wrapping the rest of a function: fixed
+encoding json/golang_decode_test.go:1071:3 if alone in an if: fixed
 encoding json/golang_decode_test.go:1105:3 if wrapping the rest of a loop: not fixed: "err" is already declared in the enclosing block
 encoding json/golang_encode_test.go:612:3 if wrapping the rest of a loop: fixed
 encoding json/golang_example_test.go:73:10 else if after break: fixed
@@ -3158,6 +3381,7 @@ encoding json/parse_test.go:49:4 if wrapping the rest of a function: fixed
 encoding json/parse_test.go:87:4 if wrapping the rest of a function: fixed
 encoding json/parse_test.go:127:3 if wrapping the rest of a loop: fixed
 encoding json/token_test.go:189:4 if wrapping the rest of a function: fixed
+encoding proto/bytes.go:170:3 if alone in an if: fixed
 encoding proto/map.go:166:4 if wrapping the rest of a loop: not fixed: "err" is already declared in the enclosing block; "n" is already declared in the enclosing block
 encoding proto/proto.go:85:9 else after return: fixed
 encoding proto/proto.go:93:9 else after return: fixed
@@ -3170,6 +3394,9 @@ encoding proto/rewrite_test.go:350:2 if wrapping the rest of a function: fixed
 encoding proto/rewrite_test.go:450:2 if wrapping the rest of a function: fixed
 encoding proto/struct.go:193:4 if wrapping the rest of a loop: fixed
 encoding proto/struct.go:244:4 if wrapping the rest of a loop: fixed
+encoding thrift/compact.go:196:2 if alone in an if: fixed
+encoding thrift/decode.go:400:4 if alone in an if: fixed
+encoding thrift/encode.go:276:4 if alone in an if: fixed
 encoding thrift/struct.go:128:11 else if after call: fixed
 encoding thrift/struct.go:130:11 else after call: fixed
 encoding thrift/thrift.go:148:10 else after return: fixed
@@ -3186,21 +3413,27 @@ goccy-yaml ast/ast.go:1480:9 else if after return: not fixed: an earlier "else" 
 goccy-yaml ast/ast.go:1843:9 else if after return: fixed
 goccy-yaml ast/ast.go:2027:9 else if after return: fixed
 goccy-yaml decode.go:285:2 if wrapping the rest of a function: fixed
+goccy-yaml decode.go:290:3 if alone in an if: fixed
 goccy-yaml decode.go:630:13 else if after return: fixed
 goccy-yaml decode.go:990:11 exit in else ending in return: fixed
 goccy-yaml decode.go:1024:11 exit in else ending in return: fixed
 goccy-yaml decode.go:1405:12 else after continue: fixed
 goccy-yaml decode.go:1484:13 else if after return: fixed
+goccy-yaml decode.go:1771:3 if alone in an if: fixed
 goccy-yaml encode.go:545:9 else if after return: fixed
 goccy-yaml encode.go:548:9 else if after return: fixed
 goccy-yaml encode_test.go:1197:3 if wrapping the rest of a loop: not fixed: "err" is already declared in the enclosing block
 goccy-yaml lexer/lexer_test.go:3154:12 else if after return: fixed
 goccy-yaml lexer/lexer_test.go:3162:12 else if after return: fixed
+goccy-yaml parser/parser.go:524:2 if alone in an if: fixed
 goccy-yaml parser/parser.go:1001:10 else if after return: fixed
+goccy-yaml parser/parser.go:1116:2 if alone in an if: fixed
 goccy-yaml parser/token.go:562:11 exit in else ending in continue: fixed
 goccy-yaml path_test.go:349:11 else after return: fixed
 goccy-yaml path_test.go:904:2 if wrapping the rest of a function: fixed
+goccy-yaml printer/printer.go:100:2 if alone in an if: fixed
 goccy-yaml scanner/context.go:351:10 exit in else ending in break: fixed
+goccy-yaml scanner/scanner.go:155:9 if alone in an if: fixed
 goccy-yaml scanner/scanner.go:258:10 else if after continue: fixed
 goccy-yaml scanner/scanner.go:260:10 else if after continue: fixed
 goccy-yaml scanner/scanner.go:270:10 else if after continue: fixed
@@ -3211,5 +3444,7 @@ goccy-yaml scanner/scanner.go:368:10 else if after continue: fixed
 goccy-yaml scanner/scanner.go:552:10 else if after continue: fixed
 goccy-yaml scanner/scanner.go:577:10 else if after continue: fixed
 goccy-yaml scanner/scanner.go:715:11 else after return: fixed
+goccy-yaml scanner/scanner.go:810:3 if alone in an if: fixed
 goccy-yaml scanner/scanner.go:1357:11 exit in else ending in continue: fixed
+goccy-yaml struct.go:43:2 if alone in an if: fixed
 goccy-yaml yaml_test.go:248:9 else after call: fixed

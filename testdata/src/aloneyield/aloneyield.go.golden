@@ -1,0 +1,36 @@
+package aloneyield
+
+func use(...any) {}
+
+// WrappingRest reports the outer "if", as an "if" wrapping the rest of the function from 1 statement, and the fix of
+// the if-alone-in-if check would edit the same "{", so that check leaves it alone and combines the levels below.
+func WrappingRest(a, b, c bool) {
+	if !a {
+		return
+	}
+
+	// want `^If wrapping the rest of the function: .* whose block holds 1 statements. Invert the condition, leaving "if !a { return }" followed by the block of statements$`
+	if b {
+		use()
+	}
+}
+
+func Chain(a, b, c bool) {
+	if !a {
+		return
+	}
+
+	// want `^If wrapping the rest of the function: .* leaving "if !a { return }"`
+	if b && c { // want `^If alone in an "if": .* leaving "if b && c { ... }"$`
+		use()
+	}
+}
+
+// NotWrapping is not the last statement of the function, so the if-alone-in-if check combines it.
+func NotWrapping(a, b bool) {
+	if a && b { // want `^If alone in an "if": .* leaving "if a && b { ... }"$`
+		use()
+	}
+
+	use()
+}

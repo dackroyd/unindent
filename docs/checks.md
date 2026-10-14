@@ -2,7 +2,7 @@
 
 Each check reports a construct that indents code without need, explains the change in the message, and offers a fix that
 `unindent -fix` applies. Every check is on by default, and its flag turns it off: `-else-after-exit=false`,
-`-else-if-after-exit=false`, `-exit-in-else=false` or `-if-wrapping-rest=false`.
+`-else-if-after-exit=false`, `-exit-in-else=false`, `-if-wrapping-rest=false` or `-if-alone-in-if=false`.
 
 A branch **exits** when every path through it ends in a `return`, `break`, `continue`, `goto` or a call that never
 returns, or in a loop or `select` that never ends. These are the Go specification's
@@ -334,6 +334,68 @@ check, so the checks never undo each other's fixes. When the block ends in anoth
 The check is independent of the others. With it off, an `if` wrapping the rest of a function or loop is not reported,
 and the other checks' fixes are offered as if it were not there.
 
+## If alone in an if
+
+Flags: `-if-alone-in-if`, and `-if-alone-in-if-max-operands`, 2 by default.
+
+Reports an `if` whose block holds only another `if`, when neither has an `else`. The inner block runs only when both
+conditions hold, so they combine with `&&` into one `if`, and the inner block moves out one level.
+
+```go
+if v, ok := cache[k]; ok { // If alone in an "if": the "if" block holds only another "if", and neither has an "else". Combine the conditions, leaving "if ok && v.Fresh() { ... }"
+	if v.Fresh() {
+		return v
+	}
+}
+```
+
+Fixed:
+
+```go
+if v, ok := cache[k]; ok && v.Fresh() {
+	return v
+}
+```
+
+`&&` evaluates its right operand only when the left one holds, so the inner condition is evaluated exactly when it was
+before, and behaviour is the same. The outer initialiser stays where it is.
+
+The limit is on the combined condition's structure, not its width: `-if-alone-in-if-max-operands` counts every operand
+of `&&` and `||` in both conditions, through parentheses. At 2, two simple conditions combine, and a condition that
+already holds `&&` or `||` keeps its nesting. At 3, `if a { if b || c { … } }` becomes `if a && (b || c) { … }`: an `||`
+is parenthesised when it joins an `&&`. The limit can't be set below 2, which would never combine anything.
+
+In a chain of `if` statements, each alone in the one before, the check reports the `if` at the top once, and its fix
+combines as many levels from the top as the limit allows, then the next levels the same way, so one run fixes the whole
+chain: at 2, `if a { if b { if c { if d { … } } } }` becomes `if a && b { if c && d { … } }`. The fixed code is not
+reported again.
+
+A comment after the outer `{`, on the same line, describes the outer test and moves after the `{` that stays. When both
+`{` lines hold such a comment, they would have to share one line, so the two `if` statements are not combined. Comments
+in the conditions and in the inner block stay where they are.
+
+Not reported:
+
+- An inner `if` with an initialiser. Hoisting it into the combined condition would run it when the outer condition is
+    false, and combining it any other way changes the code more than the nesting.
+- A comment on a line of its own between the two `if` statements, which usually describes the inner test and would have
+    nowhere to go.
+- A comment after the inner `if`, inside the outer block, such as `// continue to read to the closing quote`. It
+    describes what happens once the inner `if` is done, when only the outer condition holds, and would end up in the
+    combined block, where both hold.
+- A constant outer condition, such as `if debug` or `if false`, which switches code on or off as a whole.
+- A labelled inner `if`, whose label would have nowhere to go. A labelled outer `if` is reported, and keeps its label.
+- Two conditions of different named boolean types, which `&&` cannot join.
+- An `if` with an `else`, outer or inner.
+
+When another check reports the outer `if` with a fix that edits the same lines, this check yields and combines the chain
+from the next level: an `else if` that [Else if after an exit](#else-if-after-an-exit) reports, and an `if` that
+[If wrapping the rest](#if-wrapping-the-rest) reports, which only holds one statement when
+`-if-wrapping-rest-min-statements` is 1. The next run reports what is left. The fix only edits the conditions and the
+inner closing braces, so fixes inside the inner block apply in the same run.
+
+The check is independent of the others. With it off, an `if` alone in an `if` is not reported.
+
 ## Limitations
 
 - A happy path nested under `if err == nil` without an `else`, `if err == nil { process(v); return nil }` followed by
@@ -343,6 +405,11 @@ and the other checks' fixes are offered as if it were not there.
 - A search loop, whose last `if` acts on the element it finds and leaves the loop with a `return`, `break` or `goto`, is
     not reported by [If wrapping the rest](#if-wrapping-the-rest), however long the block is. Splitting the search from
     the action, finding the element in the loop and acting on it after, is a refactor rather than a mechanical fix.
+- An `if` alone in an `if` is not reported when the inner `if` has an initialiser,
+    `if a { if v, ok := m[k]; ok { … } }`, as no single `if` evaluates the initialiser only when `a` holds. Moving it
+    out is a refactor.
+- No check splits a condition: conditions already written as one `if` are left as they are, however many operands they
+    hold, so [If alone in an if](#if-alone-in-an-if)'s limit only applies to the nesting it removes.
 
 ## When no fix is offered
 

@@ -8,17 +8,17 @@ applies the fixes, and checks that the code still builds, passes `go vet` and it
 
 | Project | Commit | Findings | Fixed | Fix withheld | Files changed | Comments lost |
 | --- | --- | ---: | ---: | ---: | ---: | ---: |
-| [golang/tools](#golangtools) | [`16517d9`](https://github.com/golang/tools/commit/16517d951552611e7bd358c48ee1051fd0e57b0c), 2026-10-10 | 452 | 431 | 21 | 239 | 0 |
-| [grpc/grpc-go](#grpcgrpc-go) | [`8c59ee6`](https://github.com/grpc/grpc-go/commit/8c59ee6356bf92d0a5819b0cdbd3118876783028), 2026-10-10 | 115 | 89 | 26 | 63 | 0 |
-| [hashicorp/terraform](#hashicorpterraform) | [`d8e73fc`](https://github.com/hashicorp/terraform/commit/d8e73fcbd9bb9d7c7ab38242eaccef5bfe88e270), 2026-10-09 | 446 | 421 | 25 | 216 | 0 |
-| [gohugoio/hugo](#gohugoiohugo) | [`c9f6e4d`](https://github.com/gohugoio/hugo/commit/c9f6e4d4abc3645cb46824c870e4e1b4c098b765), 2026-10-11 | 139 | 133 | 6 | 81 | 0 |
-| [prometheus/prometheus](#prometheusprometheus) | [`fffc15f`](https://github.com/prometheus/prometheus/commit/fffc15f5b5a6c3ed50282d307e96db0e5f25bcb2), 2026-10-11 | 116 | 111 | 5 | 70 | 0 |
-| Total | | 1268 | 1185 | 83 | 669 | 0 |
+| [golang/tools](#golangtools) | [`16517d9`](https://github.com/golang/tools/commit/16517d951552611e7bd358c48ee1051fd0e57b0c), 2026-10-10 | 518 | 497 | 21 | 263 | 0 |
+| [grpc/grpc-go](#grpcgrpc-go) | [`8c59ee6`](https://github.com/grpc/grpc-go/commit/8c59ee6356bf92d0a5819b0cdbd3118876783028), 2026-10-10 | 145 | 119 | 26 | 79 | 0 |
+| [hashicorp/terraform](#hashicorpterraform) | [`d8e73fc`](https://github.com/hashicorp/terraform/commit/d8e73fcbd9bb9d7c7ab38242eaccef5bfe88e270), 2026-10-09 | 513 | 488 | 25 | 248 | 0 |
+| [gohugoio/hugo](#gohugoiohugo) | [`c9f6e4d`](https://github.com/gohugoio/hugo/commit/c9f6e4d4abc3645cb46824c870e4e1b4c098b765), 2026-10-11 | 184 | 178 | 6 | 101 | 0 |
+| [prometheus/prometheus](#prometheusprometheus) | [`fffc15f`](https://github.com/prometheus/prometheus/commit/fffc15f5b5a6c3ed50282d307e96db0e5f25bcb2), 2026-10-11 | 149 | 144 | 5 | 82 | 0 |
+| Total | | 1509 | 1426 | 83 | 773 | 0 |
 
 A finding's kind is the kind of `else` and the last statement of the branch before it, for an exit in an `else`, the
-last statement of the `else` block, and for an `if` wrapping the rest of a function or loop, which of the two it
-ends. A fix is withheld when it would not compile or would change behaviour; the reasons quote the names involved,
-shown here as "…".
+last statement of the `else` block, for an `if` wrapping the rest of a function or loop, which of the two it
+ends, and an `if` alone in an `if` is a kind of its own. A fix is withheld when it would not compile or would
+change behaviour; the reasons quote the names involved, shown here as "…".
 
 ## golang/tools
 
@@ -29,6 +29,7 @@ Go's analysis and refactoring tools, and the gopls language server.
 | `if wrapping the rest of a loop` | 164 |
 | `if wrapping the rest of a function` | 84 |
 | `else after return` | 76 |
+| `if alone in an if` | 66 |
 | `else if after return` | 56 |
 | `else if after continue` | 15 |
 | `else if after call` | 14 |
@@ -60,6 +61,7 @@ The Go implementation of gRPC.
 
 | Kind | Findings |
 | --- | ---: |
+| `if alone in an if` | 30 |
 | `else if after call` | 24 |
 | `exit in else ending in call` | 20 |
 | `if wrapping the rest of a function` | 19 |
@@ -93,6 +95,7 @@ An infrastructure as code tool.
 | `else if after return` | 100 |
 | `else after return` | 82 |
 | `if wrapping the rest of a loop` | 70 |
+| `if alone in an if` | 67 |
 | `else after call` | 52 |
 | `else if after call` | 41 |
 | `exit in else ending in return` | 34 |
@@ -130,6 +133,7 @@ A static site generator.
 
 | Kind | Findings |
 | --- | ---: |
+| `if alone in an if` | 45 |
 | `if wrapping the rest of a loop` | 34 |
 | `else if after return` | 30 |
 | `if wrapping the rest of a function` | 19 |
@@ -162,6 +166,7 @@ A monitoring system and time series database.
 | --- | ---: |
 | `if wrapping the rest of a loop` | 57 |
 | `if wrapping the rest of a function` | 39 |
+| `if alone in an if` | 33 |
 | `else if after return` | 10 |
 | `else after switch` | 2 |
 | `else if after continue` | 2 |

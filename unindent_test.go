@@ -18,7 +18,7 @@ func TestAnalyzer(t *testing.T) {
 
 	a := unindent.NewAnalyzer()
 
-	analysistest.RunWithSuggestedFixes(t, testdataDir(t), a, "unindent", "wrappingrest")
+	analysistest.RunWithSuggestedFixes(t, testdataDir(t), a, "unindent", "wrappingrest", "ifalone")
 }
 
 func TestAnalyzerFlags(t *testing.T) {
@@ -34,8 +34,12 @@ func TestAnalyzerFlags(t *testing.T) {
 		{"noifwrappingrest", map[string]string{"if-wrapping-rest": "false"}},
 		{"wrappingmin", map[string]string{"if-wrapping-rest-min-statements": "2"}},
 		{"wrappingmin5", map[string]string{"if-wrapping-rest-min-statements": "5"}},
+		{"noifaloneinif", map[string]string{"if-alone-in-if": "false"}},
+		{"alonemax3", map[string]string{"if-alone-in-if-max-operands": "3"}},
+		{"aloneyield", map[string]string{"if-wrapping-rest-min-statements": "1"}},
 		{"nochecks", map[string]string{
 			"else-after-exit": "false", "else-if-after-exit": "false", "exit-in-else": "false", "if-wrapping-rest": "false",
+			"if-alone-in-if": "false",
 		}},
 	} {
 		t.Run(tt.pkg, func(t *testing.T) {
@@ -56,7 +60,9 @@ func TestNewAnalyzerFlags(t *testing.T) {
 
 	a, b := unindent.NewAnalyzer(), unindent.NewAnalyzer()
 
-	for _, name := range []string{"else-after-exit", "else-if-after-exit", "exit-in-else", "if-wrapping-rest"} {
+	for _, name := range []string{
+		"else-after-exit", "else-if-after-exit", "exit-in-else", "if-wrapping-rest", "if-alone-in-if",
+	} {
 		f := a.Flags.Lookup(name)
 		require.NotNil(t, f, name)
 		require.Equal(t, "true", f.DefValue, name)
@@ -84,22 +90,46 @@ func TestWrappingMinFlag(t *testing.T) {
 	require.Equal(t, "1", f.Value.String())
 }
 
-// TestFixedNotReported checks that the fixed code of the if-wrapping-rest testdata is reported by no check, so the
-// checks never undo each other's fixes.
+func TestAloneMaxFlag(t *testing.T) {
+	t.Parallel()
+
+	a, b := unindent.NewAnalyzer(), unindent.NewAnalyzer()
+	f := a.Flags.Lookup("if-alone-in-if-max-operands")
+	require.NotNil(t, f)
+	require.Equal(t, "2", f.DefValue)
+
+	require.NoError(t, a.Flags.Set(f.Name, "3"))
+	require.Equal(t, "3", f.Value.String())
+	require.Equal(t, "2", b.Flags.Lookup(f.Name).Value.String(), "flags are shared between analyzers")
+
+	require.ErrorContains(t, a.Flags.Set(f.Name, "1"), "must be at least 2")
+	require.Error(t, a.Flags.Set(f.Name, "two"))
+	require.Equal(t, "3", f.Value.String())
+}
+
+// TestFixedNotReported checks that the fixed code of the if-wrapping-rest and if-alone-in-if testdata is reported by
+// no check, so the checks never undo each other's fixes or need another run.
 func TestFixedNotReported(t *testing.T) {
 	t.Parallel()
 
-	golden, err := os.ReadFile(filepath.Join(testdataDir(t), "src", "wrappingrest", "wrappingrest.go.golden"))
-	require.NoError(t, err)
+	for _, pkg := range []string{"wrappingrest", "ifalone"} {
+		t.Run(pkg, func(t *testing.T) {
+			t.Parallel()
 
-	dir := t.TempDir()
-	require.NoError(t, os.MkdirAll(filepath.Join(dir, "src", "fixed"), 0o755))
+			golden, err := os.ReadFile(filepath.Join(testdataDir(t), "src", pkg, pkg+".go.golden"))
+			require.NoError(t, err)
 
-	// The expectations of the first run stay in the fixed code as comments, and would expect the same reports again.
-	src := regexp.MustCompile(`// want .*`).ReplaceAll(golden, nil)
-	require.NoError(t, os.WriteFile(filepath.Join(dir, "src", "fixed", "fixed.go"), src, 0o600))
+			dir := t.TempDir()
+			require.NoError(t, os.MkdirAll(filepath.Join(dir, "src", "fixed"), 0o755))
 
-	analysistest.Run(t, dir, unindent.NewAnalyzer(), "fixed")
+			// The expectations of the first run stay in the fixed code as comments, and would expect the same reports
+			// again.
+			src := regexp.MustCompile(`// want .*`).ReplaceAll(golden, nil)
+			require.NoError(t, os.WriteFile(filepath.Join(dir, "src", "fixed", "fixed.go"), src, 0o600))
+
+			analysistest.Run(t, dir, unindent.NewAnalyzer(), "fixed")
+		})
+	}
 }
 
 func testdataDir(t *testing.T) string {

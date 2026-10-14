@@ -58,9 +58,12 @@ what to change. `unindent` fills the gaps:
     or more, other than a loop's search for one element, `unindent` inverts the condition to `return` or `continue`
     early, as gocritic's `nestingReduce` suggests for loops whose body is only that `if` and 5 statements or more. It
     reports functions and function literals as well, and an `if` after other statements.
+- **An `if` alone in an `if`.** When an `if` block holds only another `if`, and neither has an `else`, `unindent`
+    combines the two conditions with `&&`, up to a limit on their operands. revive, gocritic and staticcheck have no
+    such rule.
 - **Fixes.** Every report comes with a fix that `-fix` applies.
 
-On five large Go codebases, `unindent` reported 968 cases that revive's rules did not, and all but 6 of the 306 that
+On five large Go codebases, `unindent` reported 1209 cases that revive's rules did not, and all but 6 of the 306 that
 revive reported: 5 are an `else if` that `unindent` leaves alone or reports once its chain is split, and 1 would nest
 the happy path under `err == nil`. [Comparison with other linters](docs/comparison.md) has the details, and
 [Projects](docs/projects.md) what `unindent` finds in each codebase and what its fixes do.
@@ -95,6 +98,7 @@ settings it has:
 ```sh
 unindent -else-if-after-exit=false ./...
 unindent -if-wrapping-rest-min-statements=5 ./...
+unindent -if-alone-in-if-max-operands=3 ./...
 go vet -vettool=$(command -v unindent) -else-if-after-exit=false ./...
 ```
 
@@ -110,6 +114,7 @@ example `a.Flags.Set("else-if-after-exit", "false")`, and belong to that analyze
 | [Else if after an exit](docs/checks.md#else-if-after-an-exit) | An `else if` after a branch that always exits                                                                                                                 | `-else-if-after-exit`                                   |
 | [Exit in an else](docs/checks.md#exit-in-an-else)             | An `else` that always exits after a branch that does not, fixed by inverting the condition                                                                    | `-exit-in-else`                                         |
 | [If wrapping the rest](docs/checks.md#if-wrapping-the-rest)   | An `if` without an `else` that ends a function or loop body and holds at least 3 statements, fixed by inverting the condition to `return` or `continue` early | `-if-wrapping-rest`, `-if-wrapping-rest-min-statements` |
+| [If alone in an if](docs/checks.md#if-alone-in-an-if)         | An `if` whose block holds only another `if`, neither with an `else`, fixed by combining the conditions with `&&`, up to 2 operands                            | `-if-alone-in-if`, `-if-alone-in-if-max-operands`       |
 
 ## Limitations
 

@@ -513,6 +513,14 @@ func g(xs []int) {
 		println()
 	}
 }
+
+func h(a, b bool) {
+	if a {
+		if b {
+			println()
+		}
+	}
+}
 `
 	dir := t.TempDir()
 	if err := os.WriteFile(filepath.Join(dir, "p.go"), []byte(src), 0o644); err != nil {
@@ -540,9 +548,13 @@ func g(xs []int) {
 		{53, 2, "If wrapping the rest of the function: ...", "if wrapping the rest of a function"},
 		{4, 2, "If wrapping the rest of the function: ...", "not on an else"},
 		{48, 3, "", "not on an else"},
+		{59, 2, `If alone in an "if": ...`, "if alone in an if"},
+		{59, 2, "If wrapping the rest of the function: ...", "if wrapping the rest of a function"},
+		{60, 3, `If alone in an "if": ...`, "not on an else"},
+		{53, 2, `If alone in an "if": ...`, "not on an else"},
 	} {
 		pos := position{Project: "p", File: "p.go", Line: tt.line, Col: tt.col}
-		is := ifs.file("p", "p.go").reported(pos, strings.HasPrefix(tt.message, ifWrappingRestMessage))
+		is := ifs.file("p", "p.go").reported(pos, tt.message)
 		if got := findingKind(is, tt.message); got != tt.want {
 			t.Errorf("findingKind() at %d:%d = %q, want %q", tt.line, tt.col, got, tt.want)
 		}

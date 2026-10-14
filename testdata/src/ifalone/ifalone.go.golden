@@ -1,0 +1,256 @@
+package ifalone
+
+import (
+	"errors"
+	"io"
+)
+
+func step(...any) {}
+
+func ready() bool { return true }
+
+const debug = false
+
+type yes bool
+
+type no bool
+
+func Combined(a, b bool) {
+	if a && b { // want `^If alone in an "if": the "if" block holds only another "if", and neither has an "else". Combine the conditions, leaving "if a && b { ... }"$`
+		step(1)
+		step(2)
+	}
+
+	step()
+}
+
+func Guards(m map[string]int, k string, err error, x any) {
+	if v, ok := m[k]; ok && v > 0 { // want `leaving "if ok && v > 0 { ... }"`
+		step(v)
+	}
+
+	if err != nil && !errors.Is(err, io.EOF) { // want `leaving "if err != nil && !errors.Is\(err, io.EOF\) { ... }"`
+		step(err)
+	}
+
+	if s, ok := x.(string); ok && len(s) > 0 { // want `leaving "if ok && len\(s\) > 0 { ... }"`
+		step(s)
+	}
+
+	step()
+}
+
+func EmptyBody(a, b bool) {
+	if a && b { // want `leaving "if a && b { ... }"`
+	}
+
+	step()
+}
+
+// TooManyOperands is not reported: at the default of 2, a condition that already holds "&&" or "||" keeps its
+// nesting.
+func TooManyOperands(a, b, c bool) {
+	if a && b {
+		if c {
+			step()
+		}
+	}
+
+	if a {
+		if b || c {
+			step()
+		}
+	}
+
+	step()
+}
+
+// Chain combines as many levels as the operand limit allows, from the top, in one run: two groups of two here.
+func Chain(a, b, c, d, e bool) {
+	if a && b { // want `leaving "if a && b { ... }"`
+		if c && d { // want `leaving "if c && d { ... }"`
+			step()
+		}
+	}
+
+	if a && b { // want `leaving "if a && b { ... }"`
+		if c {
+			step()
+		}
+	}
+
+	if a && b {
+		if c && d { // want `leaving "if c && d { ... }"`
+			if e && a {
+				step()
+			}
+		}
+	}
+
+	step()
+}
+
+// NotReported are pairs that one "if" cannot replace as written, or that read worse combined.
+func NotReported(a, b bool, f func() (int, error), y yes, n no) {
+	// Hoisting the inner initialiser would run it when the outer test fails.
+	if a {
+		if v, err := f(); err != nil {
+			step(v)
+		}
+	}
+
+	// A comment between the two usually describes the inner test.
+	if a {
+		// Only when b.
+		if b {
+			step()
+		}
+	}
+
+	if a /* a */ {
+		if b {
+			step()
+		}
+	}
+
+	// A constant outer condition marks a section for debugging or a platform.
+	if debug {
+		if b {
+			step()
+		}
+	}
+
+	if false {
+		if b {
+			step()
+		}
+	}
+
+	// "&&" needs identical types, which two named boolean types, or one and bool, are not.
+	if y {
+		if n {
+			step()
+		}
+	}
+
+	if y {
+		if b {
+			step()
+		}
+	}
+
+	if a {
+		if b {
+			step()
+		} else {
+			step()
+		}
+	}
+
+	if a {
+		if b {
+			step()
+		}
+	} else {
+		step()
+	}
+
+	if a {
+		step()
+
+		if b {
+			step()
+		}
+	}
+
+	step()
+}
+
+// LabelledInner is not reported: the label would have nowhere to go.
+func LabelledInner(a, b bool) {
+	if a {
+	inner:
+		if b {
+			goto inner
+		}
+	}
+
+	step()
+}
+
+// LabelledOuter keeps the label on the combined "if".
+func LabelledOuter(a, b bool) {
+outer:
+	if a && b { // want `leaving "if a && b { ... }"`
+		goto outer
+	}
+
+	step()
+}
+
+// NamedBool joins a named boolean type with an untyped comparison, whose result takes its type.
+func NamedBool(y, z yes, x int) {
+	if y && x == 1 { // want `leaving "if y && x == 1 { ... }"`
+		step()
+	}
+
+	if y && z { // want `leaving "if y && z { ... }"`
+		step()
+	}
+
+	step()
+}
+
+func Comments(a, b bool) {
+	// Before.
+	if a && b { // Outer. // want `leaving "if a && b { ... }"`
+		step() // Body.
+	} // After.
+
+	// A comment after the inner "if" describes the case where only "a" holds, so the "if" statements stay.
+	if a {
+		if b {
+			step()
+		}
+		// Only a.
+	}
+
+	if a {
+		if b {
+			step()
+		} // After the inner block.
+	}
+
+	if ready( /* now */ ) && b { // want `leaving "if ready\(\) && b { ... }"`
+		step()
+	}
+
+	// Two comments after the braces would have to share one line, so the first "if" stays.
+	if a { // One.
+		if b { // Two.
+			step()
+		}
+	}
+
+	step()
+}
+
+func ElseIfLink(a, b, c bool) {
+	if c {
+		step()
+	} else if a && b { // want `leaving "if a && b { ... }"`
+		step()
+	}
+
+	step()
+}
+
+// InLoop combines an "if" ending a loop body, whose block holds fewer statements than the if-wrapping-rest check
+// reports.
+func InLoop(xs []int, a bool) {
+	for _, x := range xs {
+		if a && x > 0 { // want `leaving "if a && x > 0 { ... }"`
+			step(x)
+		}
+	}
+}

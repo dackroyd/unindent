@@ -26,11 +26,18 @@ type fileIfs struct {
 	byIf, byElse map[position]*ifStmt
 }
 
-// reported returns the if statement that a finding at pos is about: the one whose else is at pos, or for an if wrapping
-// the rest of a function or loop, which has no else, the one at pos.
-func (f *fileIfs) reported(pos position, wrapping bool) *ifStmt {
-	if wrapping {
+// reported returns the if statement that a finding at pos with message is about: the one whose else is at pos, or for an
+// if wrapping the rest of a function or loop or holding only another if, which has no else, the one at pos.
+func (f *fileIfs) reported(pos position, message string) *ifStmt {
+	switch {
+	case strings.HasPrefix(message, ifWrappingRestMessage):
 		if is := f.byIf[pos]; is != nil && is.wraps != "" {
+			return is
+		}
+
+		return nil
+	case strings.HasPrefix(message, ifAloneInIfMessage):
+		if is := f.byIf[pos]; is != nil && holdsOnlyIf(is.stmt) {
 			return is
 		}
 
@@ -38,6 +45,17 @@ func (f *fileIfs) reported(pos position, wrapping bool) *ifStmt {
 	}
 
 	return f.byElse[pos]
+}
+
+// holdsOnlyIf reports whether s has no else and its block holds only another if.
+func holdsOnlyIf(s *ast.IfStmt) bool {
+	if s.Else != nil || len(s.Body.List) != 1 {
+		return false
+	}
+
+	_, ok := s.Body.List[0].(*ast.IfStmt)
+
+	return ok
 }
 
 // wrappedBody describes the body that s ends, when s has no else and is the last statement of a function's or loop's
@@ -149,7 +167,7 @@ func compare(projects []project, dirs map[string]string, findings []finding, rev
 	var unmatched []string
 
 	for _, f := range findings {
-		is := x.file(f.Pos.Project, f.Pos.File).reported(f.Pos, strings.HasPrefix(f.Kind, ifWrappingRestKind))
+		is := x.file(f.Pos.Project, f.Pos.File).reported(f.Pos, kindMessage(f.Kind))
 		if is == nil {
 			unmatched = append(unmatched, f.Pos.String()+" unindent")
 			continue
@@ -276,9 +294,9 @@ func writeCounts(b *strings.Builder, title string, counts map[string]int) {
 
 // unindentReason describes what revive misses about an if statement only unindent reports, as a finding of kind. For
 // an exit in an else, revive's early-return looks at how the else block ends rather than the body. revive has no rule
-// for an if wrapping the rest of a function or loop, so its kind is the reason.
+// for an if wrapping the rest of a function or loop, or for an if alone in an if, so its kind is the reason.
 func unindentReason(is *ifStmt, kind string) string {
-	if strings.HasPrefix(kind, ifWrappingRestKind) {
+	if strings.HasPrefix(kind, ifWrappingRestKind) || kind == ifAloneInIfKind {
 		return kind
 	}
 

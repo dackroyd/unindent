@@ -31,3 +31,13 @@ func WrappingRest(ok bool) {
 		x++
 	}
 }
+
+func IfAloneInIf(a, b bool) {
+	if a {
+		if b {
+			a = !a
+		}
+	}
+
+	_ = a
+}

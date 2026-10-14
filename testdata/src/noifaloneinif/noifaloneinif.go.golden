@@ -1,0 +1,27 @@
+package noifaloneinif
+
+func use(...any) {}
+
+func AloneNotReported(a, b bool) {
+	if a {
+		if b {
+			use()
+		}
+	}
+
+	use()
+}
+
+// ElseAfterExit is still reported, with the "if" alone in its block left as it is.
+func ElseAfterExit(a, b bool) int {
+	if a {
+		return 0
+	}
+
+	// want `^Unnecessary "else": .* Remove the "else" wrapping the block of statements$`
+	if b {
+		use()
+	}
+
+	return 1
+}
