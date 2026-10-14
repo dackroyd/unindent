@@ -11,16 +11,55 @@ import (
 	"text/tabwriter"
 )
 
-// ifStmt is an if statement with an else, which both tools report on.
+// ifStmt is an if statement that a tool reports on: one with an else, or one wrapping the rest of a function or loop.
 type ifStmt struct {
 	If       position
 	stmt     *ast.IfStmt
 	inSelect bool
 	link     bool
+	// wraps is "function" or "loop" when the if has no else and ends the body of one.
+	wraps string
 }
 
 type fileIfs struct {
+	// byIf holds every if statement, and byElse those with an else.
 	byIf, byElse map[position]*ifStmt
+}
+
+// reported returns the if statement that a finding at pos is about: the one whose else is at pos, or for an if wrapping
+// the rest of a function or loop, which has no else, the one at pos.
+func (f *fileIfs) reported(pos position, wrapping bool) *ifStmt {
+	if wrapping {
+		if is := f.byIf[pos]; is != nil && is.wraps != "" {
+			return is
+		}
+
+		return nil
+	}
+
+	return f.byElse[pos]
+}
+
+// wrappedBody describes the body that s ends, when s has no else and is the last statement of a function's or loop's
+// body, the parent and grandparent in stack.
+func wrappedBody(s *ast.IfStmt, stack []ast.Node) string {
+	if s.Else != nil || len(stack) < 2 {
+		return ""
+	}
+
+	body, ok := stack[len(stack)-1].(*ast.BlockStmt)
+	if !ok || body.List[len(body.List)-1] != s {
+		return ""
+	}
+
+	switch stack[len(stack)-2].(type) {
+	case *ast.FuncDecl, *ast.FuncLit:
+		return "function"
+	case *ast.ForStmt, *ast.RangeStmt:
+		return "loop"
+	}
+
+	return ""
 }
 
 // ifIndex finds the if statement a report is about: unindent and revive's indent-error-flow and superfluous-else
@@ -59,7 +98,9 @@ func (x *ifIndex) file(proj, file string) *fileIfs {
 			return true
 		}
 
-		if s, ok := n.(*ast.IfStmt); ok && s.Else != nil {
+		if s, ok := n.(*ast.IfStmt); ok && s.Else == nil {
+			ifs.byIf[pos(s.If)] = &ifStmt{If: pos(s.If), stmt: s, wraps: wrappedBody(s, stack)}
+		} else if ok {
 			// The head of an if/else chain decides whether its links are in a select case.
 			var child ast.Node = s
 
@@ -108,7 +149,7 @@ func compare(projects []project, dirs map[string]string, findings []finding, rev
 	var unmatched []string
 
 	for _, f := range findings {
-		is := x.file(f.Pos.Project, f.Pos.File).byElse[f.Pos]
+		is := x.file(f.Pos.Project, f.Pos.File).reported(f.Pos, strings.HasPrefix(f.Kind, ifWrappingRestKind))
 		if is == nil {
 			unmatched = append(unmatched, f.Pos.String()+" unindent")
 			continue
@@ -234,8 +275,13 @@ func writeCounts(b *strings.Builder, title string, counts map[string]int) {
 }
 
 // unindentReason describes what revive misses about an if statement only unindent reports, as a finding of kind. For
-// an exit in an else, revive's early-return looks at how the else block ends rather than the body.
+// an exit in an else, revive's early-return looks at how the else block ends rather than the body. revive has no rule
+// for an if wrapping the rest of a function or loop, so its kind is the reason.
 func unindentReason(is *ifStmt, kind string) string {
+	if strings.HasPrefix(kind, ifWrappingRestKind) {
+		return kind
+	}
+
 	if is.inSelect {
 		return "in a select case"
 	}

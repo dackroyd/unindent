@@ -154,6 +154,14 @@ func g(x int) int {
 
 	return x
 }
+
+func h(xs []int) {
+	for range xs {
+		if len(xs) > 0 {
+			println()
+		}
+	}
+}
 `
 	dir := t.TempDir()
 	if err := os.WriteFile(filepath.Join(dir, "p.go"), []byte(src), 0o644); err != nil {
@@ -171,6 +179,8 @@ func g(x int) int {
 		{Pos: at(16, 10)}, // reported twice, counted once
 		{Pos: at(29, 9), Kind: "exit in else ending in return"}, // also reported by revive
 		{Pos: at(41, 9), Kind: "exit in else ending in call"},   // a helper that never returns
+		{Pos: at(62, 3), Kind: "if wrapping the rest of a loop"},
+		{Pos: at(62, 3), Kind: "else after return"}, // not at an else
 	}
 	revive := []reviveReport{
 		{Pos: at(6, 9), Rule: "indent-error-flow"},
@@ -181,7 +191,7 @@ func g(x int) int {
 
 	got := compare([]project{{Name: "stdlib"}}, map[string]string{"stdlib": dir}, findings, revive)
 
-	if !strings.Contains(got, "\nstdlib   6         4       2     4              2\n") {
+	if !strings.Contains(got, "\nstdlib   7         4       2     5              2\n") {
 		t.Errorf("compare() has the wrong counts for stdlib in:\n%s", got)
 	}
 
@@ -190,8 +200,9 @@ func g(x int) int {
 		"in a select case: 1",
 		"ends in a call: 1",
 		"exit in else: ends in a call: 1",
+		"if wrapping the rest of a loop: 1",
 		"Reported by revive only:\n  early-return: 1\n  early-return on an else if: 1",
-		"not on an if statement with an else:\n  stdlib p.go:99:1 unindent\n",
+		"not on an if statement with an else:\n  stdlib p.go:99:1 unindent\n  stdlib p.go:62:3 unindent\n",
 	} {
 		if !strings.Contains(got, want) {
 			t.Errorf("compare() is missing %q in:\n%s", want, got)
@@ -490,6 +501,18 @@ func f(x int) int {
 end:
 	return x
 }
+
+func g(xs []int) {
+	for range xs {
+		if len(xs) > 0 {
+			println()
+		}
+	}
+
+	if len(xs) > 1 {
+		println()
+	}
+}
 `
 	dir := t.TempDir()
 	if err := os.WriteFile(filepath.Join(dir, "p.go"), []byte(src), 0o644); err != nil {
@@ -513,9 +536,14 @@ end:
 		{19, 9, `Exit in "else": ...`, "exit in else ending in other"},
 		{32, 9, `Exit in "else": ...`, "exit in else ending in other"},
 		{38, 9, `Exit in "else": ...`, "exit in else ending in goto"},
+		{48, 3, "If wrapping the rest of the loop: ...", "if wrapping the rest of a loop"},
+		{53, 2, "If wrapping the rest of the function: ...", "if wrapping the rest of a function"},
+		{4, 2, "If wrapping the rest of the function: ...", "not on an else"},
+		{48, 3, "", "not on an else"},
 	} {
 		pos := position{Project: "p", File: "p.go", Line: tt.line, Col: tt.col}
-		if got := findingKind(ifs.file("p", "p.go").byElse[pos], tt.message); got != tt.want {
+		is := ifs.file("p", "p.go").reported(pos, strings.HasPrefix(tt.message, ifWrappingRestMessage))
+		if got := findingKind(is, tt.message); got != tt.want {
 			t.Errorf("findingKind() at %d:%d = %q, want %q", tt.line, tt.col, got, tt.want)
 		}
 	}

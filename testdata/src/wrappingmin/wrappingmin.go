@@ -1,0 +1,38 @@
+package wrappingmin
+
+func use(...any) {}
+
+func Two(ok bool) {
+	if ok { // want `^If wrapping the rest of the function: the function ends in an "if" without an "else", whose block holds 2 statements. Invert the condition, leaving "if !ok { return }" followed by the block of statements$`
+		use(1)
+		use(2)
+	}
+}
+
+func One(xs []int) {
+	for _, x := range xs {
+		if x > 0 {
+			use(x)
+		}
+	}
+}
+
+// RedundantExit is not reported: the final "continue" does not count.
+func RedundantExit(xs []int) {
+	for _, x := range xs {
+		if x > 0 {
+			use(x)
+			continue
+		}
+	}
+}
+
+func Five(ok bool) {
+	if ok { // want `whose block holds 5 statements`
+		use(1)
+		use(2)
+		use(3)
+		use(4)
+		use(5)
+	}
+}

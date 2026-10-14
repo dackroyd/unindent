@@ -54,7 +54,13 @@ func (c *checker) flush() {
 	}
 
 	for _, f := range c.found {
-		diag := analysis.Diagnostic{Pos: f.stmt.Else.Pos(), Message: f.message}
+		// Findings are reported at the else, or at the "if" when it has none.
+		pos := f.stmt.If
+		if f.stmt.Else != nil {
+			pos = f.stmt.Else.Pos()
+		}
+
+		diag := analysis.Diagnostic{Pos: pos, Message: f.message}
 
 		if len(f.conflicts) > 0 {
 			diag.Message += ". Not fixed automatically: " + strings.Join(f.conflicts, "; ")

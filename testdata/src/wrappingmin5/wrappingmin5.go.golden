@@ -1,0 +1,28 @@
+package wrappingmin5
+
+func use(...any) {}
+
+// Four is not reported with the threshold of gocritic's nestingReduce.
+func Four(ok bool) {
+	if ok {
+		use(1)
+		use(2)
+		use(3)
+		use(4)
+	}
+}
+
+func Five(xs []int) {
+	for _, x := range xs {
+		if x <= 0 {
+			continue
+		}
+
+		// want `^If wrapping the rest of the loop: the loop body ends in an "if" without an "else", whose block holds 5 statements. Invert the condition, leaving "if x <= 0 { continue }" followed by the block of statements$`
+		use(1)
+		use(2)
+		use(3)
+		use(4)
+		use(5)
+	}
+}

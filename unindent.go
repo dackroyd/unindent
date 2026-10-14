@@ -22,6 +22,9 @@ const (
 	flagElseAfterExit   = "else-after-exit"
 	flagElseIfAfterExit = "else-if-after-exit"
 	flagExitInElse      = "exit-in-else"
+	flagIfWrappingRest  = "if-wrapping-rest"
+	// flagIfWrappingRestMin is a setting of the if-wrapping-rest check, so it sits beside the check's flag.
+	flagIfWrappingRestMin = flagIfWrappingRest + "-min-statements"
 )
 
 // checks are the checks that are turned on.
@@ -29,16 +32,22 @@ type checks struct {
 	elseAfterExit   bool
 	elseIfAfterExit bool
 	exitInElse      bool
+	ifWrappingRest  bool
 }
 
 type analyzer struct {
 	checks checks
+	// wrappingMin is the fewest statements an if wrapping the rest of a function or loop is reported with.
+	wrappingMin minStatements
 }
 
 // NewAnalyzer which checks that whether code blocks can be unindented without changing behaviour. Every check is on;
 // its flag in the analyzer's Flags turns it off. Each analyzer has its own flags.
 func NewAnalyzer() *analysis.Analyzer {
-	a := &analyzer{checks: checks{elseAfterExit: true, elseIfAfterExit: true, exitInElse: true}}
+	a := &analyzer{
+		checks:      checks{elseAfterExit: true, elseIfAfterExit: true, exitInElse: true, ifWrappingRest: true},
+		wrappingMin: defaultWrappingMin,
+	}
 
 	an := &analysis.Analyzer{
 		Doc:      "Identifies unnecessarily indented code",
@@ -54,6 +63,10 @@ func NewAnalyzer() *analysis.Analyzer {
 		`report an "else if" after a branch that always exits`)
 	an.Flags.BoolVar(&a.checks.exitInElse, flagExitInElse, true,
 		`report an "else" that always exits after a branch that does not, which the inverted condition can exit first`)
+	an.Flags.BoolVar(&a.checks.ifWrappingRest, flagIfWrappingRest, true,
+		`report an "if" without an "else" that ends a function or loop body, which the inverted condition can leave first`)
+	an.Flags.Var(&a.wrappingMin, flagIfWrappingRestMin,
+		`the fewest statements in the block of an "if" that the `+flagIfWrappingRest+` check reports`)
 
 	return an
 }
@@ -71,6 +84,8 @@ type checker struct {
 	cfgs   *ctrlflow.CFGs
 	builds *buildDependents
 	checks checks
+	// wrappingMin is the fewest statements an if wrapping the rest of a function or loop is reported with.
+	wrappingMin int
 	// strict counts the calls that never return only in some builds as returning, and records them in dependent.
 	strict    bool
 	dependent []string
@@ -102,7 +117,7 @@ func (a *analyzer) run(pass *analysis.Pass) (interface{}, error) {
 		pass.ReadFile = cachedReadFile(pass.ReadFile)
 	}
 
-	c := &checker{pass: pass, cfgs: cfgs, builds: builds, checks: a.checks}
+	c := &checker{pass: pass, cfgs: cfgs, builds: builds, checks: a.checks, wrappingMin: int(a.wrappingMin)}
 
 	// Track the analysis of the stack to use when evaluating deeper elements.
 	infoStack := []nodeInfo{{Returns: true}}
@@ -142,8 +157,13 @@ func (c *checker) analyze(stmt *ast.IfStmt, stack []ast.Node, parentInfo nodeInf
 	}
 
 	if !c.ifAlwaysReturns(stmt) {
-		if !link && c.checks.exitInElse && c.elseBlockExits(stmt) && !c.nestsHappyPath(stmt) {
+		switch {
+		case !link && c.checks.exitInElse && c.elseBlockExits(stmt) && !c.nestsHappyPath(stmt):
 			c.reportExitInElse(stmt, stack)
+		case c.checks.ifWrappingRest && stmt.Else == nil:
+			if exit, ok := c.wrappedRest(stmt, stack); ok {
+				c.reportWrappingRest(stmt, stack, exit)
+			}
 		}
 
 		return nodeInfo{}

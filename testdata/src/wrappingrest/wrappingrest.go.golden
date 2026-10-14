@@ -1,0 +1,609 @@
+package wrappingrest
+
+import (
+	"fmt"
+	"sync"
+)
+
+func step(...any) {}
+
+func ready() bool { return true }
+
+func lookup(k string) (int, bool) { return len(k), k != "" }
+
+func Function(ok bool) {
+	step(1)
+
+	if !ok {
+		return
+	}
+
+	// want `^If wrapping the rest of the function: the function ends in an "if" without an "else", whose block holds 5 statements. Invert the condition, leaving "if !ok { return }" followed by the block of statements$`
+	step(1)
+	step(2)
+	step(3)
+	step(4)
+	step(5)
+}
+
+// ThreeStatements is reported: the block holds as many statements as the threshold.
+func ThreeStatements(ok bool) {
+	if !ok {
+		return
+	}
+
+	// want `^If wrapping the rest of the function: .* whose block holds 3 statements. Invert the condition, leaving "if !ok { return }" followed by the block of statements$`
+	step(1)
+	step(2)
+	step(3)
+}
+
+// FewerStatements is not reported: the block holds fewer statements than the threshold, however long they are.
+func FewerStatements(ok bool) {
+	if ok {
+		step(1)
+		for i := range 10 {
+			step(i)
+			step(i)
+			step(i)
+		}
+	}
+}
+
+func OnlyStatement(n int) {
+	if n <= 0 {
+		return
+	}
+
+	// want `^If wrapping the rest of the function: .* whose block holds 6 statements. Invert the condition, leaving "if n <= 0 { return }" followed by the block of statements$`
+	step(1)
+	step(2)
+	step(3)
+	step(4)
+	step(5)
+	step(6)
+}
+
+func Negations(a, b int, x, y float64, p, q bool) {
+	func() {
+		if a != b {
+			return
+		}
+
+		// want `leaving "if a != b { return }"`
+		step(1, 2, 3, 4, 5)
+		step(1)
+		step(2)
+		step(3)
+		step(4)
+	}()
+
+	func() {
+		if p && q {
+			return
+		}
+
+		// want `leaving "if p && q { return }"`
+		step(1)
+		step(2)
+		step(3)
+		step(4)
+		step(5)
+	}()
+
+	func() {
+		if !(x < y) {
+			return
+		}
+
+		// want `leaving "if !\(x < y\) { return }"`
+		step(1)
+		step(2)
+		step(3)
+		step(4)
+		step(5)
+	}()
+
+	func() {
+		if !p && !ready() {
+			return
+		}
+
+		// want `leaving "if !p && !ready\(\) { return }"`
+		step(1)
+		step(2)
+		step(3)
+		step(4)
+		step(5)
+	}()
+
+	if !ready() {
+		return
+	}
+
+	// want `leaving "if !ready\(\) { return }"`
+	step(1)
+	step(2)
+	step(3)
+	step(4)
+	step(5)
+}
+
+// VariableFirst negates as for an exit in an else: a constant on the left of a reversed comparison moves right.
+func VariableFirst(s string) {
+	for _, c := range s {
+		if c < '0' || c > '9' {
+			continue
+		}
+
+		// want `leaving "if c < '0' \|\| c > '9' { continue }"`
+		step(c)
+		step(c)
+		step(c)
+	}
+}
+
+func Loops(xs []int, m map[string]int) {
+	for _, x := range xs {
+		if x <= 0 {
+			continue
+		}
+
+		// want `^If wrapping the rest of the loop: the loop body ends in an "if" without an "else", whose block holds 5 statements. Invert the condition, leaving "if x <= 0 { continue }" followed by the block of statements$`
+		step(1)
+		step(2)
+		step(3)
+		step(4)
+		step(5)
+	}
+
+	for i := 0; i < len(xs); i++ {
+		step(i)
+
+		if xs[i] == 0 {
+			continue
+		}
+
+		// want `^If wrapping the rest of the loop: .* Invert the condition, leaving "if xs\[i\] == 0 { continue }" followed by the block of statements$`
+		step(1)
+		step(2)
+		step(3)
+		step(4)
+		step(5)
+	}
+
+	for k := range m {
+		if k == "" {
+			continue
+		}
+
+		// want `leaving "if k == "" { continue }" followed by the block of statements$`
+		step(1)
+		step(2)
+		step(3)
+		step(4)
+	}
+}
+
+// Searches are not reported: a loop whose "if" block ends in a "return", "break" or "goto" looks for one element and
+// acts on it once, which the inverted guard would hide, however long the block is.
+func Searches(xs []int) {
+	for _, x := range xs {
+		if x > 0 {
+			step(1)
+			step(2)
+			step(3)
+			step(4)
+			step(5)
+
+			return
+		}
+	}
+
+	for _, x := range xs {
+		if x > 0 {
+			step(1)
+			step(2)
+			step(3)
+
+			break
+		}
+	}
+
+outer:
+	for _, row := range [][]int{xs} {
+		for _, x := range row {
+			if x > 0 {
+				step(1)
+				step(2)
+				step(3)
+
+				break outer
+			}
+		}
+	}
+
+	for _, x := range xs {
+		if x > 0 {
+			step(1)
+			step(2)
+			step(3)
+
+			goto done
+		}
+	}
+
+done:
+	step()
+}
+
+func LabelledLoop(rows [][]int) {
+outer:
+	for _, row := range rows {
+		for _, v := range row {
+			if v == 0 {
+				continue outer
+			}
+		}
+
+		if len(row) <= 1 {
+			continue
+		}
+
+		// want `leaving "if len\(row\) <= 1 { continue }" followed by the block of statements without its final "continue outer"$`
+		step(1)
+		step(2)
+		step(3)
+		step(4)
+		step(5)
+	}
+}
+
+func RedundantExit(ok bool, xs []int) {
+	for range xs {
+		if !ok {
+			continue
+		}
+
+		// want `whose block holds 5 statements. .* followed by the block of statements without its final "continue"$`
+		step(1)
+		step(2)
+		step(3)
+		step(4)
+		step(5)
+	}
+
+	if !ok {
+		return
+	}
+
+	// want `whose block holds 5 statements. .* followed by the block of statements without its final "return"$`
+	step(1)
+	step(2)
+	step(3)
+	step(4)
+	step(5)
+	// done
+}
+
+// RedundantExitNotCounted is not reported: the final "return" does not count, as the fix removes it.
+func RedundantExitNotCounted(ok bool) {
+	if ok {
+		step(1)
+		step(2)
+
+		return
+	}
+}
+
+// OtherExits keeps a final exit that is not what falling off the end of the body does.
+func OtherExits(xs [][]int) {
+	for _, x := range xs {
+		if len(x) <= 0 {
+			continue
+		}
+
+		// want `leaving "if len\(x\) <= 0 { continue }" followed by the block of statements$`
+		step(1)
+		step(2)
+		step(3)
+		step(4)
+		panic(x)
+	}
+
+outer:
+	for _, x := range xs {
+		for range x {
+			if len(x) <= 0 {
+				continue
+			}
+
+			// want `leaving "if len\(x\) <= 0 { continue }" followed by the block of statements$`
+			step(1)
+			step(2)
+			step(3)
+			step(4)
+			continue outer
+		}
+	}
+}
+
+// Results are not reported: a function with results can't end in an "if" without an "else", and an "if" that returns
+// before a final "return" has an implicit else, which is not this check's.
+func Results(ok bool) (n int) {
+	if ok {
+		step(1)
+		step(2)
+		step(3)
+		step(4)
+		step(5)
+
+		return 1
+	}
+
+	return 0
+}
+
+// FuncLiteral uses the literal's own signature: "return" leaves the literal.
+func FuncLiteral(ok bool) int {
+	f := func() {
+		if !ok {
+			return
+		}
+
+		// want `^If wrapping the rest of the function: .* leaving "if !ok { return }" followed by the block of statements$`
+		step(1)
+		step(2)
+		step(3)
+		step(4)
+		step(5)
+	}
+
+	f()
+
+	g := func() int {
+		if ok {
+			step(1)
+			step(2)
+			step(3)
+			step(4)
+			step(5)
+		}
+
+		return 1
+	}
+
+	return g()
+}
+
+func NotReported(ok bool, xs []int, ch chan int) {
+	if ok {
+		step(1)
+		step(2)
+		step(3)
+		step(4)
+		step(5)
+	}
+
+	switch {
+	case ok:
+		if len(xs) > 0 {
+			step(1)
+			step(2)
+			step(3)
+			step(4)
+			step(5)
+		}
+	}
+
+	select {
+	case <-ch:
+		if len(xs) > 0 {
+			step(1)
+			step(2)
+			step(3)
+			step(4)
+			step(5)
+		}
+	}
+
+	{
+		if ok {
+			step(1)
+			step(2)
+			step(3)
+			step(4)
+			step(5)
+		}
+	}
+
+	if ok {
+		step(1)
+		step(2)
+		step(3)
+		step(4)
+		step(5)
+	} else {
+		step(6)
+	}
+}
+
+func Labelled(ok bool) {
+	step(1)
+
+	goto check
+
+check:
+	if ok {
+		step(1)
+		step(2)
+		step(3)
+		step(4)
+		step(5)
+	}
+}
+
+// NestedLoop reports both: the inner "if" ends a loop body inside the block that moves.
+func NestedLoop(a bool) {
+	if !a {
+		return
+	}
+
+	// want `leaving "if !a { return }"`
+	step(1)
+	step(2)
+	step(3)
+	step(4)
+
+	for i := range 3 {
+		if i <= 0 {
+			continue
+		}
+
+		// want `leaving "if i <= 0 { continue }"`
+		step(1)
+		step(2)
+		step(3)
+		step(4)
+		step(5)
+	}
+}
+
+func Init(k string) {
+	v, ok := lookup(k)
+	if !ok {
+		return
+	}
+
+	// want `^If wrapping the rest of the function: .* Move variable declaration "v, ok := lookup\(k\)" before the "if", and invert the condition, leaving "if !ok { return }" followed by the block of statements$`
+	step(v)
+	step(2)
+	step(3)
+	step(4)
+	step(5)
+}
+
+// InitInLoop keeps the initialiser, as the block doesn't use it.
+func InitInLoop(m map[string]int) {
+	for k := range m {
+		if n := len(k); n <= 3 {
+			continue
+		}
+
+		// want `^If wrapping the rest of the loop: .* Invert the condition, leaving "if n <= 3 { continue }" followed by the block of statements$`
+		step(1)
+		step(2)
+		step(3)
+		step(4)
+		step(5)
+	}
+}
+
+func Comments(ok bool) {
+	if !ok {
+		return
+	}
+
+	// the main path // want `leaving "if !ok { return }"`
+	// first
+	step(1)
+	step(2)
+	step(3) // third
+	step(4)
+	step(5)
+	// last
+}
+
+func CommentAfterBrace(xs []int) {
+	for _, x := range xs {
+		if x <= 0 {
+			continue
+		}
+
+		// want `leaving "if x <= 0 { continue }"`
+		step(1)
+		step(2)
+		step(3)
+		step(4)
+		step(5)
+		// positive
+	}
+}
+
+// Defers keeps the order of the deferred calls, which still run when the function returns.
+func Defers(mu *sync.Mutex, ok bool) {
+	mu.Lock()
+	defer mu.Unlock()
+
+	if !ok {
+		return
+	}
+
+	// want `leaving "if !ok { return }"`
+	defer step(1)
+	step(2)
+	step(3)
+	step(4)
+	step(5)
+}
+
+// Gotos keeps a loop built with a label inside the block, and a goto out of it.
+func Gotos(n int) {
+again:
+	step(0)
+
+	if n <= 0 {
+		return
+	}
+
+	// want `leaving "if n <= 0 { return }"`
+	step(1)
+
+loop:
+	n--
+	if n > 5 {
+		goto loop
+	}
+
+	if n > 2 {
+		goto again
+	}
+
+	step(2)
+	step(3)
+}
+
+// InnerFix is fixed in the same run as a fix inside the block.
+func InnerFix(ok bool, err error) {
+	if !ok {
+		return
+	}
+
+	// want `leaving "if !ok { return }"`
+	step(1)
+	step(2)
+	step(3)
+	step(4)
+
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+
+	// want `^Unnecessary "else"`
+	step(5)
+}
+
+// BlankLines leaves no blank line at the end of the function, where the block had one.
+func BlankLines(ok bool) {
+	if !ok {
+		return
+	}
+
+	// want `leaving "if !ok { return }"`
+	step(1)
+	step(2)
+	step(3)
+	step(4)
+	step(5)
+}

@@ -16,8 +16,8 @@ import (
 )
 
 // BenchmarkSynthetic analyzes generated code shaped to expose costs that grow faster than the code: long "else if"
-// chains whose initialisers move before the "if", blocks with many reported statements, and deep nesting, for both an
-// unnecessary "else" and an exit in an else.
+// chains whose initialisers move before the "if", blocks with many reported statements, and deep nesting, for an
+// unnecessary "else", an exit in an else and an if wrapping the rest of a loop.
 func BenchmarkSynthetic(b *testing.B) {
 	for _, bc := range []struct {
 		name string
@@ -29,6 +29,8 @@ func BenchmarkSynthetic(b *testing.B) {
 		{"nested", genNested, 40},
 		{"inverted", genInverted, 400},
 		{"nestedinverted", genNestedInverted, 40},
+		{"wrapping", genWrapping, 400},
+		{"nestedwrapping", genNestedWrapping, 40},
 	} {
 		b.Run(fmt.Sprintf("%s=%d", bc.name, bc.n), func(b *testing.B) {
 			var src strings.Builder
@@ -144,6 +146,40 @@ func genNestedInverted(src *strings.Builder, n int) {
 	}
 
 	src.WriteString("\treturn x\n}\n\n")
+}
+
+// genWrapping writes a function of n loops whose bodies are an if wrapping the rest of the loop, whose initialiser
+// moves before the "if".
+func genWrapping(src *strings.Builder, n int) {
+	src.WriteString("func Wrapping(xs []int) int {\n\ttotal := 0\n\n")
+
+	for i := range n {
+		fmt.Fprintf(src, "\tfor _, x := range xs {\n\t\tif v, err := f(x); err == nil {\n\t\t\ty%d := v * 2\n", i)
+		fmt.Fprintf(src, "\t\t\ttotal += y%d\n\t\t\ttotal += x\n\t\t\ttotal++\n\t\t\ttotal--\n\t\t}\n\t}\n\n", i)
+	}
+
+	src.WriteString("\treturn total\n}\n\n")
+}
+
+// genNestedWrapping writes loops nested n deep, each ending in an if that wraps the rest of the loop and holds the
+// next loop.
+func genNestedWrapping(src *strings.Builder, n int) {
+	src.WriteString("func NestedWrapping(xs []int) {\n")
+
+	for i := range n {
+		indent := strings.Repeat("\t", 2*i+1)
+		fmt.Fprintf(src, "%sfor _, x%d := range xs {\n%s\tif x%d > %d {\n", indent, i, indent, i, i)
+		fmt.Fprintf(src, "%s\t\tf(x%d)\n%s\t\tf(x%d)\n%s\t\tf(x%d)\n%s\t\tf(x%d)\n", indent, i, indent, i, indent, i, indent, i)
+	}
+
+	fmt.Fprintf(src, "%sf(0)\n", strings.Repeat("\t", 2*n+1))
+
+	for i := n - 1; i >= 0; i-- {
+		indent := strings.Repeat("\t", 2*i+1)
+		fmt.Fprintf(src, "%s\t}\n%s}\n", indent, indent)
+	}
+
+	src.WriteString("}\n\n")
 }
 
 func writeFile(b *testing.B, name, content string) {

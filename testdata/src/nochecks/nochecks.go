@@ -21,3 +21,13 @@ func ExitInElse(x int) int {
 
 	return x
 }
+
+func WrappingRest(ok bool) {
+	if ok {
+		x := 1
+		x++
+		x++
+		x++
+		x++
+	}
+}

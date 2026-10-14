@@ -1,0 +1,123 @@
+package unindent
+
+func WrappingNameDeclared(v int, ok bool) {
+	if ok { // want `^If wrapping the rest of the function: the function ends in an "if" without an "else", whose block holds 5 statements. Invert the condition, leaving "if !ok { return }" followed by the block of statements. Not fixed automatically: "v" is already declared in the enclosing block$`
+		v := 2
+		use(v)
+		use(2)
+		use(3)
+		use(4)
+	}
+}
+
+func WrappingInitDeclared(v int) {
+	if v, ok := lookup(); ok { // want `Move variable declaration "v, ok := lookup\(\)" before the "if", and invert the condition, leaving "if !ok { return }" followed by the block of statements. Not fixed automatically: "v" is already declared in the enclosing block$`
+		use(v)
+		use(2)
+		use(3)
+		use(4)
+		use(5)
+	}
+}
+
+func WrappingAlsoInit(xs []int) {
+	for range xs {
+		if x, ok := lookup(); ok { // want `leaving "if !ok { continue }" followed by the block of statements. Not fixed automatically: "x" is also declared by the "if" initialiser$`
+			use(x)
+			x := 2
+			use(x)
+			use(4)
+			use(5)
+		}
+	}
+}
+
+func WrappingEarlierFix(ok bool) {
+	if v, err := load(); err != nil {
+		return
+	} else { // want `^Unnecessary "else": .* Move variable declaration "v, err := load\(\)" before the "if", and remove the "else" wrapping the block of statements$`
+		use(v)
+	}
+
+	if ok { // want `leaving "if !ok { return }" followed by the block of statements. Not fixed automatically: "v" is also moved into the enclosing block by an earlier fix$`
+		v := 1
+		use(v)
+		use(3)
+		use(4)
+		use(5)
+	}
+}
+
+// WrappingInnerMove is not fixed: the fix inside the block moves y into it, where the parameter is not, but the
+// function's body declares it.
+func WrappingInnerMove(y int, ok bool) {
+	if ok { // want `leaving "if !ok { return }" followed by the block of statements. Not fixed automatically: "y" is already declared in the enclosing block$`
+		use(1)
+		use(2)
+		use(3)
+		use(4)
+
+		if y, err := load(); err != nil {
+			return
+		} else { // want `^Unnecessary "else": .* Move variable declaration "y, err := load\(\)" before the "if", and remove the "else" wrapping the block of statements$`
+			use(y)
+		}
+	}
+}
+
+// WrappingInElse withholds the fix of the outer "if", which copies its else block, until the fix inside it is applied.
+func WrappingInElse(ok bool) error {
+	if ok {
+		use(1)
+	} else { // want `^Exit in "else": .* Not fixed automatically: another fix inside the "if" statement has to be applied first$`
+		go func() {
+			if ok { // want `leaving "if !ok { return }" followed by the block of statements$`
+				use(1)
+				use(2)
+				use(3)
+				use(4)
+				use(5)
+			}
+		}()
+
+		return nil
+	}
+
+	return nil
+}
+
+// WrappingInitFix withholds the fix that moves the initialiser, until the fix inside it is applied.
+func WrappingInitFix(a bool) {
+	if f := func() int { // want `Move variable declaration .* before the "if", and invert the condition, leaving "if f\(\) <= 0 { return }" followed by the block of statements. Not fixed automatically: another fix inside the "if" statement has to be applied first$`
+		if a {
+			return 1
+		} else { // want `^Unnecessary "else"`
+			return 2
+		}
+	}; f() > 0 {
+		use(f)
+		use(2)
+		use(3)
+		use(4)
+		use(5)
+	}
+}
+
+// WrappingNested reports the outer "if". Once it is fixed, the inner one ends the function, and the next run reports
+// it.
+func WrappingNested(a, b bool) {
+	if a { // want `leaving "if !a { return }"`
+		use(1)
+		use(2)
+		use(3)
+		use(4)
+
+		if b {
+			use(1)
+			use(2)
+			use(3)
+			use(4)
+			use(5)
+		}
+	}
+}

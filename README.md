@@ -54,9 +54,13 @@ what to change. `unindent` fills the gaps:
     does not, and inverts the condition so the `else` block exits first. It follows exits through nested statements and
     calls here too, doesn't turn `x < y` into `x >= y` for floating point numbers, where NaN makes them differ, and
     never nests the happy path under `err == nil`.
+- **An `if` wrapping the rest of a function or loop.** When a function or loop body ends in an `if` holding 3 statements
+    or more, other than a loop's search for one element, `unindent` inverts the condition to `return` or `continue`
+    early, as gocritic's `nestingReduce` suggests for loops whose body is only that `if` and 5 statements or more. It
+    reports functions and function literals as well, and an `if` after other statements.
 - **Fixes.** Every report comes with a fix that `-fix` applies.
 
-On five large Go codebases, `unindent` reported 434 cases that revive's rules did not, and all but 6 of the 306 that
+On five large Go codebases, `unindent` reported 968 cases that revive's rules did not, and all but 6 of the 306 that
 revive reported: 5 are an `else if` that `unindent` leaves alone or reports once its chain is split, and 1 would nest
 the happy path under `err == nil`. [Comparison with other linters](docs/comparison.md) has the details, and
 [Projects](docs/projects.md) what `unindent` finds in each codebase and what its fixes do.
@@ -85,10 +89,12 @@ go vet -vettool=$(command -v unindent) ./...
 `unindent` exits with status 3 when it reports a finding, 1 when it cannot load the packages, and 0 otherwise. Test
 files are checked too; pass `-test=false` to skip them.
 
-Every check is on by default, and each has a flag that turns it off, named in the [table of checks](#checks):
+Every check is on by default, and each has a flag that turns it off, named in the [table of checks](#checks), beside any
+settings it has:
 
 ```sh
 unindent -else-if-after-exit=false ./...
+unindent -if-wrapping-rest-min-statements=5 ./...
 go vet -vettool=$(command -v unindent) -else-if-after-exit=false ./...
 ```
 
@@ -98,11 +104,12 @@ example `a.Flags.Set("else-if-after-exit", "false")`, and belong to that analyze
 
 ## Checks
 
-| Check                                                         | Reports                                                                                    | Flag                  |
-| ------------------------------------------------------------- | ------------------------------------------------------------------------------------------ | --------------------- |
-| [Else after an exit](docs/checks.md#else-after-an-exit)       | An `else` after a branch that always exits                                                 | `-else-after-exit`    |
-| [Else if after an exit](docs/checks.md#else-if-after-an-exit) | An `else if` after a branch that always exits                                              | `-else-if-after-exit` |
-| [Exit in an else](docs/checks.md#exit-in-an-else)             | An `else` that always exits after a branch that does not, fixed by inverting the condition | `-exit-in-else`       |
+| Check                                                         | Reports                                                                                                                                                       | Flag                                                    |
+| ------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------- |
+| [Else after an exit](docs/checks.md#else-after-an-exit)       | An `else` after a branch that always exits                                                                                                                    | `-else-after-exit`                                      |
+| [Else if after an exit](docs/checks.md#else-if-after-an-exit) | An `else if` after a branch that always exits                                                                                                                 | `-else-if-after-exit`                                   |
+| [Exit in an else](docs/checks.md#exit-in-an-else)             | An `else` that always exits after a branch that does not, fixed by inverting the condition                                                                    | `-exit-in-else`                                         |
+| [If wrapping the rest](docs/checks.md#if-wrapping-the-rest)   | An `if` without an `else` that ends a function or loop body and holds at least 3 statements, fixed by inverting the condition to `return` or `continue` early | `-if-wrapping-rest`, `-if-wrapping-rest-min-statements` |
 
 ## Limitations
 

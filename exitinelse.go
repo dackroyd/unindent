@@ -176,7 +176,7 @@ func (c *checker) invertConflicts(info *types.Info, stmt *ast.IfStmt, enclosing 
 // body are described by gotoConflicts, and skipped here.
 func elseGotoConflicts(stmt *ast.IfStmt, enclosing ast.Node, vars []movedVar, reported []string) []string {
 	labels := labelsAfter(enclosing, stmt.End())
-	if len(labels) == 0 || len(vars) == 0 {
+	if stmt.Else == nil || len(labels) == 0 || len(vars) == 0 {
 		return nil
 	}
 

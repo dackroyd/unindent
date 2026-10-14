@@ -2,7 +2,7 @@
 
 Each check reports a construct that indents code without need, explains the change in the message, and offers a fix that
 `unindent -fix` applies. Every check is on by default, and its flag turns it off: `-else-after-exit=false`,
-`-else-if-after-exit=false` or `-exit-in-else=false`.
+`-else-if-after-exit=false`, `-exit-in-else=false` or `-if-wrapping-rest=false`.
 
 A branch **exits** when every path through it ends in a `return`, `break`, `continue`, `goto` or a call that never
 returns, or in a loop or `select` that never ends. These are the Go specification's
@@ -244,12 +244,105 @@ reported, and the other checks' fixes no longer allow for the body it would move
 [Else if after an exit](#else-if-after-an-exit) off, the `else` of an `else if` is still not reported, as the chain
 stays.
 
+## If wrapping the rest
+
+Flags: `-if-wrapping-rest`, and `-if-wrapping-rest-min-statements`, 3 by default.
+
+Reports an `if` without an `else` that is the last statement of a function or loop body, when its block holds at least 3
+statements. Nothing runs after the block, so the inverted condition can leave the function with `return`, or go on to
+the next iteration with `continue`, and the block follows the `if` at the outer level.
+
+```go
+for _, item := range items {
+	if item.Ready() { // If wrapping the rest of the loop: the loop body ends in an "if" without an "else", whose block holds 3 statements. Invert the condition, leaving "if !item.Ready() { continue }" followed by the block of statements
+		v := item.Value()
+		store(v)
+		count++
+	}
+}
+```
+
+Fixed:
+
+```go
+for _, item := range items {
+	if !item.Ready() {
+		continue
+	}
+
+	v := item.Value()
+	store(v)
+	count++
+}
+```
+
+Falling off the end of the body does what the new exit does, so behaviour is the same:
+
+- In a function, only one without results can end in an `if` without an `else`, as a function with results needs a
+    terminating statement, so a bare `return` is always right. A function literal is checked against its own signature,
+    wherever it is. An `if` that returns a value before a final `return` has the `else` implied, which this check leaves
+    alone.
+- In a `for` or `range` loop, the `if` must be the last statement of the loop's own body, so the unlabelled `continue`
+    goes on to the next iteration of that loop, running its post statement, as falling off the end did. Labelled loops
+    are reported too.
+- `defer` statements keep their order and still run when the function returns. Labels and `goto` statements in the block
+    move with it and keep their targets, and nothing follows the `if` for a `goto` to jump over.
+
+An `if` at the end of a `switch` or `select` case, or of a plain block, is not reported: leaving them early takes a
+`break`, which reads less clearly than the nesting it removes. Nor is a labelled `if`, or, in a loop, an `if` whose
+block ends in a `return`, `break` or `goto`, whatever its size. Such a loop searches for one element and acts on it
+once, and the inverted `if` would hide that: `if !found { continue }` makes the block look like it runs for every
+element, with the one-off exit at the end of the loop body.
+
+The threshold counts the statements directly in the block, however long they are: a nested loop or `switch` counts once,
+and a statement split over several lines counts once. A final `return` in a function, or `continue` to the loop, does
+not count, as falling off the end of the body does the same: the fix removes it. Set `-if-wrapping-rest-min-statements`
+to report shorter blocks, down to 1, or only longer ones: 5 matches gocritic's `nestingReduce`. Below 3, most reports
+are short filters inside loops, where the new `if` adds as many lines as the nesting it removes.
+
+The condition is negated as for [Exit in an else](#exit-in-an-else). Unlike that check, this one reports a block under
+`if err != nil`: the fix leaves `if err == nil { return }`, which holds only the exit, and the error handling follows,
+so no happy path ends up under `err == nil`. When the block uses a variable that the initialiser declares, the fix moves
+the initialiser before the `if`; otherwise it stays, as only the condition uses it:
+
+```go
+func handle(k string) {
+	if v, ok := lookup(k); ok { // ... Move variable declaration "v, ok := lookup(k)" before the "if", and invert the condition, leaving "if !ok { return }" followed by the block of statements
+		// ...
+	}
+}
+```
+
+Fixed:
+
+```go
+func handle(k string) {
+	v, ok := lookup(k)
+	if !ok {
+		return
+	}
+
+	// ...
+}
+```
+
+The fix only replaces the block's braces, so fixes inside it apply in the same run, and comments stay where they are. A
+comment after the `{` moves with the block, as it describes the case the block handles. The fixed code is reported by no
+check, so the checks never undo each other's fixes. When the block ends in another `if` wrapping the rest, as in
+`if a { …; if b { … } }`, that `if` ends the function once the outer one is fixed, and the next run reports it.
+
+The check is independent of the others. With it off, an `if` wrapping the rest of a function or loop is not reported,
+and the other checks' fixes are offered as if it were not there.
+
 ## Limitations
 
 - A happy path nested under `if err == nil` without an `else`, `if err == nil { process(v); return nil }` followed by
     the error handling, is not reported. Turning it around would move the statements after the `if` into it, which is a
     refactor rather than a change of indentation. When the `else` holds the exit instead,
     `if err == nil { process(v) } else { return err }`, [Exit in an else](#exit-in-an-else) reports it.
+- A search loop, whose last `if` acts on the element it finds and leaves the loop with a `return`, `break` or `goto`, is
+    not reported by [If wrapping the rest](#if-wrapping-the-rest), however long the block is. Splitting the search from
+    the action, finding the element in the loop and acting on it after, is a refactor rather than a mechanical fix.
 
 ## When no fix is offered
 
@@ -258,15 +351,16 @@ message ends with "Not fixed automatically:" and the reason, so the change can b
 variable.
 
 - **A name declared in the `else` block is already declared in the enclosing block.** Moving the declaration would
-    redeclare it, or turn `:=` into an assignment to the existing variable. For an exit in an `else`, the same applies
-    to the names the body declares, as the body is what moves.
+    redeclare it, or turn `:=` into an assignment to the existing variable. For an exit in an `else` or an `if` wrapping
+    the rest, the same applies to the names the body declares, as the body is what moves. A function's parameters are
+    declared in its body's block.
 - **A name declared in the `else` block would hide a variable used after the `if`.** Once moved, the later uses would
     refer to the new variable instead.
 - **An initialiser that has to move declares a name that is already declared in the enclosing block**, for example a
     named result `err`, or that would hide a variable used after the `if`.
 - **Two fixes move the same name into the enclosing block.** Two initialisers in the same chain, or in consecutive `if`
-    statements, declare the same name, or an `else` block, or for an exit in an `else` the body, redeclares a name from
-    a moved initialiser.
+    statements, declare the same name, or an `else` block, or for an exit in an `else` or an `if` wrapping the rest the
+    body, redeclares a name from a moved initialiser.
 - **An earlier link in the chain is not fixed.** The rest of the chain uses what that link's initialiser declares, so it
     cannot move out from under it.
 - **An initialiser in the chain stays, as the Else if after an exit check is off.** The final `else` uses a variable
@@ -285,8 +379,9 @@ variable.
     break a `goto` to a label inside it: such a `goto` must be inside the block too, and the fix keeps the block's
     statements in order with nothing between them.
 - **Another fix inside the `if` statement has to be applied first.** An initialiser that has to move holds another fix,
-    such as an `else` in a function literal, or so does the `else` block or condition of an exit in an `else`:
-    `unindent -fix` applies that one, and a second run applies this one.
+    such as an `else` in a function literal, or so does the `else` block or condition of an exit in an `else`, for
+    example an `if` wrapping the rest of a function literal in the `else` block: `unindent -fix` applies that one, and a
+    second run applies this one.
 
 ```go
 func load() (err error) {
