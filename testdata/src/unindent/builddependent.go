@@ -113,3 +113,13 @@ func ElseAfterConstrainedCallWithoutCounterpart(x int) int {
 
 	return x
 }
+
+func ExitInElseThroughBuildDependentCall(x int) int {
+	if x > 0 {
+		x++
+	} else { // want `^Exit in "else": .* Invert the condition, leaving "if x <= 0 { ... }" followed by the block of statements. Not fixed automatically: "buildstub.Stop" never returns only in some builds$`
+		buildstub.Stop()
+	}
+
+	return x
+}

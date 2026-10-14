@@ -178,8 +178,9 @@ applies the fixes, and checks that the code still builds, passes `+"`go vet`"+` 
 		total.Lost)
 
 	b.WriteString(`
-A finding's kind is the kind of ` + "`else`" + ` and the last statement of the branch before it. A fix is withheld when
-it would not compile or would change behaviour; the reasons quote the names involved, shown here as "…".
+A finding's kind is the kind of ` + "`else`" + ` and the last statement of the branch before it, or for an exit in an
+` + "`else`" + `, the last statement of the ` + "`else`" + ` block. A fix is withheld when it would not compile or would change
+behaviour; the reasons quote the names involved, shown here as "…".
 `)
 
 	for _, p := range set.Projects {

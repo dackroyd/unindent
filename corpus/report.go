@@ -16,6 +16,12 @@ import (
 // notFixed precedes the reasons in the message of a finding reported without a fix.
 const notFixed = "Not fixed automatically: "
 
+// exitInElse starts the message of the check that inverts an if whose else block exits, and the kind of its findings.
+const (
+	exitInElseMessage = `Exit in "else"`
+	exitInElseKind    = "exit in else"
+)
+
 // position is a place in a project's source, with File relative to the project.
 type position struct {
 	Project, File string
@@ -107,7 +113,7 @@ func (r *runner) report(bin string, p project, dir string) ([]finding, error) {
 
 				findings = append(findings, finding{
 					Pos:     pos,
-					Kind:    findingKind(ifs.file(p.Name, pos.File).byElse[pos]),
+					Kind:    findingKind(ifs.file(p.Name, pos.File).byElse[pos], d.Message),
 					Message: d.Message,
 					Fixed:   len(d.SuggestedFixes) > 0,
 				})
@@ -166,11 +172,16 @@ func isGenerated(cache map[string]bool, file string) bool {
 	return cache[file]
 }
 
-// findingKind describes the if statement with an else that a finding is about: whether the else is an "else if", and
-// how the branch before it ends, its last statement.
-func findingKind(is *ifStmt) string {
+// findingKind describes the if statement with an else that a finding with message is about: whether the else is an
+// "else if", and how the branch before it ends, its last statement. For an exit in an else block, it is how the else
+// block ends.
+func findingKind(is *ifStmt, message string) string {
 	if is == nil {
 		return "not on an else"
+	}
+
+	if els, ok := is.stmt.Else.(*ast.BlockStmt); ok && strings.HasPrefix(message, exitInElseMessage) {
+		return exitInElseKind + " ending in " + exitKind(lastStmt(els))
 	}
 
 	form := "else"
@@ -178,28 +189,29 @@ func findingKind(is *ifStmt) string {
 		form = "else if"
 	}
 
-	var exit string
+	return form + " after " + exitKind(lastStmt(is.stmt.Body))
+}
 
-	switch last := lastStmt(is.stmt.Body).(type) {
+// exitKind describes last, the statement a branch exits with.
+func exitKind(last ast.Stmt) string {
+	switch last := last.(type) {
 	case *ast.ReturnStmt:
-		exit = "return"
+		return "return"
 	case *ast.BranchStmt:
-		exit = last.Tok.String()
+		return last.Tok.String()
 	case *ast.ExprStmt:
-		exit = "call"
+		return "call"
 	case *ast.IfStmt:
-		exit = "nested if"
+		return "nested if"
 	case *ast.SwitchStmt, *ast.TypeSwitchStmt:
-		exit = "switch"
+		return "switch"
 	case *ast.ForStmt:
-		exit = "for"
+		return "for"
 	case *ast.SelectStmt:
-		exit = "select"
-	default:
-		exit = "other"
+		return "select"
 	}
 
-	return form + " after " + exit
+	return "other"
 }
 
 // renderFindings lists one finding per line, with its kind and whether it is fixed, or why not.

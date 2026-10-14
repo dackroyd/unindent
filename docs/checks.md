@@ -1,8 +1,8 @@
 # Checks
 
 Each check reports a construct that indents code without need, explains the change in the message, and offers a fix that
-`unindent -fix` applies. Every check is on by default, and its flag turns it off: `-else-after-exit=false` or
-`-else-if-after-exit=false`.
+`unindent -fix` applies. Every check is on by default, and its flag turns it off: `-else-after-exit=false`,
+`-else-if-after-exit=false` or `-exit-in-else=false`.
 
 A branch **exits** when every path through it ends in a `return`, `break`, `continue`, `goto` or a call that never
 returns, or in a loop or `select` that never ends. These are the Go specification's
@@ -135,9 +135,121 @@ return y
 
 An `else if` after a branch that does not exit is not reported: removing its `else` would change which branches run.
 
-The two checks are independent. With this one off, the `else` at the end of such a chain is still reported, and its fix
-moves the block out of the chain, leaving the `else if` links as they are. With
+The two `else` checks are independent. With this one off, the `else` at the end of such a chain is still reported, and
+its fix moves the block out of the chain, leaving the `else if` links as they are. With
 [Else after an exit](#else-after-an-exit) off, the `else if` links are still reported, and the final `else` stays.
+
+## Exit in an else
+
+Flag: `-exit-in-else`.
+
+Reports an `else` block that exits after a body that does not. Inverting the condition lets the `else` block exit first,
+and the body, which only ran when the `else` block did not, follows the `if` at the outer level. This is revive's
+`early-return`, with exits followed through nested statements and calls as for the other checks.
+
+```go
+v, err := load()
+if err == nil {
+	process(v)
+} else { // Exit in "else": the "else" block always ends in a "return", "break", "continue", "goto", a call that never returns or a loop or select that never ends, and the "if" block does not. Invert the condition, leaving "if err != nil { ... }" followed by the block of statements
+	return err
+}
+
+return nil
+```
+
+Fixed:
+
+```go
+v, err := load()
+if err != nil {
+	return err
+}
+
+process(v)
+
+return nil
+```
+
+Moving the body out keeps behaviour wherever the `if` is: the body flowed into the statements after the `if`, and still
+does. It doesn't need to be the last statement of its block, and the body can be empty: `if ok {} else { return }`
+becomes `if !ok { return }`.
+
+The condition is negated so it reads naturally, keeping the rest of it as written:
+
+- A negation is removed: `!ok` becomes `ok`, and `!(a && b)` becomes `a && b`.
+- `==` and `!=` swap.
+- `<`, `<=`, `>` and `>=` are reversed when both operands are integers or strings, so `n > 0` becomes `n <= 0`. A
+    constant on the left only moves to the right, so the comparison reads variable first: `0 < n` becomes `n <= 0`.
+    Floating point comparisons are wrapped instead, `!(x < y)`, as `x >= y` is false when either is NaN, while
+    `!(x < y)` is true. So are comparisons of type parameters, which may be floating point.
+- `&&` and `||` swap by De Morgan's laws when every operand negates in one of these ways or is an identifier, selector,
+    call or index expression, which gets a `!`: `ok && n > 0` becomes `!ok || n <= 0`, `a && (b || c)` becomes
+    `!a || (!b && !c)`, and the range check `'0' <= c && c <= '9'` becomes `c < '0' || c > '9'`. An `&&` that becomes an
+    `||` inside an `&&` is parenthesised, so `a || b && c` becomes `!a && (!b || !c)`. When an operand, at any depth,
+    would need wrapping, such as a floating point comparison, the whole condition is wrapped instead: `!(ok && x < y)`.
+- Anything else gets a `!`: `!ok`, `!s.Valid()`, `!*p`.
+
+An `if` whose condition only holds while an error is not `nil` is not reported when its `else` block holds more than its
+exit, as inverting it would nest the happy path under `err == nil`:
+
+```go
+if err != nil {
+	log.Print(err)
+} else { // not reported: the fix would leave "if err == nil { ... }" followed by the logging
+	process(v)
+	return nil
+}
+```
+
+That covers `err != nil`, `nil != err`, `!(err == nil)` and an `||` with such an operand, such as `err != nil || retry`,
+for any value whose type implements `error`. `err != nil && retry` is still reported, as its `else` block also runs with
+an error when `retry` is false. An `else` block that only exits is reported, as its inverted `if` is an early exit on
+success rather than a nested happy path: in a retry loop, `if err != nil { wait() } else { break }` becomes
+`if err == nil { break }` followed by `wait()`, and the test idiom `if err != nil { check(err) } else { t.Fatal(…) }`
+becomes `if err == nil { t.Fatal(…) }`.
+
+Only an `if` that starts a chain is reported. The body of an `else if` would run after the branches before it once it
+moved out of the chain. When those branches exit, [Else if after an exit](#else-if-after-an-exit) reports the `else if`
+first, and once it starts its own `if`, the next run reports its `else`.
+
+When the body uses a variable that the initialiser declares, the fix moves the initialiser before the `if`. Otherwise
+the initialiser stays:
+
+```go
+if v, err := load(); err == nil {
+	process(v)
+} else { // ... Move variable declaration "v, err := load()" before the "if", and invert the condition, leaving "if err != nil { ... }" followed by the block of statements
+	return err
+}
+```
+
+Fixed:
+
+```go
+v, err := load()
+if err != nil {
+	return err
+}
+
+process(v)
+```
+
+The fix moves the `else` block, comments included, into the `if`. When a fix inside that block, or in the condition, is
+offered too, this one is withheld until it is applied, so the fixes of one run never overlap: run `unindent -fix` again
+to apply it.
+
+The check is independent of the other two. With it off, an `else` block that exits after a body that does not is not
+reported, and the other checks' fixes no longer allow for the body it would move. With
+[Else if after an exit](#else-if-after-an-exit) off, the `else` of an `else if` is still not reported, as the chain
+stays.
+
+## Limitations
+
+- A happy path nested under `if err == nil` without an `else`, `if err == nil { process(v); return nil }` followed by
+    the error handling, is not reported. Turning it around would move the statements after the `if` into it, which is a
+    refactor rather than a change of indentation. When the `else` holds the exit instead,
+    `if err == nil { process(v) } else { return err }`, [Exit in an else](#exit-in-an-else) reports it.
 
 ## When no fix is offered
 
@@ -146,13 +258,15 @@ message ends with "Not fixed automatically:" and the reason, so the change can b
 variable.
 
 - **A name declared in the `else` block is already declared in the enclosing block.** Moving the declaration would
-    redeclare it, or turn `:=` into an assignment to the existing variable.
+    redeclare it, or turn `:=` into an assignment to the existing variable. For an exit in an `else`, the same applies
+    to the names the body declares, as the body is what moves.
 - **A name declared in the `else` block would hide a variable used after the `if`.** Once moved, the later uses would
     refer to the new variable instead.
 - **An initialiser that has to move declares a name that is already declared in the enclosing block**, for example a
     named result `err`, or that would hide a variable used after the `if`.
 - **Two fixes move the same name into the enclosing block.** Two initialisers in the same chain, or in consecutive `if`
-    statements, declare the same name, or an `else` block redeclares a name from a moved initialiser.
+    statements, declare the same name, or an `else` block, or for an exit in an `else` the body, redeclares a name from
+    a moved initialiser.
 - **An earlier link in the chain is not fixed.** The rest of the chain uses what that link's initialiser declares, so it
     cannot move out from under it.
 - **An initialiser in the chain stays, as the Else if after an exit check is off.** The final `else` uses a variable
@@ -162,14 +276,17 @@ variable.
     in a file with build constraints and again in a file that the build leaves out, so in another build it may return,
     and the `else` block would then run after it. The runtime's `racerelease`, for example, throws in builds without
     `-race`, where `race0.go` declares it as a stub, and returns in builds with it, where `race.go` declares it. The
-    reason names the call: `"racerelease" never returns only in some builds`.
+    reason names the call: `"racerelease" never returns only in some builds`. For an exit in an `else`, the same goes
+    for the `else` block: in a build where the call returns, the body would run after it.
 - **A `goto` would jump over a moved declaration.** A `goto` before the `if`, or inside it, to a label after the `if`
     would jump over a variable that the fix moves out of the `else` block or the initialiser, which Go does not allow:
-    `"goto fail" would jump over the declaration of "v"`. Moving the `else` block cannot break a `goto` to a label
-    inside it: such a `goto` must be inside the block too, and the fix keeps the block's statements in order with
-    nothing between them.
+    `"goto fail" would jump over the declaration of "v"`. For an exit in an `else`, the variables are those the body
+    declares, and a `goto` in the `else` block counts too, as the block moves before the body. Moving a block cannot
+    break a `goto` to a label inside it: such a `goto` must be inside the block too, and the fix keeps the block's
+    statements in order with nothing between them.
 - **Another fix inside the `if` statement has to be applied first.** An initialiser that has to move holds another fix,
-    such as an `else` in a function literal: `unindent -fix` applies that one, and a second run applies this one.
+    such as an `else` in a function literal, or so does the `else` block or condition of an exit in an `else`:
+    `unindent -fix` applies that one, and a second run applies this one.
 
 ```go
 func load() (err error) {

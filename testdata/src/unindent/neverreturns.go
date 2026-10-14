@@ -96,10 +96,10 @@ func TestErrorContinues(t *testing.T) {
 	}
 }
 
-func LogPrintContinues(err error) int {
-	if err != nil {
-		log.Print(err)
-	} else {
+func LogPrintContinues(ok bool) int {
+	if !ok {
+		log.Print("not ok")
+	} else { // want `^Exit in "else": .* Invert the condition, leaving "if ok { ... }" followed by the block of statements$`
 		return 1
 	}
 
@@ -109,7 +109,7 @@ func LogPrintContinues(err error) int {
 func DeferredPanicContinues(x int) int {
 	if x < 0 {
 		defer func() { panic("negative") }()
-	} else {
+	} else { // want `^Exit in "else": .* Invert the condition, leaving "if x >= 0 { ... }" followed by the block of statements$`
 		return x
 	}
 

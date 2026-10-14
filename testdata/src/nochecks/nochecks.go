@@ -11,3 +11,13 @@ func Chain(x int) int {
 
 	return x
 }
+
+func ExitInElse(x int) int {
+	if x > 0 {
+		x++
+	} else {
+		return 0
+	}
+
+	return x
+}

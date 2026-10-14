@@ -4,21 +4,27 @@ tools cmd/file2fuzz/main.go:74:11 else if after return: not fixed: "err" is alre
 tools cmd/file2fuzz/main.go:96:11 else if after return: fixed
 tools cmd/file2fuzz/main_test.go:140:11 else if after call: fixed
 tools cmd/fiximports/main.go:497:10 else if after break: fixed
+tools cmd/goyacc/yacc.go:1915:11 exit in else ending in break: fixed
 tools cmd/html2article/conv.go:85:10 else if after break: fixed
 tools cmd/present/dir.go:49:9 else if after return: fixed
 tools cmd/signature-fuzzer/fuzz-runner/runner.go:210:9 else after return: fixed
+tools cmd/signature-fuzzer/internal/fuzz-generator/generator.go:866:10 exit in else ending in return: fixed
 tools cmd/signature-fuzzer/internal/fuzz-generator/generator.go:1444:9 else if after return: fixed
 tools cmd/signature-fuzzer/internal/fuzz-generator/generator.go:1506:12 else after continue: fixed
 tools cmd/signature-fuzzer/internal/fuzz-generator/generator.go:1540:11 else after continue: fixed
 tools cmd/signature-fuzzer/internal/fuzz-generator/generator.go:1611:11 else after continue: fixed
+tools cmd/signature-fuzzer/internal/fuzz-generator/generator.go:1860:10 exit in else ending in return: fixed
 tools cmd/splitdwarf/internal/macho/fat.go:49:9 else if after return: fixed
 tools cmd/splitdwarf/internal/macho/fat.go:57:10 else after return: fixed
 tools cmd/splitdwarf/splitdwarf.go:377:9 else after call: fixed
+tools cmd/ssadump/main.go:145:9 exit in else ending in return: fixed
 tools container/intsets/sparse.go:70:9 else after return: fixed
 tools container/intsets/sparse.go:80:9 else after return: fixed
 tools container/intsets/sparse.go:90:9 else after return: fixed
+tools go/analysis/internal/checker/fix_test.go:247:14 exit in else ending in call: fixed
 tools go/analysis/internal/checker/fix_test.go:368:13 else if after call: fixed
 tools go/analysis/passes/asmdecl/asmdecl.go:319:11 else if after continue: fixed
+tools go/analysis/passes/bools/bools.go:177:10 exit in else ending in break: fixed
 tools go/analysis/passes/modernize/modernize.go:199:9 else after return: fixed
 tools go/analysis/passes/modernize/stditerators.go:361:11 else if after call: fixed
 tools go/analysis/passes/modernize/stringscut.go:644:12 else if after return: fixed
@@ -41,6 +47,7 @@ tools go/callgraph/vta/internal/trie/builder.go:245:9 else if after return: fixe
 tools go/callgraph/vta/internal/trie/builder.go:441:9 else if after return: fixed
 tools go/callgraph/vta/internal/trie/builder.go:443:9 else if after return: fixed
 tools go/callgraph/vta/internal/trie/builder.go:487:10 else if after return: fixed
+tools go/packages/packages.go:279:10 exit in else ending in return: fixed
 tools go/packages/packages.go:321:10 else if after return: fixed
 tools go/packages/packages.go:1602:9 else after return: fixed
 tools go/packages/packages_test.go:741:10 else if after continue: fixed
@@ -48,12 +55,14 @@ tools go/packages/packages_test.go:889:10 else if after continue: fixed
 tools go/packages/packages_test.go:1007:10 else if after continue: fixed
 tools go/packages/packages_test.go:1747:13 else if after call: fixed
 tools go/packages/packages_test.go:3791:9 else after return: fixed
+tools go/ssa/builder.go:754:11 exit in else ending in call: fixed
 tools go/ssa/emit.go:296:13 else after return: fixed
 tools go/ssa/emit.go:302:12 else after return: fixed
 tools go/ssa/interp/interp.go:458:10 else after call: fixed
 tools go/ssa/interp/interp_test.go:185:9 else if after call: not fixed: "err" is already declared in the enclosing block
 tools go/ssa/interp/ops.go:1171:10 else after call: fixed
 tools go/ssa/sanity.go:348:10 else if after continue: fixed
+tools go/ssa/sanity.go:663:11 exit in else ending in call: fixed
 tools gopls/internal/analysis/fillswitch/fillswitch.go:231:9 else after return: fixed
 tools gopls/internal/analysis/ptrtoerror/ptrtoerror.go:240:9 else after return: fixed
 tools gopls/internal/analysis/unusedfunc/unusedfunc.go:286:9 else after return: fixed
@@ -64,7 +73,9 @@ tools gopls/internal/cache/check.go:1965:10 else after return: fixed
 tools gopls/internal/cache/errors.go:40:9 else if after return: not fixed: "err" is already declared in the enclosing block
 tools gopls/internal/cache/mod_tidy.go:166:10 else if after continue: fixed
 tools gopls/internal/cache/parse_cache.go:189:11 else after continue: fixed
+tools gopls/internal/cache/parse_cache.go:280:10 exit in else ending in break: fixed
 tools gopls/internal/cache/snapshot.go:772:9 else after return: fixed
+tools gopls/internal/cmd/codeaction.go:194:11 exit in else ending in return: fixed
 tools gopls/internal/cmd/codeaction.go:209:10 else after return: fixed
 tools gopls/internal/cmd/mcp.go:212:9 else after return: fixed
 tools gopls/internal/cmd/serve.go:133:10 else after return: not fixed: "err" is already declared in the enclosing block
@@ -82,6 +93,9 @@ tools gopls/internal/golang/completion/completion.go:859:9 else if after return:
 tools gopls/internal/golang/completion/completion.go:864:9 else if after return: fixed
 tools gopls/internal/golang/completion/completion.go:868:9 else if after return: fixed
 tools gopls/internal/golang/completion/completion.go:2478:10 else if after return: fixed
+tools gopls/internal/golang/completion/completion.go:2813:11 exit in else ending in return: fixed
+tools gopls/internal/golang/completion/completion.go:2821:11 exit in else ending in return: fixed
+tools gopls/internal/golang/completion/completion.go:2828:11 exit in else ending in return: fixed
 tools gopls/internal/golang/completion/completion.go:3125:9 else if after return: fixed
 tools gopls/internal/golang/completion/definition.go:79:9 else if after return: fixed
 tools gopls/internal/golang/completion/definition.go:86:9 else if after return: fixed
@@ -113,6 +127,7 @@ tools gopls/internal/golang/stub.go:95:11 else if after continue: fixed
 tools gopls/internal/golang/stubmethods/stubcalledfunc.go:249:9 else after return: fixed
 tools gopls/internal/golang/util.go:294:9 else after return: fixed
 tools gopls/internal/mcp/mcp.go:98:9 else after return: fixed
+tools gopls/internal/mcp/references.go:62:10 exit in else ending in continue: fixed
 tools gopls/internal/protocol/edits.go:177:10 else after return: fixed
 tools gopls/internal/protocol/form.go:255:9 else if after return: fixed
 tools gopls/internal/protocol/generate/typenames.go:141:10 else if after call: fixed
@@ -129,6 +144,7 @@ tools gopls/internal/server/command.go:1978:11 else after return: fixed
 tools gopls/internal/server/command.go:2125:10 else if after return: fixed
 tools gopls/internal/server/diagnostics.go:709:11 else after return: fixed
 tools gopls/internal/server/diagnostics.go:725:13 else after return: fixed
+tools gopls/internal/server/prompt.go:405:10 exit in else ending in return: fixed
 tools gopls/internal/settings/settings_test.go:234:10 else if after continue: fixed
 tools gopls/internal/template/completion.go:217:10 else if after break: fixed
 tools gopls/internal/template/completion.go:219:10 else if after continue: fixed
@@ -159,6 +175,7 @@ tools internal/diff/lcs/old.go:259:10 else if after continue: fixed
 tools internal/flow/lattice.go:59:9 else if after return: fixed
 tools internal/fmtstr/parse.go:266:11 else after return: fixed
 tools internal/gcimporter/exportdata.go:330:10 else after goto: fixed
+tools internal/gcimporter/iexport.go:1070:11 exit in else ending in call: fixed
 tools internal/gcimporter/iimport.go:165:10 else after call: fixed
 tools internal/gcimporter/iimport.go:267:10 else if after call: fixed
 tools internal/gcimporter/iimport.go:269:10 else if after call: fixed
@@ -170,6 +187,7 @@ tools internal/refactor/delete.go:123:10 else after return: fixed
 tools internal/refactor/delete.go:204:10 else after return: fixed
 tools internal/refactor/delete.go:317:12 else if after break: fixed
 tools internal/refactor/delete.go:408:11 else if after continue: fixed
+tools internal/refactor/inline/callee.go:818:10 exit in else ending in break: fixed
 tools internal/refactor/inline/inline.go:1032:11 else if after return: fixed
 tools internal/refactor/inline/inline.go:2715:11 else after switch: fixed
 tools internal/refactor/inline/inline_test.go:2071:12 else if after call: fixed
@@ -184,6 +202,7 @@ tools refactor/rename/check.go:222:10 else if after return: fixed
 tools refactor/rename/check.go:303:9 else if after return: fixed
 tools refactor/rename/check.go:305:9 else after return: fixed
 tools refactor/rename/spec.go:380:12 else if after return: fixed
+tools refactor/satisfy/find.go:444:10 exit in else ending in return: fixed
 grpc-go attributes/attributes.go:142:9 else if after return: fixed
 grpc-go balancer/ringhash/picker_test.go:289:11 else if after return: fixed
 grpc-go benchmark/latency/latency.go:185:9 else if after return: fixed
@@ -198,6 +217,18 @@ grpc-go credentials/oauth/oauth_test.go:29:9 else if after return: fixed
 grpc-go credentials/tls.go:182:10 else if after return: fixed
 grpc-go default_dial_option_server_option_test.go:35:9 else after call: fixed
 grpc-go default_dial_option_server_option_test.go:54:9 else after call: not fixed: "err" is also moved into the enclosing block by an earlier fix
+grpc-go examples/features/metadata/client/main.go:61:9 exit in else ending in call: fixed
+grpc-go examples/features/metadata/client/main.go:69:9 exit in else ending in call: not fixed: "ok" is also moved into the enclosing block by an earlier fix
+grpc-go examples/features/metadata/client/main.go:80:9 exit in else ending in call: not fixed: "ok" is also moved into the enclosing block by an earlier fix; "t" is also moved into the enclosing block by an earlier fix
+grpc-go examples/features/metadata/client/main.go:108:9 exit in else ending in call: fixed
+grpc-go examples/features/metadata/client/main.go:116:9 exit in else ending in call: not fixed: "ok" is also moved into the enclosing block by an earlier fix
+grpc-go examples/features/metadata/client/main.go:143:9 exit in else ending in call: not fixed: "ok" is also moved into the enclosing block by an earlier fix; "t" is also moved into the enclosing block by an earlier fix
+grpc-go examples/features/metadata/client/main.go:171:9 exit in else ending in call: fixed
+grpc-go examples/features/metadata/client/main.go:179:9 exit in else ending in call: not fixed: "ok" is also moved into the enclosing block by an earlier fix
+grpc-go examples/features/metadata/client/main.go:206:9 exit in else ending in call: not fixed: "ok" is also moved into the enclosing block by an earlier fix; "t" is also moved into the enclosing block by an earlier fix
+grpc-go examples/features/metadata/client/main.go:235:10 exit in else ending in call: fixed
+grpc-go examples/features/metadata/client/main.go:243:10 exit in else ending in call: not fixed: "ok" is also moved into the enclosing block by an earlier fix
+grpc-go examples/features/metadata/client/main.go:279:9 exit in else ending in call: fixed
 grpc-go gcp/observability/config.go:136:9 else if after return: fixed
 grpc-go grpclog/internal/loggerv2_test.go:66:10 else if after call: fixed
 grpc-go grpclog/internal/loggerv2_test.go:72:10 else if after call: fixed
@@ -227,11 +258,21 @@ grpc-go security/advancedtls/crl.go:331:11 else if after return: fixed
 grpc-go security/advancedtls/crl.go:340:11 else if after return: fixed
 grpc-go stats/opencensus/e2e_test.go:257:12 else if after break: fixed
 grpc-go stats/stats_test.go:422:10 else if after return: fixed
+grpc-go stats/stats_test.go:534:10 exit in else ending in call: fixed
+grpc-go stats/stats_test.go:541:10 exit in else ending in call: not fixed: "ok" is also moved into the enclosing block by an earlier fix
+grpc-go stats/stats_test.go:648:10 exit in else ending in call: fixed
+grpc-go stream.go:365:11 exit in else ending in return: fixed
 grpc-go stream.go:1965:9 else if after return: not fixed: "err" is already declared in the enclosing block
 grpc-go test/balancer_test.go:597:10 else if after call: fixed
+grpc-go test/bufconn/bufconn_test.go:240:10 exit in else ending in call: fixed
+grpc-go test/bufconn/bufconn_test.go:256:10 exit in else ending in call: fixed
+grpc-go test/bufconn/bufconn_test.go:281:10 exit in else ending in call: fixed
+grpc-go test/bufconn/bufconn_test.go:302:10 exit in else ending in call: fixed
 grpc-go test/config_selector_test.go:155:11 else if after call: fixed
 grpc-go test/end2end_test.go:2477:9 else after call: not fixed: "err" is already declared in the enclosing block; "err" is already declared in the enclosing block
+grpc-go test/end2end_test.go:6605:9 exit in else ending in call: fixed
 grpc-go test/goaway_test.go:523:10 else if after break: fixed
+grpc-go test/local_creds_test.go:62:11 exit in else ending in return: not fixed: "ok" is already declared in the enclosing block
 grpc-go test/retry_test.go:581:11 else if after call: not fixed: "err" is already declared in the enclosing block
 grpc-go test/retry_test.go:583:11 else if after call: not fixed: an earlier "else" in the chain is not fixed automatically
 grpc-go test/retry_test.go:597:11 else if after call: not fixed: "err" is already declared in the enclosing block
@@ -240,15 +281,23 @@ grpc-go test/xds/xds_client_retry_test.go:185:12 else if after continue: fixed
 grpc-go test/xds/xds_client_sni_test.go:398:9 else if after call: not fixed: "err" is already declared in the enclosing block
 grpc-go xds/server_ext_test.go:137:12 else if after return: fixed
 terraform internal/addrs/action_test.go:406:12 else after call: fixed
+terraform internal/addrs/provider_config.go:178:9 exit in else ending in return: fixed
+terraform internal/addrs/provider_config.go:191:10 exit in else ending in return: fixed
+terraform internal/addrs/provider_config.go:309:9 exit in else ending in return: fixed
+terraform internal/addrs/provider_config.go:322:10 exit in else ending in return: fixed
 terraform internal/addrs/provider_config.go:395:10 else after return: fixed
 terraform internal/addrs/provider_config_test.go:146:11 else after return: fixed
 terraform internal/addrs/remove_target.go:43:9 else if after return: fixed
+terraform internal/backend/backendrun/unparsed_value.go:110:10 exit in else ending in continue: fixed
 terraform internal/backend/local/test.go:276:9 else if after return: fixed
+terraform internal/backend/remote-state/consul/client.go:195:10 exit in else ending in return: fixed
 terraform internal/backend/remote-state/consul/client.go:265:9 else if after return: fixed
 terraform internal/backend/remote-state/gcs/client.go:39:10 else after return: fixed
 terraform internal/backend/remote-state/kubernetes/client.go:268:10 else after return: fixed
 terraform internal/backend/remote-state/oci/client.go:73:10 else after return: fixed
 terraform internal/backend/remote-state/oss/backend.go:552:11 else after return: fixed
+terraform internal/backend/remote-state/oss/backend.go:608:9 exit in else ending in return: fixed
+terraform internal/backend/remote-state/oss/backend_state.go:97:10 exit in else ending in break: fixed
 terraform internal/backend/remote-state/oss/client.go:421:9 else if after return: not fixed: "err" is already declared in the enclosing block
 terraform internal/backend/remote-state/pg/backend_test.go:170:11 else if after return: fixed
 terraform internal/backend/remote-state/pg/backend_test.go:186:11 else if after return: fixed
@@ -268,12 +317,20 @@ terraform internal/backend/remote-state/s3/backend_test.go:308:9 else if after c
 terraform internal/backend/remote-state/s3/backend_test.go:547:12 else if after call: fixed
 terraform internal/backend/remote-state/s3/backend_test.go:804:12 else if after call: fixed
 terraform internal/backend/remote-state/s3/backend_test.go:965:12 else if after call: fixed
+terraform internal/backend/remote-state/s3/backend_test.go:1492:12 exit in else ending in call: fixed
+terraform internal/backend/remote-state/s3/backend_test.go:2242:9 exit in else ending in call: fixed
+terraform internal/backend/remote-state/s3/backend_test.go:2297:9 exit in else ending in call: fixed
+terraform internal/backend/remote-state/s3/backend_test.go:2352:9 exit in else ending in call: fixed
 terraform internal/backend/remote-state/s3/backend_test.go:2996:9 else after call: fixed
+terraform internal/backend/remote-state/s3/backend_test.go:3010:10 exit in else ending in call: fixed
+terraform internal/backend/remote-state/s3/backend_test.go:3462:9 exit in else ending in call: fixed
 terraform internal/backend/remote-state/s3/backend_test.go:3812:9 else after call: fixed
 terraform internal/backend/remote-state/s3/client.go:798:9 else after return: fixed
 terraform internal/backend/remote-state/s3/client_test.go:398:10 else if after call: fixed
 terraform internal/backend/remote-state/s3/client_test.go:634:11 else if after call: fixed
 terraform internal/backend/remote-state/s3/validate.go:235:12 else if after return: fixed
+terraform internal/backend/testing.go:85:10 exit in else ending in call: fixed
+terraform internal/cloud/backend.go:1234:9 exit in else ending in return: fixed
 terraform internal/cloud/backend_plan.go:557:11 else if after return: fixed
 terraform internal/cloud/backend_show.go:35:9 else if after return: fixed
 terraform internal/cloud/backend_show.go:71:10 else after return: fixed
@@ -289,6 +346,7 @@ terraform internal/cloud/cloudplan/saved_plan.go:59:9 else if after return: fixe
 terraform internal/cloud/cloudplan/saved_plan_test.go:75:9 else after call: not fixed: "err" is already declared in the enclosing block
 terraform internal/cloud/state.go:627:9 else if after return: fixed
 terraform internal/cloud/tfe_client_mock.go:1851:11 else after return: fixed
+terraform internal/cloud/tfe_client_mock.go:2024:11 exit in else ending in break: fixed
 terraform internal/cloudplugin/cloudplugin1/grpc_client.go:44:10 else if after break: fixed
 terraform internal/command/arguments/apply_test.go:206:12 else if after call: fixed
 terraform internal/command/arguments/apply_test.go:265:12 else if after call: fixed
@@ -313,9 +371,17 @@ terraform internal/command/jsonstate/state_test.go:746:11 else if after return: 
 terraform internal/command/login.go:281:10 else after return: fixed
 terraform internal/command/login.go:712:9 else if after return: fixed
 terraform internal/command/meta.go:782:10 else if after return: fixed
+terraform internal/command/meta_backend.go:168:10 exit in else ending in return: fixed
 terraform internal/command/meta_backend.go:270:10 else after return: fixed
+terraform internal/command/meta_backend.go:1221:14 exit in else ending in return: fixed
+terraform internal/command/meta_backend.go:1226:13 exit in else ending in return: fixed
+terraform internal/command/meta_backend.go:1274:14 exit in else ending in return: fixed
+terraform internal/command/meta_backend.go:1279:13 exit in else ending in return: fixed
+terraform internal/command/meta_backend.go:2304:12 exit in else ending in return: fixed
 terraform internal/command/meta_backend.go:3095:9 else after return: fixed
+terraform internal/command/meta_backend_migrate.go:330:10 exit in else ending in return: fixed
 terraform internal/command/meta_backend_migrate.go:667:10 else if after return: not fixed: "err" is already declared in the enclosing block
+terraform internal/command/meta_providers.go:547:11 exit in else ending in return: fixed
 terraform internal/command/views/apply_test.go:78:9 else if after call: fixed
 terraform internal/command/views/init_test.go:87:10 else if after call: fixed
 terraform internal/command/views/json/diagnostic.go:483:11 else after switch: fixed
@@ -324,6 +390,8 @@ terraform internal/command/views/plan_test.go:31:9 else if after call: fixed
 terraform internal/command/views/refresh_test.go:27:9 else if after call: fixed
 terraform internal/command/views/view.go:242:9 else after return: fixed
 terraform internal/command/workspace_command_test.go:818:9 else if after call: fixed
+terraform internal/command/workspace_select.go:89:10 exit in else ending in return: fixed
+terraform internal/configs/configschema/coerce_value_test.go:677:11 exit in else ending in return: fixed
 terraform internal/configs/configschema/empty_value.go:46:10 else after return: fixed
 terraform internal/configs/configschema/empty_value.go:52:10 else after return: fixed
 terraform internal/configs/configschema/path.go:23:12 else if after return: fixed
@@ -340,6 +408,7 @@ terraform internal/configs/parser_config_dir.go:326:9 else if after return: fixe
 terraform internal/configs/parser_config_dir.go:328:9 else if after return: fixed
 terraform internal/configs/parser_config_dir.go:330:9 else if after return: fixed
 terraform internal/configs/parser_config_dir.go:332:9 else after return: fixed
+terraform internal/configs/parser_file_matcher.go:218:10 exit in else ending in return: fixed
 terraform internal/configs/provider_test.go:88:11 else after return: fixed
 terraform internal/configs/provider_test.go:142:11 else after return: fixed
 terraform internal/configs/test_file.go:450:12 else after continue: fixed
@@ -351,6 +420,9 @@ terraform internal/getmodules/moduleaddrs/detect_s3.go:31:10 else if after retur
 terraform internal/getmodules/moduleaddrs/detect_s3.go:33:10 else after return: fixed
 terraform internal/getproviders/multi_source.go:73:10 else after return: fixed
 terraform internal/getproviders/package_authentication_test.go:68:9 else after return: fixed
+terraform internal/grpcwrap/provider.go:94:9 exit in else ending in return: fixed
+terraform internal/grpcwrap/provider6.go:113:9 exit in else ending in return: fixed
+terraform internal/grpcwrap/provider6.go:1085:11 exit in else ending in call: fixed
 terraform internal/initwd/module_install.go:111:9 else if after return: fixed
 terraform internal/initwd/module_install_test.go:142:9 else after call: fixed
 terraform internal/initwd/module_install_test.go:163:9 else after call: fixed
@@ -368,6 +440,7 @@ terraform internal/lang/funcs/cidr_test.go:161:11 else if after return: fixed
 terraform internal/lang/funcs/cidr_test.go:268:11 else if after return: fixed
 terraform internal/lang/funcs/cidr_test.go:389:11 else if after return: fixed
 terraform internal/lang/funcs/collection.go:263:11 else if after return: fixed
+terraform internal/lang/funcs/collection.go:533:12 exit in else ending in call: fixed
 terraform internal/lang/funcs/collection_test.go:272:11 else if after return: fixed
 terraform internal/lang/funcs/collection_test.go:361:11 else if after return: fixed
 terraform internal/lang/funcs/collection_test.go:449:11 else if after return: fixed
@@ -421,13 +494,17 @@ terraform internal/lang/funcs/string_test.go:74:11 else if after return: fixed
 terraform internal/lang/funcs/string_test.go:133:11 else if after return: fixed
 terraform internal/lang/funcs/string_test.go:250:11 else if after return: fixed
 terraform internal/lang/globalref/analyzer_meta_references.go:241:10 else if after return: fixed
+terraform internal/legacy/helper/schema/resource_diff.go:352:9 exit in else ending in return: fixed
 terraform internal/legacy/helper/schema/resource_timeout.go:80:11 else after return: fixed
+terraform internal/legacy/helper/schema/resource_timeout.go:88:12 exit in else ending in return: fixed
 terraform internal/legacy/helper/schema/resource_timeout_test.go:80:11 else after return: fixed
 terraform internal/legacy/helper/schema/schema.go:356:9 else after return: fixed
+terraform internal/legacy/helper/schema/schema.go:1690:11 exit in else ending in return: fixed
 terraform internal/moduledeps/module.go:156:9 else if after return: fixed
 terraform internal/moduletest/graph/apply.go:204:9 else after return: fixed
 terraform internal/moduletest/graph/eval_context.go:407:10 else after continue: fixed
 terraform internal/moduletest/graph/node_test_run.go:278:9 else after return: fixed
+terraform internal/moduletest/mocking/values.go:233:10 exit in else ending in return: fixed
 terraform internal/moduletest/run.go:385:12 else if after continue: fixed
 terraform internal/moduletest/run.go:407:12 else after continue: fixed
 terraform internal/plans/changes.go:689:10 else after return: fixed
@@ -436,6 +513,10 @@ terraform internal/plans/planfile/wrapped.go:37:9 else after return: fixed
 terraform internal/plans/planfile/wrapped.go:46:9 else after return: fixed
 terraform internal/plans/planfile/wrapped.go:57:9 else after return: fixed
 terraform internal/plans/planfile/wrapped.go:68:9 else after return: fixed
+terraform internal/plugin/grpc_provider.go:146:10 exit in else ending in return: fixed
+terraform internal/plugin/grpc_provider.go:187:9 exit in else ending in return: not fixed: "err" is already declared in the enclosing block
+terraform internal/plugin6/grpc_provider.go:158:10 exit in else ending in return: fixed
+terraform internal/plugin6/grpc_provider.go:199:9 exit in else ending in return: not fixed: "err" is already declared in the enclosing block
 terraform internal/promising/promise.go:235:10 else after return: fixed
 terraform internal/providercache/cached_provider_test.go:111:11 else if after call: fixed
 terraform internal/providercache/dir_modify.go:71:10 else if after return: fixed
@@ -458,6 +539,7 @@ terraform internal/stacks/stackmigrate/resources.go:175:9 else after return: fix
 terraform internal/stacks/stackmigrate/resources.go:210:9 else after return: fixed
 terraform internal/stacks/stackruntime/internal/stackeval/input_variable.go:546:10 else if after return: fixed
 terraform internal/stacks/stackruntime/internal/stackeval/input_variable_config.go:121:9 else after return: fixed
+terraform internal/stacks/stackruntime/internal/stackeval/provider_expressions.go:348:9 exit in else ending in return: fixed
 terraform internal/stacks/stackruntime/internal/stackeval/stack.go:592:11 else after return: fixed
 terraform internal/stacks/stackruntime/internal/stackeval/stack_config.go:585:11 else after return: fixed
 terraform internal/states/remote/state_test.go:556:12 else if after call: fixed
@@ -470,8 +552,10 @@ terraform internal/states/statemgr/filesystem_test.go:329:9 else if after return
 terraform internal/states/statemgr/filesystem_test.go:331:9 else after call: fixed
 terraform internal/terraform/config_graph_module_test.go:188:9 else after call: fixed
 terraform internal/terraform/config_graph_module_test.go:212:9 else after call: not fixed: "exists" is also moved into the enclosing block by an earlier fix; "name" is also moved into the enclosing block by an earlier fix
+terraform internal/terraform/context_apply.go:135:10 exit in else ending in return: fixed
 terraform internal/terraform/context_apply2_test.go:79:9 else after call: fixed
 terraform internal/terraform/context_apply_action_test.go:303:12 else after return: fixed
+terraform internal/terraform/context_apply_deferred_test.go:4079:14 exit in else ending in nested if: not fixed: another fix inside the "if" statement has to be applied first
 terraform internal/terraform/context_apply_deferred_test.go:4082:15 else after call: fixed
 terraform internal/terraform/context_apply_test.go:816:9 else after call: fixed
 terraform internal/terraform/context_apply_test.go:952:9 else after call: fixed
@@ -517,7 +601,11 @@ terraform internal/terraform/context_apply_test.go:10743:9 else after call: not 
 terraform internal/terraform/context_apply_test.go:10819:9 else if after call: fixed
 terraform internal/terraform/context_apply_test.go:10825:9 else if after call: not fixed: "ok" is also moved into the enclosing block by an earlier fix; "pm" is also moved into the enclosing block by an earlier fix
 terraform internal/terraform/context_apply_test.go:12737:9 else after call: fixed
+terraform internal/terraform/context_eval_test.go:196:9 exit in else ending in call: fixed
+terraform internal/terraform/context_eval_test.go:291:9 exit in else ending in call: fixed
 terraform internal/terraform/context_init_dyn_provider_test.go:443:11 else if after call: fixed
+terraform internal/terraform/context_plan2_test.go:693:9 exit in else ending in call: fixed
+terraform internal/terraform/context_plan2_test.go:704:9 exit in else ending in call: not fixed: "rc" is also moved into the enclosing block by an earlier fix
 terraform internal/terraform/context_plan2_test.go:8049:9 else after call: fixed
 terraform internal/terraform/context_plan_actions_test.go:2107:14 else after return: fixed
 terraform internal/terraform/context_plan_ephemeral_test.go:833:11 else after return: fixed
@@ -527,14 +615,18 @@ terraform internal/terraform/context_plan_query_test.go:719:11 else after return
 terraform internal/terraform/context_validate_test.go:4479:12 else after call: fixed
 terraform internal/terraform/evaluate.go:471:9 else if after switch: fixed
 terraform internal/terraform/evaluate_valid.go:172:9 else after return: fixed
+terraform internal/terraform/node_output.go:717:10 exit in else ending in return: fixed
 terraform internal/terraform/node_resource_abstract_instance.go:394:10 else after call: fixed
+terraform internal/terraform/node_resource_abstract_instance.go:1134:11 exit in else ending in return: fixed
 terraform internal/terraform/node_resource_plan_instance.go:414:10 else after return: fixed
 terraform internal/terraform/node_resource_plan_partialexp.go:55:9 else if after return: fixed
 terraform internal/terraform/node_resource_plan_partialexp.go:57:9 else after return: fixed
+terraform internal/terraform/node_resource_plan_partialexp.go:284:10 exit in else ending in return: fixed
 terraform internal/terraform/node_root_variable_test.go:157:10 else after call: fixed
 terraform internal/terraform/providers.go:88:11 else after continue: fixed
 terraform internal/terraform/transform_module_variable.go:47:9 else after return: fixed
 terraform internal/terraform/variables.go:117:9 else after return: fixed
+terraform internal/tfdiags/diagnostic_extra.go:76:10 exit in else ending in return: fixed
 hugo cache/filecache/filecache_pruner_test.go:40:9 else if after call: not fixed: "err" is already declared in the enclosing block
 hugo commands/hugobuilder.go:114:9 else if after return: fixed
 hugo commands/hugobuilder.go:534:10 else if after continue: fixed
@@ -551,15 +643,23 @@ hugo common/version/version.go:201:10 else if after return: fixed
 hugo common/version/version.go:206:10 else if after return: fixed
 hugo config/allconfig/load.go:322:10 else after return: fixed
 hugo config/allconfig/load.go:375:11 else if after break: fixed
+hugo config/defaultConfigProvider.go:207:10 exit in else ending in call: fixed
+hugo config/defaultConfigProvider.go:362:11 exit in else ending in return: fixed
 hugo create/skeletons/skeletons.go:154:10 else after return: fixed
 hugo helpers/path.go:276:9 else after return: fixed
 hugo helpers/url.go:92:9 else after return: fixed
+hugo hugofs/rootmapping_fs.go:379:11 exit in else ending in continue: fixed
+hugo hugolib/content_map.go:195:10 exit in else ending in return: fixed
 hugo hugolib/content_map_page_contentnode.go:330:10 else after return: fixed
 hugo hugolib/hugo_sites.go:585:10 else after return: fixed
 hugo hugolib/hugo_sites_build.go:288:9 else if after return: fixed
 hugo hugolib/hugo_sites_build.go:415:11 else if after return: fixed
+hugo hugolib/page__meta.go:967:11 exit in else ending in call: fixed
 hugo hugolib/shortcode.go:163:10 else if after return: fixed
+hugo hugolib/shortcode.go:618:12 exit in else ending in return: fixed
 hugo hugolib/shortcode.go:680:11 else if after continue: fixed
+hugo hugolib/shortcode.go:689:13 exit in else ending in return: fixed
+hugo hugolib/shortcode.go:703:13 exit in else ending in return: fixed
 hugo hugolib/site.go:1367:11 else if after break: fixed
 hugo hugolib/site_render.go:151:12 else after continue: fixed
 hugo hugolib/site_render.go:164:13 else after continue: fixed
@@ -568,8 +668,10 @@ hugo hugolib/site_render.go:215:11 else after continue: fixed
 hugo hugolib/site_render.go:224:12 else after continue: fixed
 hugo hugolib/site_render.go:234:12 else after continue: fixed
 hugo identity/finder.go:215:9 else after return: fixed
+hugo internal/js/esbuild/resolve.go:231:13 exit in else ending in return: fixed
 hugo markup/goldmark/codeblocks/render.go:165:11 else after return: fixed
 hugo markup/goldmark/internal/extensions/attributes/attributes.go:144:11 else after return: fixed
+hugo modules/collect.go:863:12 exit in else ending in continue: fixed
 hugo navigation/menu.go:120:9 else if after return: fixed
 hugo navigation/menu.go:122:9 else after return: fixed
 hugo navigation/menu.go:292:11 else after return: fixed
@@ -585,24 +687,36 @@ hugo parser/pageparser/pagelexer_shortcode.go:318:10 else if after return: fixed
 hugo parser/pageparser/pageparser.go:82:10 else if after return: fixed
 hugo parser/pageparser/pageparser_intro_test.go:88:10 else after continue: fixed
 hugo resources/images/color.go:85:9 else after return: fixed
+hugo resources/images/config.go:314:11 exit in else ending in return: fixed
+hugo resources/images/image.go:291:10 exit in else ending in return: fixed
 hugo resources/page/page_markup.go:199:11 else after return: fixed
+hugo resources/page/pagegroup.go:452:12 exit in else ending in return: fixed
 hugo resources/page/pagemeta/page_frontmatter.go:458:10 else after return: fixed
+hugo resources/page/pagination_test.go:59:9 exit in else ending in call: not fixed: "groups" is already declared in the enclosing block
+hugo resources/page/pagination_test.go:74:9 exit in else ending in call: not fixed: "groups" is already declared in the enclosing block; "ok" is also moved into the enclosing block by an earlier fix
 hugo resources/page/permalinks.go:452:11 else after return: fixed
+hugo resources/page/permalinks.go:568:10 exit in else ending in return: fixed
 hugo tpl/collections/collections.go:446:10 else if after return: fixed
 hugo tpl/collections/collections.go:641:9 else if after return: fixed
 hugo tpl/collections/collections.go:643:9 else if after return: fixed
+hugo tpl/internal/go_templates/htmltemplate/escape.go:258:10 exit in else ending in call: fixed
 hugo tpl/internal/go_templates/htmltemplate/escape_test.go:2236:9 else if after call: fixed
 hugo tpl/internal/go_templates/htmltemplate/html.go:225:9 else if after return: fixed
 hugo tpl/internal/go_templates/htmltemplate/transition.go:59:10 else if after return: fixed
 hugo tpl/internal/go_templates/htmltemplate/transition.go:152:9 else if after return: fixed
 hugo tpl/internal/go_templates/htmltemplate/transition.go:164:9 else if after return: fixed
+hugo tpl/internal/go_templates/htmltemplate/transition.go:624:10 exit in else ending in return: fixed
+hugo tpl/internal/go_templates/texttemplate/hugo_template.go:556:11 exit in else ending in call: fixed
 hugo tpl/strings/strings.go:354:9 else if after return: fixed
 hugo tpl/strings/strings.go:356:9 else after return: fixed
 hugo tpl/tplimpl/templates.go:235:12 else if after break: fixed
+hugo tpl/transform/unmarshal.go:215:10 exit in else ending in return: fixed
 hugo transform/urlreplacers/absurlreplacer.go:231:10 else after break: fixed
 hugo watcher/filenotify/poller_test.go:270:12 else if after return: fixed
 prometheus discovery/aws/msk.go:538:9 else if after return: fixed
 prometheus discovery/consul/consul.go:356:9 else after for: fixed
+prometheus discovery/kubernetes/endpointslice.go:275:9 exit in else ending in return: fixed
+prometheus discovery/kubernetes/ingress.go:164:9 exit in else ending in return: fixed
 prometheus model/exemplar/exemplar.go:58:9 else if after return: fixed
 prometheus model/exemplar/exemplar.go:63:9 else if after return: fixed
 prometheus model/histogram/float_histogram.go:1477:12 else if after goto: fixed

@@ -46,7 +46,7 @@ func NestSwitchAssign(s string, x int) int {
 		default:
 			return 0
 		}
-	} else {
+	} else { // want `^Exit in "else": .* Invert the condition, leaving "if s != "" { ... }" followed by the block of statements$`
 		l := len(s)
 		switch {
 		case l > 5:
@@ -113,7 +113,7 @@ func NestTypeswitchAssign(v any, x int) int {
 		default:
 			return 0
 		}
-	} else {
+	} else { // want `^Exit in "else": .* Invert the condition, leaving "if x <= 0 { ... }" followed by the block of statements$`
 		switch t := v.(type) {
 		case string:
 			return len(t)

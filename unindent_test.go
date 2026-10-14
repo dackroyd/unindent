@@ -28,7 +28,8 @@ func TestAnalyzerFlags(t *testing.T) {
 	}{
 		{"noelseif", map[string]string{"else-if-after-exit": "false"}},
 		{"noelse", map[string]string{"else-after-exit": "false"}},
-		{"nochecks", map[string]string{"else-after-exit": "false", "else-if-after-exit": "false"}},
+		{"noexitinelse", map[string]string{"exit-in-else": "false"}},
+		{"nochecks", map[string]string{"else-after-exit": "false", "else-if-after-exit": "false", "exit-in-else": "false"}},
 	} {
 		t.Run(tt.pkg, func(t *testing.T) {
 			t.Parallel()
@@ -48,7 +49,7 @@ func TestNewAnalyzerFlags(t *testing.T) {
 
 	a, b := unindent.NewAnalyzer(), unindent.NewAnalyzer()
 
-	for _, name := range []string{"else-after-exit", "else-if-after-exit"} {
+	for _, name := range []string{"else-after-exit", "else-if-after-exit", "exit-in-else"} {
 		f := a.Flags.Lookup(name)
 		require.NotNil(t, f, name)
 		require.Equal(t, "true", f.DefValue, name)

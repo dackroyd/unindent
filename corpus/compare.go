@@ -16,6 +16,7 @@ type ifStmt struct {
 	If       position
 	stmt     *ast.IfStmt
 	inSelect bool
+	link     bool
 }
 
 type fileIfs struct {
@@ -77,7 +78,7 @@ func (x *ifIndex) file(proj, file string) *fileIfs {
 				_, inSelect = stack[i].(*ast.CommClause)
 			}
 
-			is := &ifStmt{If: pos(s.If), stmt: s, inSelect: inSelect}
+			is := &ifStmt{If: pos(s.If), stmt: s, inSelect: inSelect, link: child != s}
 			ifs.byIf[is.If] = is
 			ifs.byElse[pos(s.Else.Pos())] = is
 		}
@@ -100,6 +101,7 @@ func compare(projects []project, dirs map[string]string, findings []finding, rev
 	x := &ifIndex{dirs: dirs, files: map[string]*fileIfs{}}
 
 	unindentIfs := map[position]*ifStmt{}
+	unindentKinds := map[position]string{}
 	reviveRules := map[position][]string{}
 	reviveIfs := map[position]*ifStmt{}
 
@@ -113,6 +115,7 @@ func compare(projects []project, dirs map[string]string, findings []finding, rev
 		}
 
 		unindentIfs[is.If] = is
+		unindentKinds[is.If] = f.Kind
 	}
 
 	for _, rep := range revive {
@@ -152,7 +155,7 @@ func compare(projects []project, dirs map[string]string, findings []finding, rev
 		}
 
 		row(p.Project).unindentOnly++
-		unindentOnly[unindentReason(is)]++
+		unindentOnly[unindentReason(is, unindentKinds[p])]++
 	}
 
 	for p, is := range reviveIfs {
@@ -230,31 +233,40 @@ func writeCounts(b *strings.Builder, title string, counts map[string]int) {
 	}
 }
 
-// unindentReason describes what revive misses about an if statement only unindent reports.
-func unindentReason(is *ifStmt) string {
+// unindentReason describes what revive misses about an if statement only unindent reports, as a finding of kind. For
+// an exit in an else, revive's early-return looks at how the else block ends rather than the body.
+func unindentReason(is *ifStmt, kind string) string {
 	if is.inSelect {
 		return "in a select case"
 	}
 
-	if _, ok := is.stmt.Else.(*ast.IfStmt); ok {
+	branch, prefix := is.stmt.Body, ""
+
+	if els, ok := is.stmt.Else.(*ast.BlockStmt); ok && strings.HasPrefix(kind, exitInElseKind) {
+		branch, prefix = els, exitInElseKind+": "
+	} else if _, ok := is.stmt.Else.(*ast.IfStmt); ok {
 		return "else if chain"
 	}
 
-	switch lastStmt(is.stmt.Body).(type) {
+	switch lastStmt(branch).(type) {
 	case *ast.IfStmt, *ast.SwitchStmt, *ast.TypeSwitchStmt:
-		return "exits through a nested if, switch or type switch"
+		return prefix + "exits through a nested if, switch or type switch"
 	case *ast.ExprStmt:
-		return "ends in a call"
+		return prefix + "ends in a call"
 	case *ast.ForStmt, *ast.SelectStmt:
-		return "ends in a for or select that never ends"
+		return prefix + "ends in a for or select that never ends"
 	}
 
-	return "other"
+	return prefix + "other"
 }
 
 // reviveReason describes what unindent misses about an if statement only revive reports.
 func reviveReason(is *ifStmt, rules []string) string {
 	if !slices.ContainsFunc(rules, func(r string) bool { return r != "early-return" }) {
+		if is.link {
+			return "early-return on an else if"
+		}
+
 		return "early-return"
 	}
 

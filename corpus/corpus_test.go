@@ -128,6 +128,30 @@ func f(x int, c chan int) int {
 		return x
 	}
 
+	if x > 4 {
+		x++
+	} else {
+		panic(x)
+	}
+
+	if x > 5 {
+		x++
+	} else {
+		fatal()
+	}
+
+	return x
+}
+
+func g(x int) int {
+	if x > 0 {
+		x++
+	} else if x < 0 {
+		x--
+	} else {
+		return x
+	}
+
 	return x
 }
 `
@@ -145,15 +169,19 @@ func f(x int, c chan int) int {
 		{Pos: at(23, 9)},  // else after panic
 		{Pos: at(99, 1)},  // not on an if statement
 		{Pos: at(16, 10)}, // reported twice, counted once
+		{Pos: at(29, 9), Kind: "exit in else ending in return"}, // also reported by revive
+		{Pos: at(41, 9), Kind: "exit in else ending in call"},   // a helper that never returns
 	}
 	revive := []reviveReport{
 		{Pos: at(6, 9), Rule: "indent-error-flow"},
 		{Pos: at(27, 2), Rule: "early-return"},
+		{Pos: at(33, 2), Rule: "early-return"},
+		{Pos: at(51, 9), Rule: "early-return"}, // an else if link
 	}
 
 	got := compare([]project{{Name: "stdlib"}}, map[string]string{"stdlib": dir}, findings, revive)
 
-	if !strings.Contains(got, "\nstdlib   4         2       1     3              1\n") {
+	if !strings.Contains(got, "\nstdlib   6         4       2     4              2\n") {
 		t.Errorf("compare() has the wrong counts for stdlib in:\n%s", got)
 	}
 
@@ -161,7 +189,8 @@ func f(x int, c chan int) int {
 		"other: 1",
 		"in a select case: 1",
 		"ends in a call: 1",
-		"Reported by revive only:\n  early-return: 1",
+		"exit in else: ends in a call: 1",
+		"Reported by revive only:\n  early-return: 1\n  early-return on an else if: 1",
 		"not on an if statement with an else:\n  stdlib p.go:99:1 unindent\n",
 	} {
 		if !strings.Contains(got, want) {
@@ -452,6 +481,12 @@ func f(x int) int {
 		x++
 	}
 
+	if x > 5 {
+		x++
+	} else {
+		goto end
+	}
+
 end:
 	return x
 }
@@ -465,18 +500,22 @@ end:
 
 	for _, tt := range []struct {
 		line, col int
+		message   string
 		want      string
 	}{
-		{6, 9, "else if after return"},
-		{8, 9, "else after call"},
-		{19, 9, "else after switch"},
-		{28, 9, "else if after for"},
-		{30, 9, "else if after select"},
-		{32, 9, "else after goto"},
-		{4, 2, "not on an else"},
+		{6, 9, "", "else if after return"},
+		{8, 9, "", "else after call"},
+		{19, 9, "", "else after switch"},
+		{28, 9, "", "else if after for"},
+		{30, 9, "", "else if after select"},
+		{32, 9, "", "else after goto"},
+		{4, 2, "", "not on an else"},
+		{19, 9, `Exit in "else": ...`, "exit in else ending in other"},
+		{32, 9, `Exit in "else": ...`, "exit in else ending in other"},
+		{38, 9, `Exit in "else": ...`, "exit in else ending in goto"},
 	} {
 		pos := position{Project: "p", File: "p.go", Line: tt.line, Col: tt.col}
-		if got := findingKind(ifs.file("p", "p.go").byElse[pos]); got != tt.want {
+		if got := findingKind(ifs.file("p", "p.go").byElse[pos], tt.message); got != tt.want {
 			t.Errorf("findingKind() at %d:%d = %q, want %q", tt.line, tt.col, got, tt.want)
 		}
 	}

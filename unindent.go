@@ -21,12 +21,14 @@ import (
 const (
 	flagElseAfterExit   = "else-after-exit"
 	flagElseIfAfterExit = "else-if-after-exit"
+	flagExitInElse      = "exit-in-else"
 )
 
 // checks are the checks that are turned on.
 type checks struct {
 	elseAfterExit   bool
 	elseIfAfterExit bool
+	exitInElse      bool
 }
 
 type analyzer struct {
@@ -36,7 +38,7 @@ type analyzer struct {
 // NewAnalyzer which checks that whether code blocks can be unindented without changing behaviour. Every check is on;
 // its flag in the analyzer's Flags turns it off. Each analyzer has its own flags.
 func NewAnalyzer() *analysis.Analyzer {
-	a := &analyzer{checks: checks{elseAfterExit: true, elseIfAfterExit: true}}
+	a := &analyzer{checks: checks{elseAfterExit: true, elseIfAfterExit: true, exitInElse: true}}
 
 	an := &analysis.Analyzer{
 		Doc:      "Identifies unnecessarily indented code",
@@ -50,6 +52,8 @@ func NewAnalyzer() *analysis.Analyzer {
 		`report an "else" after a branch that always exits`)
 	an.Flags.BoolVar(&a.checks.elseIfAfterExit, flagElseIfAfterExit, true,
 		`report an "else if" after a branch that always exits`)
+	an.Flags.BoolVar(&a.checks.exitInElse, flagExitInElse, true,
+		`report an "else" that always exits after a branch that does not, which the inverted condition can exit first`)
 
 	return an
 }
@@ -75,7 +79,7 @@ type checker struct {
 }
 
 func (a *analyzer) run(pass *analysis.Pass) (interface{}, error) {
-	if !a.checks.elseAfterExit && !a.checks.elseIfAfterExit {
+	if a.checks == (checks{}) {
 		return analysis.Fact(nil), nil
 	}
 
@@ -130,21 +134,27 @@ func (a *analyzer) run(pass *analysis.Pass) (interface{}, error) {
 
 func (c *checker) analyze(stmt *ast.IfStmt, stack []ast.Node, parentInfo nodeInfo) nodeInfo {
 	parent, ok := stack[len(stack)-2].(*ast.IfStmt)
-	if ok && parent.Else == stmt && !parentInfo.Returns {
+	link := ok && parent.Else == stmt
+
+	if link && !parentInfo.Returns {
 		// This is an 'else if' where the 'if' doesn't return, so the 'else' is not redundant
 		return nodeInfo{}
 	}
 
 	if !c.ifAlwaysReturns(stmt) {
+		if !link && c.checks.exitInElse && c.elseBlockExits(stmt) && !c.nestsHappyPath(stmt) {
+			c.reportExitInElse(stmt, stack)
+		}
+
 		return nodeInfo{}
 	}
 
 	var dependent []string
-	if ok && parent.Else == stmt {
+	if link {
 		dependent = parentInfo.Dependent
 	}
 
-	dependent = slices.Concat(dependent, c.buildDependentExits(stmt))
+	dependent = slices.Concat(dependent, c.buildDependentExits(stmt.Body))
 
 	if c.reports(stmt) {
 		c.reportUnnecessaryElse(stmt, stack, dependent)
@@ -162,13 +172,13 @@ func (c *checker) reports(stmt *ast.IfStmt) bool {
 	return c.checks.elseAfterExit
 }
 
-// buildDependentExits returns the calls that never return only in some builds that stmt's body needs to exit, if it
-// does not exit in every build.
-func (c *checker) buildDependentExits(stmt *ast.IfStmt) []string {
+// buildDependentExits returns the calls that never return only in some builds that block needs to exit, if it does not
+// exit in every build.
+func (c *checker) buildDependentExits(block *ast.BlockStmt) []string {
 	c.strict, c.dependent = true, nil
 	defer func() { c.strict = false }()
 
-	if c.ifAlwaysReturns(stmt) {
+	if c.blockAlwaysReturns(block) {
 		return nil
 	}
 
@@ -767,6 +777,7 @@ func (c *checker) movedBefore(info *types.Info, enclosing ast.Node, head *ast.If
 
 // chainMovedNames returns the names that the fixes of the if/else chain at stmt move into the block holding it: the
 // initialisers they hoist, and the declarations of the else block they move up, including what fixes inside it move.
+// For an "else" that exits after a body that does not, they are the initialiser it hoists and what the body declares.
 // Only the fixes of checks that are on count, and a link after an "else if" keeps its initialiser when the "else if"
 // check is off.
 func (c *checker) chainMovedNames(info *types.Info, stmt ast.Stmt) []string {
@@ -775,11 +786,25 @@ func (c *checker) chainMovedNames(info *types.Info, stmt ast.Stmt) []string {
 	}
 
 	head, _ := stmt.(*ast.IfStmt)
-	link := head
+	if head == nil || head.Else == nil {
+		return nil
+	}
 
 	var names []string
 
-	for link != nil && c.ifAlwaysReturns(link) {
+	if !c.blockAlwaysReturns(head.Body) {
+		if !c.checks.exitInElse || !c.elseBlockExits(head) {
+			return nil
+		}
+
+		if s := info.Scopes[head]; s != nil && invertHoistsInit(info, head) {
+			names = append(names, s.Names()...)
+		}
+
+		return append(names, c.movedNames(info, head.Body)...)
+	}
+
+	for link := head; link != nil; {
 		hoists := c.reports(link) && (link == head || c.checks.elseIfAfterExit)
 		if s := info.Scopes[link]; s != nil && hoists && hoistsInit(link) {
 			names = append(names, s.Names()...)
@@ -788,6 +813,9 @@ func (c *checker) chainMovedNames(info *types.Info, stmt ast.Stmt) []string {
 		switch e := link.Else.(type) {
 		case *ast.IfStmt:
 			link = e
+			if !c.ifAlwaysReturns(link) {
+				link = nil
+			}
 		case *ast.BlockStmt:
 			if c.checks.elseAfterExit {
 				names = append(names, c.movedNames(info, e)...)
@@ -874,10 +902,8 @@ func elseUsesInit(stmt *ast.IfStmt) bool {
 // nodeSource returns the source text of n, comments included. Where the file cannot be read, it returns n formatted,
 // without its comments.
 func nodeSource(pass *analysis.Pass, n ast.Node) string {
-	if tf := pass.Fset.File(n.Pos()); tf != nil && pass.ReadFile != nil {
-		if src, err := pass.ReadFile(tf.Name()); err == nil && len(src) == tf.Size() {
-			return string(src[tf.Offset(n.Pos()):tf.Offset(n.End())])
-		}
+	if src, ok := source(pass, n.Pos(), n.End()); ok {
+		return src
 	}
 
 	return mustFormatNode(n)

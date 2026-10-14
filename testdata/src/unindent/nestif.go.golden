@@ -92,21 +92,21 @@ func NestIfDeep(s string, x int) int {
 func NestIfElseAssignDeep(s string, x int) int {
 	var y int
 
-	if s == "" {
-		if x > 0 {
-			l := len(s)
-			if l > 5 {
-				return x
-			}
-
-			// want `^Unnecessary "else": preceding conditions always end in a "return", "break", "continue", "goto", a call that never returns or a loop or select that never ends. Move variable declaration "l := len\(s\)" before the "if", and remove the "else" wrapping the block of statements$`
-			y = l
-		} else {
-			return 0
-		}
-	} else {
+	if s != "" { // want `^Exit in "else": .* Invert the condition, leaving "if s != "" { ... }" followed by the block of statements$`
 		return 1
 	}
+
+	if x <= 0 { // want `^Exit in "else": .* Invert the condition, leaving "if x <= 0 { ... }" followed by the block of statements$`
+		return 0
+	}
+
+	l := len(s)
+	if l > 5 {
+		return x
+	}
+
+	// want `^Unnecessary "else": preceding conditions always end in a "return", "break", "continue", "goto", a call that never returns or a loop or select that never ends. Move variable declaration "l := len\(s\)" before the "if", and remove the "else" wrapping the block of statements$`
+	y = l
 
 	return y
 }

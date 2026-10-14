@@ -69,8 +69,8 @@ func MaxAssignReturn(x, y int) int {
 
 	if x > y {
 		max = x
-	} else {
-		// Note: "else" required as "if" doesn't return, but it could be inverted or otherwise simplified if we can detect that in the future
+	} else { // want `^Exit in "else": the "else" block always ends in a "return", "break", "continue", "goto", a call that never returns or a loop or select that never ends, and the "if" block does not. Invert the condition, leaving "if x <= y { ... }" followed by the block of statements$`
+		// Note: only the "else" returns, so the condition can be inverted to return first
 		return y
 	}
 
@@ -85,7 +85,7 @@ func MaxAssignReturnMulti(x, y int) int {
 	} else if x == y {
 		return x
 	} else {
-		// Note: "else" required as "if" doesn't return, but it could be inverted or otherwise simplified if we can detect that in the future
+		// Note: "else" required, as the first branch doesn't return
 		return y
 	}
 

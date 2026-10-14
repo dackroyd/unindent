@@ -17,7 +17,7 @@ type finding struct {
 	edits     []analysis.TextEdit
 	conflicts []string
 	// copies says that the fix rewrites source text that other fixes may edit, such as an initialiser it moves before
-	// the "if", so it can only be applied once they are.
+	// the "if" or an else block it moves before the body, so it can only be applied once they are.
 	copies bool
 }
 

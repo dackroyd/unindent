@@ -50,10 +50,15 @@ what to change. `unindent` fills the gaps:
     and `Panic` functions.
 - **`else if` chains.** When a branch exits, the `else if` after it can start a new `if`. revive does not report chains.
 - **`select` cases.** revive skips `if` statements directly inside a `select` case.
+- **Exits in an `else`.** Like revive's `early-return`, `unindent` reports an `else` block that exits after a body that
+    does not, and inverts the condition so the `else` block exits first. It follows exits through nested statements and
+    calls here too, doesn't turn `x < y` into `x >= y` for floating point numbers, where NaN makes them differ, and
+    never nests the happy path under `err == nil`.
 - **Fixes.** Every report comes with a fix that `-fix` applies.
 
-On five large Go codebases, `unindent` reported 410 cases that revive's rules did not. revive reported 96 that
-`unindent` does not yet, so run both for now. [Comparison with other linters](docs/comparison.md) has the details, and
+On five large Go codebases, `unindent` reported 434 cases that revive's rules did not, and all but 6 of the 306 that
+revive reported: 5 are an `else if` that `unindent` leaves alone or reports once its chain is split, and 1 would nest
+the happy path under `err == nil`. [Comparison with other linters](docs/comparison.md) has the details, and
 [Projects](docs/projects.md) what `unindent` finds in each codebase and what its fixes do.
 
 ## Quick start
@@ -93,10 +98,11 @@ example `a.Flags.Set("else-if-after-exit", "false")`, and belong to that analyze
 
 ## Checks
 
-| Check                                                         | Reports                                       | Flag                  |
-| ------------------------------------------------------------- | --------------------------------------------- | --------------------- |
-| [Else after an exit](docs/checks.md#else-after-an-exit)       | An `else` after a branch that always exits    | `-else-after-exit`    |
-| [Else if after an exit](docs/checks.md#else-if-after-an-exit) | An `else if` after a branch that always exits | `-else-if-after-exit` |
+| Check                                                         | Reports                                                                                    | Flag                  |
+| ------------------------------------------------------------- | ------------------------------------------------------------------------------------------ | --------------------- |
+| [Else after an exit](docs/checks.md#else-after-an-exit)       | An `else` after a branch that always exits                                                 | `-else-after-exit`    |
+| [Else if after an exit](docs/checks.md#else-if-after-an-exit) | An `else if` after a branch that always exits                                              | `-else-if-after-exit` |
+| [Exit in an else](docs/checks.md#exit-in-an-else)             | An `else` that always exits after a branch that does not, fixed by inverting the condition | `-exit-in-else`       |
 
 ## Limitations
 

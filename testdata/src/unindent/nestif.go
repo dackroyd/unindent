@@ -88,10 +88,10 @@ func NestIfElseAssignDeep(s string, x int) int {
 			} else { // want `^Unnecessary "else": preceding conditions always end in a "return", "break", "continue", "goto", a call that never returns or a loop or select that never ends. Move variable declaration "l := len\(s\)" before the "if", and remove the "else" wrapping the block of statements$`
 				y = l
 			}
-		} else {
+		} else { // want `^Exit in "else": .* Invert the condition, leaving "if x <= 0 { ... }" followed by the block of statements$`
 			return 0
 		}
-	} else {
+	} else { // want `^Exit in "else": .* Invert the condition, leaving "if s != "" { ... }" followed by the block of statements$`
 		return 1
 	}
 

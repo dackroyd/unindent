@@ -40,14 +40,7 @@ func NestSwitchIncomplete(s string, x int) int {
 func NestSwitchAssign(s string, x int) int {
 	var value int
 
-	if s == "" {
-		switch {
-		case x > 0:
-			value = x
-		default:
-			return 0
-		}
-	} else {
+	if s != "" { // want `^Exit in "else": .* Invert the condition, leaving "if s != "" { ... }" followed by the block of statements$`
 		l := len(s)
 		switch {
 		case l > 5:
@@ -55,6 +48,13 @@ func NestSwitchAssign(s string, x int) int {
 		default:
 			return l
 		}
+	}
+
+	switch {
+	case x > 0:
+		value = x
+	default:
+		return 0
 	}
 
 	return value
@@ -106,16 +106,7 @@ func NestTypeswitchIncomplete(v any, x int) int {
 func NestTypeswitchAssign(v any, x int) int {
 	var value int
 
-	if x > 0 {
-		switch t := v.(type) {
-		case string:
-			value = -len(t)
-		case int:
-			return x * 2
-		default:
-			return 0
-		}
-	} else {
+	if x <= 0 { // want `^Exit in "else": .* Invert the condition, leaving "if x <= 0 { ... }" followed by the block of statements$`
 		switch t := v.(type) {
 		case string:
 			return len(t)
@@ -124,6 +115,15 @@ func NestTypeswitchAssign(v any, x int) int {
 		default:
 			return 1
 		}
+	}
+
+	switch t := v.(type) {
+	case string:
+		value = -len(t)
+	case int:
+		return x * 2
+	default:
+		return 0
 	}
 
 	return value

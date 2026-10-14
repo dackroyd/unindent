@@ -16,7 +16,8 @@ import (
 )
 
 // BenchmarkSynthetic analyzes generated code shaped to expose costs that grow faster than the code: long "else if"
-// chains whose initialisers move before the "if", blocks with many reported statements, and deep nesting.
+// chains whose initialisers move before the "if", blocks with many reported statements, and deep nesting, for both an
+// unnecessary "else" and an exit in an else.
 func BenchmarkSynthetic(b *testing.B) {
 	for _, bc := range []struct {
 		name string
@@ -26,6 +27,8 @@ func BenchmarkSynthetic(b *testing.B) {
 		{"chain", genChain, 14},
 		{"block", genBlock, 400},
 		{"nested", genNested, 40},
+		{"inverted", genInverted, 400},
+		{"nestedinverted", genNestedInverted, 40},
 	} {
 		b.Run(fmt.Sprintf("%s=%d", bc.name, bc.n), func(b *testing.B) {
 			var src strings.Builder
@@ -111,6 +114,36 @@ func genNested(src *strings.Builder, n int) {
 	}
 
 	src.WriteString("}\n")
+}
+
+// genInverted writes a function of n statements that each have an else that exits after a body that doesn't, whose
+// initialiser moves before the "if".
+func genInverted(src *strings.Builder, n int) {
+	src.WriteString("func Inverted() (int, error) {\n\ttotal := 0\n\n")
+
+	for i := range n {
+		fmt.Fprintf(src, "\tif v%d, err := f(total); err == nil {\n\t\tx%d := v%d * 2\n\t\ttotal += x%d\n", i, i, i, i)
+		src.WriteString("\t} else {\n\t\treturn 0, err\n\t}\n\n")
+	}
+
+	src.WriteString("\treturn total, nil\n}\n\n")
+}
+
+// genNestedInverted writes if statements nested n deep, each with an else that exits after a body that doesn't.
+func genNestedInverted(src *strings.Builder, n int) {
+	src.WriteString("func NestedInverted(x int) int {\n")
+
+	for i := range n {
+		indent := strings.Repeat("\t", i+1)
+		fmt.Fprintf(src, "%sif x != %d {\n%s\ty%d := x + %d\n", indent, i, indent, i, i)
+	}
+
+	for i := n - 1; i >= 0; i-- {
+		indent := strings.Repeat("\t", i+1)
+		fmt.Fprintf(src, "%s\tx += y%d\n%s} else {\n%s\treturn %d\n%s}\n", indent, i, indent, indent, i, indent)
+	}
+
+	src.WriteString("\treturn x\n}\n\n")
 }
 
 func writeFile(b *testing.B, name, content string) {
