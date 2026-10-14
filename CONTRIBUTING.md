@@ -3,6 +3,9 @@
 Bug reports, false positives and suggestions are welcome as [issues](https://github.com/dackroyd/unindent/issues). A
 false positive report is most useful with the smallest code that reproduces it.
 
+A new check starts as an issue. [`docs/check-policy.md`](docs/check-policy.md) lists the rules every check follows, so a
+proposal only discusses what is new about it, and what the issue and the pull request need.
+
 ## Setup
 
 Go 1.26 or later. [`.tool-versions`](.tool-versions) pins the version used for development, for
@@ -170,6 +173,7 @@ Update the documentation in the same change as the behaviour it describes:
 
 - [`README.md`](README.md): the problem, the quick start, usage and limitations.
 - [`docs/checks.md`](docs/checks.md): what each check reports and how it is fixed.
+- [`docs/check-policy.md`](docs/check-policy.md): the rules every check follows, and what adding one needs.
 - [`docs/comparison.md`](docs/comparison.md): coverage compared with other linters.
 - [`docs/golangci-lint.md`](docs/golangci-lint.md): the golangci-lint plugin, its settings and how its reports differ.
 - [`docs/projects.md`](docs/projects.md): generated from the large set's results, so record them rather than edit it.
