@@ -1,0 +1,3 @@
+kind: Fixed
+body: A file with many fixes is checked faster and with less memory, as each source file is read once per package rather than once for every fix.
+time: 2026-10-14T05:30:00.000000000Z

@@ -94,6 +94,10 @@ func (a *analyzer) run(pass *analysis.Pass) (interface{}, error) {
 		return nil, fmt.Errorf("unexpected analyzer type for build-dependent calls %T", pass.ResultOf[buildAnalyzer])
 	}
 
+	if pass.ReadFile != nil {
+		pass.ReadFile = cachedReadFile(pass.ReadFile)
+	}
+
 	c := &checker{pass: pass, cfgs: cfgs, builds: builds, checks: a.checks}
 
 	// Track the analysis of the stack to use when evaluating deeper elements.
@@ -886,4 +890,25 @@ func mustFormatNode(n any) string {
 	}
 
 	return buf.String()
+}
+
+// cachedReadFile returns readFile, reading each file once: the fixes and messages quote the source of a file many
+// times, and the driver's readFile reads it from disk each time.
+func cachedReadFile(readFile func(string) ([]byte, error)) func(string) ([]byte, error) {
+	type result struct {
+		content []byte
+		err     error
+	}
+
+	cache := map[string]result{}
+
+	return func(name string) ([]byte, error) {
+		r, ok := cache[name]
+		if !ok {
+			r.content, r.err = readFile(name)
+			cache[name] = r
+		}
+
+		return r.content, r.err
+	}
 }
