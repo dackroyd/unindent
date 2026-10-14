@@ -22,3 +22,6 @@ go.work
 
 # GoReleaser output
 dist/
+
+# golangci-lint built with the plugin by "golangci-lint custom"
+custom-gcl

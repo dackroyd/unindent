@@ -1,0 +1,61 @@
+package sample
+
+import (
+	"errors"
+	"strconv"
+
+	"example.com/sample/fail"
+)
+
+func ElseAfterExit(s string) (int, error) {
+	if s == "" {
+		return 0, errors.New("empty")
+	}
+
+	return strconv.Atoi(s)
+}
+
+func ExitInElse(d byte) int {
+	v := 0
+	if d < '0' || d > '9' {
+		fail.Exit("not a digit")
+	}
+
+	v = int(d - '0')
+	v *= 2
+	return v
+}
+
+func WrappingRest(xs []string) int {
+	total := 0
+	for _, x := range xs {
+		if x == "" {
+			continue
+		}
+
+		n := len(x)
+		total += n
+		total *= 2
+	}
+	return total
+}
+
+func AloneInIf(a, b bool, n int) int {
+	if a && b {
+		n++
+	}
+	if a && b {
+		if n > 0 {
+			n--
+		}
+	}
+	return n
+}
+
+func Suppressed(s string) int {
+	if s == "" {
+		return 0
+	} else { //nolint:unindent // Kept to show that nolint suppresses a finding.
+		return len(s)
+	}
+}

@@ -28,14 +28,15 @@ jobs:
         if: ${{ !contains(github.event.pull_request.labels.*.name, 'no changelog') }}
         run: |
           changed=$(git diff --name-only HEAD^1 HEAD)
-          code=$(printf '%s\n' "$changed" | grep -E '^([^/]+|cmd/.+)\.go$' | grep -v '_test\.go$' || true)
+          code=$(printf '%s\n' "$changed" | grep -E '^([^/]+|cmd/.+|gclplugin/[^/]+)\.go$' |
+            grep -v '_test\.go$' || true)
           if [ -z "$code" ]; then
-            echo "No change to the analyzer or CLI."
+            echo "No change to the analyzer, CLI or golangci-lint plugin."
             exit 0
           fi
           added=$(git diff --name-only --diff-filter=A HEAD^1 HEAD -- .changes/unreleased)
           if [ -z "$added" ]; then
-            echo "::error::This changes the analyzer or CLI, so it needs a changelog fragment: run" \
+            echo "::error::This changes the analyzer, CLI or plugin, so it needs a changelog fragment: run" \
               "\"go tool -modfile=tools/go.mod changie new\", or label it \"no changelog\" if users won't notice."
             printf 'Changed:\n%s\n' "$code"
             exit 1

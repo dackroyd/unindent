@@ -1,0 +1,7 @@
+# Builds golangci-lint with the plugin from this checkout, for check.sh and the Plugin CI job.
+version: v2.14.0
+name: custom-gcl
+plugins:
+  - module: github.com/dackroyd/unindent
+    import: github.com/dackroyd/unindent/gclplugin
+    path: ../../..

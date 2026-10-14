@@ -106,6 +106,51 @@ The analyzer is also available as a Go package, `unindent.NewAnalyzer()`, for us
 [`go/analysis`](https://pkg.go.dev/golang.org/x/tools/go/analysis) driver. Its flags are in the analyzer's `Flags`, for
 example `a.Flags.Set("else-if-after-exit", "false")`, and belong to that analyzer alone.
 
+## golangci-lint
+
+`unindent` is a [module plugin](https://golangci-lint.run/docs/plugins/module-plugins/) for golangci-lint, so it runs in
+a golangci-lint that `golangci-lint custom` builds with it. Add a `.custom-gcl.yaml` beside your `.golangci.yaml`, or,
+if you already build golangci-lint with other plugins, add the `unindent` entry to its `plugins`:
+
+```yaml
+version: v2.14.0
+name: custom-gcl
+plugins:
+  - module: github.com/dackroyd/unindent
+    import: github.com/dackroyd/unindent/gclplugin
+    version: v0.1.0
+```
+
+Enable the linter in `.golangci.yaml`, with any settings, named like the flags:
+
+```yaml
+version: "2"
+
+linters:
+  enable:
+    - unindent
+  settings:
+    custom:
+      unindent:
+        type: module
+        description: Identifies unnecessarily indented code
+        original-url: https://github.com/dackroyd/unindent
+        settings:
+          if-wrapping-rest-min-statements: 5
+```
+
+Then build and run it, `--fix` included:
+
+```sh
+golangci-lint custom
+./custom-gcl run ./...
+```
+
+[golangci-lint-action](https://github.com/golangci/golangci-lint-action) builds it by itself when it finds a
+`.custom-gcl.yaml`. See [docs/golangci-lint.md](docs/golangci-lint.md) for the settings and how golangci-lint's reports
+differ from the command's. Tested with golangci-lint v2.14.0 and no other plugins. All plugins' requirements are
+resolved together, so with others, [a CI run of the binary you build](docs/golangci-lint.md#compatibility) is the check.
+
 ## Checks
 
 | Check                                                         | Reports                                                                                                                                                       | Flag                                                    |
@@ -129,8 +174,8 @@ example `a.Flags.Set("else-if-after-exit", "false")`, and belong to that analyze
     `staticcheck` and `govet`'s `lostcancel`.
 
 When a fix would not compile or would change behaviour, the finding is reported without one, with the reason. See
-[when no fix is offered](docs/checks.md#when-no-fix-is-offered). Where golangci-lint runs `unindent` as a custom linter
-named `unindent`, `//nolint:unindent` suppresses a finding that should stay as it is.
+[when no fix is offered](docs/checks.md#when-no-fix-is-offered). In [golangci-lint](#golangci-lint), `//nolint:unindent`
+suppresses a finding that should stay as it is.
 
 ## Contributing
 

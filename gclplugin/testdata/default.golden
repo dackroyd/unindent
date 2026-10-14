@@ -1,0 +1,4 @@
+sample.go:13:9: Unnecessary "else": preceding conditions always end in a "return", "break", "continue", "goto", a call that never returns or a loop or select that never ends. Remove the "else" wrapping the block of statements (unindent)
+sample.go:23:9: Exit in "else": the "else" block always ends in a "return", "break", "continue", "goto", a call that never returns or a loop or select that never ends, and the "if" block does not. Invert the condition, leaving "if d < '0' || d > '9' { ... }" followed by the block of statements (unindent)
+sample.go:32:3: If wrapping the rest of the loop: the loop body ends in an "if" without an "else", whose block holds 3 statements. Invert the condition, leaving "if x == "" { continue }" followed by the block of statements (unindent)
+sample.go:42:2: If alone in an "if": the "if" block holds only another "if", and neither has an "else". Combine the conditions, leaving "if a && b { ... }" (unindent)

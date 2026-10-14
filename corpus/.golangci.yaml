@@ -1,0 +1,3 @@
+# The standard linters, so the repository's .golangci.yaml, which needs the golangci-lint that .custom-gcl.yaml
+# builds, does not apply to the corpus module.
+version: "2"

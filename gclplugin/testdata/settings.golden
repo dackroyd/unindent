@@ -1,0 +1,3 @@
+sample.go:13:9: Unnecessary "else": preceding conditions always end in a "return", "break", "continue", "goto", a call that never returns or a loop or select that never ends. Remove the "else" wrapping the block of statements (unindent)
+sample.go:42:2: If alone in an "if": the "if" block holds only another "if", and neither has an "else". Combine the conditions, leaving "if a && b { ... }" (unindent)
+sample.go:47:2: If alone in an "if": the "if" block holds only another "if", and neither has an "else". Combine the conditions, leaving "if a && b && n > 0 { ... }" (unindent)

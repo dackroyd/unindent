@@ -67,12 +67,45 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
+      # Building golangci-lint with the plugin fills the module and build caches with about 1.4 GB of golangci-lint's
+      # dependencies, more than a cache saves on a build of about a minute.
       - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
         with:
           go-version: ${{ matrix.go }}
+          cache: false
+      # .custom-gcl.yaml makes the action build golangci-lint with unindent from this checkout, which
+      # .golangci.yaml enables.
       - uses: golangci/golangci-lint-action@ba0d7d2ec06a0ea1cb5fa41b2e4a3ab91d21278a # v9.3.0
         with:
           version: v2.14.0
+
+  plugin:
+    name: Plugin (Go ${{ matrix.go }})
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: read
+    strategy:
+      fail-fast: false
+      matrix:
+        go: ["1.26.x", "1.27.x"]
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
+        with:
+          go-version: ${{ matrix.go }}
+          cache: false
+      # Builds golangci-lint with the plugin from this checkout, as gclplugin/testdata/sample/.custom-gcl.yaml says.
+      - uses: golangci/golangci-lint-action@ba0d7d2ec06a0ea1cb5fa41b2e4a3ab91d21278a # v9.3.0
+        with:
+          version: v2.14.0
+          install-only: true
+          working-directory: gclplugin/testdata/sample
+          skip-cache: true
+      - name: Check the plugin's findings and fixes
+        run: CUSTOM_GCL="$PWD/gclplugin/testdata/sample/custom-gcl" gclplugin/testdata/check.sh
 
   workflows:
     name: Workflows
@@ -114,7 +147,8 @@ jobs:
           fetch-depth: 2
       # The corpus results depend on the analyzer and CLI, the root module's dependencies, the corpus check and this
       # workflow. The corpus job's tests also check docs/projects.md, which is generated from the large set's results.
-      # The analyzer's tests and their testdata, the other docs and the other workflows don't affect them.
+      # The analyzer's tests and their testdata, the golangci-lint plugin, which the corpus check doesn't build, the
+      # other docs and the other workflows don't affect them.
       - name: Find whether the corpus results can change
         id: changes
         env:
@@ -131,7 +165,8 @@ jobs:
               printf '%s\n' "$changed" |
                 grep -E -e '^go\.(mod|sum|work|work\.sum)$' -e '^corpus/' -e '^docs/projects\.md$' \
                   -e '^\.github/workflows/ci\.yaml$' || true
-              printf '%s\n' "$changed" | grep -E '\.go$' | grep -Ev -e '_test\.go$' -e '(^|/)testdata/' || true
+              printf '%s\n' "$changed" | grep -E '\.go$' |
+                grep -Ev -e '_test\.go$' -e '(^|/)testdata/' -e '^gclplugin/' || true
             } | sort -u
           )
           if [ -n "$relevant" ]; then

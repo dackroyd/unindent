@@ -1,0 +1,20 @@
+version: "2"
+
+linters:
+  default: none
+  enable:
+    - unindent
+  settings:
+    custom:
+      unindent:
+        type: module
+        description: Identifies unnecessarily indented code
+        original-url: https://github.com/dackroyd/unindent
+        settings:
+          else-after-exit: true
+          else-if-after-exit: true
+          exit-in-else: false
+          if-wrapping-rest: true
+          if-wrapping-rest-min-statements: 4
+          if-alone-in-if: true
+          if-alone-in-if-max-operands: 3

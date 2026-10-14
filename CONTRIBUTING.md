@@ -17,8 +17,12 @@ go test -race ./...
 go vet ./...
 gofmt -l .
 go mod tidy -diff
-golangci-lint run
+golangci-lint custom && ./custom-gcl run
 ```
+
+[`.golangci.yaml`](.golangci.yaml) enables `unindent` on its own code, so the lint uses the golangci-lint that
+`golangci-lint custom` builds with this checkout from [`.custom-gcl.yaml`](.custom-gcl.yaml), as the "Lint" job does.
+Plain `golangci-lint run` stops with `plugin "unindent" not found`.
 
 Every check runs on both Go releases the Go team supports, Go 1.26 and 1.27, and the tests also run with Go 1.27 on
 arm64 Linux and Apple silicon macOS.
@@ -49,6 +53,19 @@ files in [`testdata/src/unindent`](testdata/src/unindent):
 - The `.golden` file next to each test file holds the source after the suggested fixes are applied.
 
 Add a case for every change in behaviour: one that is reported, and one alongside it that is not.
+
+### The golangci-lint plugin
+
+[`gclplugin/gclplugin_test.go`](gclplugin/gclplugin_test.go) tests how the plugin's settings set the flags.
+[`gclplugin/testdata/check.sh`](gclplugin/testdata/check.sh) checks the plugin end to end: it builds golangci-lint with
+it, lints the module in [`gclplugin/testdata/sample`](gclplugin/testdata/sample) with the default and with changed
+settings, applies `--fix`, and compares the results with the `.golden` files beside it. The "Plugin" job runs it with
+both Go releases. Run it with golangci-lint v2.14.0 on `PATH`, and with `UPDATE=1` to rewrite the golden files after an
+intended change:
+
+```sh
+gclplugin/testdata/check.sh
+```
 
 ## Benchmarks
 
@@ -143,9 +160,9 @@ are keyed by `projects.go`, and a change to the projects restores the last build
 is built again. Together they stay well under the repository's 10 GB cache limit.
 
 CI runs the corpus jobs on every push to `main`, and on pull requests that change something the results depend on: the
-analyzer and CLI (Go files other than tests and `testdata`), the root `go.mod`, `go.sum` or `go.work`, anything in
-`corpus/`, `docs/projects.md`, or the CI workflow. The "Corpus" job passes when every corpus job passed or was skipped,
-so it is the check to require, rather than the jobs for each release.
+analyzer and CLI (Go files other than tests, `testdata` and the golangci-lint plugin in `gclplugin/`), the root
+`go.mod`, `go.sum` or `go.work`, anything in `corpus/`, `docs/projects.md`, or the CI workflow. The "Corpus" job passes
+when every corpus job passed or was skipped, so it is the check to require, rather than the jobs for each release.
 
 ## Documentation
 
@@ -154,6 +171,7 @@ Update the documentation in the same change as the behaviour it describes:
 - [`README.md`](README.md): the problem, the quick start, usage and limitations.
 - [`docs/checks.md`](docs/checks.md): what each check reports and how it is fixed.
 - [`docs/comparison.md`](docs/comparison.md): coverage compared with other linters.
+- [`docs/golangci-lint.md`](docs/golangci-lint.md): the golangci-lint plugin, its settings and how its reports differ.
 - [`docs/projects.md`](docs/projects.md): generated from the large set's results, so record them rather than edit it.
 - A changelog fragment for every change that users notice, as [Changelog](#changelog) describes.
 
@@ -172,9 +190,9 @@ it asks for the entry, written for people who use `unindent`: what changed and, 
 kinds choose the next version: Fixed and Security bump the patch version, and the others the minor version until v1.0.0.
 
 Changes that users don't notice, such as CI, the corpus check, tests and documentation, need no fragment. The
-"Changelog" check fails a pull request that changes the analyzer or the CLI (Go files other than tests, in the root or
-`cmd/`) without adding a fragment. Label the pull request `no changelog` when such a change is internal, a refactoring
-for example.
+"Changelog" check fails a pull request that changes the analyzer, the CLI or the golangci-lint plugin (Go files other
+than tests, in the root, `cmd/` or `gclplugin/`) without adding a fragment. Label the pull request `no changelog` when
+such a change is internal, a refactoring for example.
 
 changie and [GoReleaser](https://goreleaser.com) are pinned with `tool` directives in the nested [`tools`](tools/go.mod)
 module, not the root `go.mod`, as the root module's requirements join the module graph of every module that imports

@@ -476,5 +476,5 @@ for _, x := range xs {
 ```
 
 A finding without a fix can be fixed by hand, or, when the `else` is wanted, as it is for a call that returns in other
-builds, suppressed. Where golangci-lint runs `unindent` as a custom linter named `unindent`, add `//nolint:unindent` to
-the line the finding is reported on, the `else`.
+builds, suppressed. Where `unindent` runs as a [golangci-lint plugin](golangci-lint.md), add `//nolint:unindent` to the
+line the finding is reported on, the `else`.

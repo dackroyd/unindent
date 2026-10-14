@@ -77,3 +77,31 @@ chain is split. The other tests that an error is not `nil`, so inverting it woul
 revive's three rules can be turned off where `unindent` runs, as can gocritic's `nestingReduce`, whose loops `unindent`
 reports too, other than searches. Where both run they ask for the same change, so the only cost is the same `if`
 reported twice.
+
+In [golangci-lint](golangci-lint.md), this keeps revive's other default rules and leaves the three to `unindent`:
+
+```yaml
+version: "2"
+
+linters:
+  enable:
+    - revive
+    - unindent
+  settings:
+    revive:
+      enable-default-rules: true
+      rules:
+        - name: early-return
+          disabled: true
+        - name: indent-error-flow
+          disabled: true
+        - name: superfluous-else
+          disabled: true
+    custom:
+      unindent:
+        type: module
+        description: Identifies unnecessarily indented code
+        original-url: https://github.com/dackroyd/unindent
+```
+
+gocritic leaves `nestingReduce` off unless it is enabled.

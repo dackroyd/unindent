@@ -1,0 +1,12 @@
+version: "2"
+
+linters:
+  default: none
+  enable:
+    - unindent
+  settings:
+    custom:
+      unindent:
+        type: module
+        description: Identifies unnecessarily indented code
+        original-url: https://github.com/dackroyd/unindent

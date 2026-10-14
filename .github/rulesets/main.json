@@ -37,6 +37,8 @@
           { "context": "Test (Go 1.27.x, macos-latest)", "integration_id": 15368 },
           { "context": "Lint (Go 1.26.x)", "integration_id": 15368 },
           { "context": "Lint (Go 1.27.x)", "integration_id": 15368 },
+          { "context": "Plugin (Go 1.26.x)", "integration_id": 15368 },
+          { "context": "Plugin (Go 1.27.x)", "integration_id": 15368 },
           { "context": "Workflows", "integration_id": 15368 },
           { "context": "Corpus", "integration_id": 15368 },
           { "context": "Changelog", "integration_id": 15368 }

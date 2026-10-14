@@ -1,0 +1,8 @@
+# Builds golangci-lint with unindent from this checkout as ./custom-gcl, so the lint job checks this repository with
+# it. golangci-lint-action builds it whenever this file is present; locally, run "golangci-lint custom".
+version: v2.14.0
+name: custom-gcl
+plugins:
+  - module: github.com/dackroyd/unindent
+    import: github.com/dackroyd/unindent/gclplugin
+    path: .
