@@ -99,3 +99,13 @@ jobs:
         env:
           GOPROXY: https://proxy.golang.org
         run: go list -m "github.com/dackroyd/unindent@$VERSION"
+      - name: Check the release notes
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          body=$(gh release view "$VERSION" --json body --jq .body)
+          if [ "$(printf '%s' "$body" | tr -d '[:space:]')" != "$(tr -d '[:space:]' < "$RUNNER_TEMP/notes.md")" ]; then
+            echo "::error::The notes of the $VERSION release don't match .changes/$VERSION.md."
+            exit 1
+          fi

@@ -30,6 +30,5 @@ archives:
 checksum:
   name_template: checksums.txt
 
-# The release notes are changie's, from .changes/<version>.md.
-changelog:
-  disable: true
+# The release notes are changie's, from .changes/<version>.md, passed with --release-notes. The changelog must stay
+# enabled: disabling it skips the step that reads that file, and the release is published with empty notes.
