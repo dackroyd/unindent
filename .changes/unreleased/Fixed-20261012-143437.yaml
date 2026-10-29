@@ -1,3 +1,0 @@
-kind: Fixed
-body: An unlabeled `break` inside a `switch` no longer counts as leaving the `if`. The fix moved the `else` block out of the `if`, so it ran when the `switch` broke out.
-time: 2026-10-12T14:34:37.966538473Z

@@ -1,3 +1,0 @@
-kind: Added
-body: 'Each check can be turned off with a flag, `-else-after-exit=false` or `-else-if-after-exit=false`, from the command line, `go vet -vettool` or the analyzer''s `Flags`. Both checks stay on by default.'
-time: 2026-10-13T09:00:00.000000000Z

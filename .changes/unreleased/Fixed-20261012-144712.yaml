@@ -1,3 +1,0 @@
-kind: Fixed
-body: No fix is offered when the `else` block declares a name that is already declared in the enclosing block, or that would hide a variable used after the `if`. The fix produced code that did not compile, or that silently used the wrong variable. The finding is still reported, with the reason.
-time: 2026-10-12T14:47:12.566035241Z

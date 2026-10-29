@@ -1,3 +1,0 @@
-kind: Added
-body: 'Calls that never return count as exits: `panic`, `t.Fatal`, `t.Skip` and the other methods of `testing.TB` that stop the test, and functions that always call `os.Exit`, `log.Fatal` or `runtime.Goexit`, in any package. A call to a function that never returns only in some builds, as a file with other build constraints declares it again, is reported without a fix: the race detector stubs in the runtime, for example.'
-time: 2026-10-12T15:26:51.80172344Z

@@ -1,3 +1,0 @@
-kind: Fixed
-body: Comments inside an initialiser that the fix moves before the `if` are kept. They were deleted, as the initialiser was rebuilt from its syntax tree.
-time: 2026-10-13T00:48:33.161547989Z

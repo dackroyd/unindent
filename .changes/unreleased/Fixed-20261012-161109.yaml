@@ -1,3 +1,0 @@
-kind: Fixed
-body: An `else if` chain whose initialisers move before the `if` no longer takes time that doubles with every link. A chain of 20 took 19 seconds to check, and now takes 7 milliseconds.
-time: 2026-10-12T16:11:09.763006508Z

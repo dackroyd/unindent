@@ -1,3 +1,0 @@
-kind: Fixed
-body: Comments between `else {` and the first statement of the block are kept by the fix. They were deleted with the `else`.
-time: 2026-10-12T15:05:29.308020619Z
