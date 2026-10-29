@@ -1,3 +1,0 @@
-kind: Fixed
-body: A branch with a label after the statement that ends it, such as a `return`, no longer counts as an exit. A `goto` can jump to the label and carry on to the end of the branch, so the fix moved the `else` block where it also ran after that path.
-time: 2026-10-13T08:00:00.000000000Z

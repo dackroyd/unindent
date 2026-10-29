@@ -1,3 +1,0 @@
-kind: Fixed
-body: A fix that moves an initialiser before the `if` is withheld when the initialiser holds another fix, such as an `else` in a function literal, and is offered on the next run. The two fixes overlapped, so `unindent -fix` skipped one and exited with an error.
-time: 2026-10-13T09:30:00.000000000Z
