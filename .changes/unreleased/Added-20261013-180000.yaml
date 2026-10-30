@@ -1,3 +1,0 @@
-kind: Added
-body: 'An `if` whose block holds only another `if`, neither with an `else`, is reported, with a fix that combines the two conditions with `&&` into one `if`, so the inner block moves out one level. `-if-alone-in-if-max-operands`, 2 by default, limits the operands of `&&` and `||` in the combined condition, and a chain of such `if` statements is combined from the top in one run. An inner `if` with an initialiser or a label, a constant outer condition, a comment on its own line between the two and a comment after the inner `if` are left alone. The new check is on by default; `-if-alone-in-if=false` turns it off.'
-time: 2026-10-13T18:00:00.000000000Z

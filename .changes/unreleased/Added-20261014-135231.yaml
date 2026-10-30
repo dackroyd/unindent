@@ -1,3 +1,0 @@
-kind: Added
-body: 'A golangci-lint module plugin: `golangci-lint custom` builds golangci-lint with `unindent` from a `.custom-gcl.yaml` that imports `github.com/dackroyd/unindent/gclplugin`. The linter `unindent` takes the flags as its settings, such as `exit-in-else: false`, rejects unknown ones, and `golangci-lint run --fix` applies the same fixes as `unindent -fix`. Tested with golangci-lint v2.14.0; see `docs/golangci-lint.md`.'
-time: 2026-10-14T13:52:31.384312887Z
