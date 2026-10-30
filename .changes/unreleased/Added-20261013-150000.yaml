@@ -1,3 +1,0 @@
-kind: Added
-body: 'An `if` without an `else` that ends a function or loop body and holds at least 3 statements is reported, with a fix that inverts the condition to `return` or `continue` early, so the block follows the `if` at the outer level, as gocritic''s `nestingReduce` suggests for loops. A final `return` or `continue` in the block, which the fix makes redundant, is removed and not counted. A loop whose block ends in a `return`, `break` or `goto`, a search for one element, is left alone. The new check is on by default; `-if-wrapping-rest=false` turns it off, and `-if-wrapping-rest-min-statements` sets the number of statements.'
-time: 2026-10-13T15:00:00.000000000Z

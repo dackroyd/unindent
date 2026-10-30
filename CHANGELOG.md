@@ -3,6 +3,40 @@
 All notable changes are listed here. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 versions follow [Semantic Versioning](https://semver.org/).
 
+## [0.2.0](https://github.com/dackroyd/unindent/releases/tag/v0.2.0) - 2026-10-30
+
+### Added
+
+- An `else` block that always exits after a body that does not is reported, with a fix that inverts the condition so
+  the `else` block exits first and the body follows the `if`, as revive's `early-return` suggests. The condition is
+  negated as written, swapping `==` and `!=`, reversing `<` or `>=` for integers and strings, variable first, but not
+  floating point numbers, where NaN makes `!(x < y)` and `x >= y` differ, and applying De Morgan's laws to `&&` and
+  `||` when every operand negates that way. An `if` whose condition needs an error that is not `nil`, such as `if err
+  != nil { log.Print(err) } else { process(v); return }`, is not reported, so the happy path never ends up under `err
+  == nil`; an `else` block that only exits, as in a retry loop's `else { break }`, is. The new check is on by default,
+  and `-exit-in-else=false` turns it off.
+- An `if` without an `else` that ends a function or loop body and holds at least 3 statements is reported, with a fix
+  that inverts the condition to `return` or `continue` early, so the block follows the `if` at the outer level, as
+  gocritic's `nestingReduce` suggests for loops. A final `return` or `continue` in the block, which the fix makes
+  redundant, is removed and not counted. A loop whose block ends in a `return`, `break` or `goto`, a search for one
+  element, is left alone. The new check is on by default; `-if-wrapping-rest=false` turns it off, and
+  `-if-wrapping-rest-min-statements` sets the number of statements.
+- An `if` whose block holds only another `if`, neither with an `else`, is reported, with a fix that combines the two
+  conditions with `&&` into one `if`, so the inner block moves out one level. `-if-alone-in-if-max-operands`, 2 by
+  default, limits the operands of `&&` and `||` in the combined condition, and a chain of such `if` statements is
+  combined from the top in one run. An inner `if` with an initialiser or a label, a constant outer condition, a
+  comment on its own line between the two and a comment after the inner `if` are left alone. The new check is on by
+  default; `-if-alone-in-if=false` turns it off.
+- A golangci-lint module plugin: `golangci-lint custom` builds golangci-lint with `unindent` from a `.custom-gcl.yaml`
+  that imports `github.com/dackroyd/unindent/gclplugin`. The linter `unindent` takes the flags as its settings, such
+  as `exit-in-else: false`, rejects unknown ones, and `golangci-lint run --fix` applies the same fixes as `unindent
+  -fix`. Tested with golangci-lint v2.14.0; see `docs/golangci-lint.md`.
+
+### Fixed
+
+- A file with many fixes is checked faster and with less memory, as each source file is read once per package rather
+  than once for every fix.
+
 ## [0.1.0](https://github.com/dackroyd/unindent/releases/tag/v0.1.0) - 2026-10-29
 
 ### Added
